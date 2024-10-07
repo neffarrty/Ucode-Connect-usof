@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  login     String    @unique
+  password  String
+  fullname  String
+  email     String
+  avatar    String
+  rating    Int       @default(0)
+  role      Role      @default(USER)
+  ports     Post[]
+  comments  Comment[]
+  likes     Like[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Post {
+  id         Int               @id @default(autoincrement())
+  author     User              @relation(fields: [authorId], references: [id])
+  authorId   Int               @map("author_id")
+  title      String
+  status     Status            @default(ACTIVE)
+  content    String
+  categories PostsCategories[]
+  comments   Comment[]
+  likes      Like[]
+  createdAt  DateTime          @default(now()) @map("created_at")
+  updatedAt  DateTime          @updatedAt @map("updated_at")
+
+  @@map("posts")
+}
+
+model Category {
+  id          Int               @id @default(autoincrement())
+  title       String
+  description String
+  posts       PostsCategories[]
+
+  @@map("categories")
+}
+
+model PostsCategories {
+  post       Post     @relation(fields: [postId], references: [id])
+  postId     Int      @map("post_id")
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId Int      @map("category_id")
+
+  @@id([postId, categoryId])
+  @@map("posts_categories")
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int      @map("author_id")
+  content   String
+  Post      Post?    @relation(fields: [postId], references: [id])
+  postId    Int?     @map("post_id")
+  likes     Like[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("comments")
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int      @map("author_id")
+  content   String
+  post      Post?    @relation(fields: [postId], references: [id])
+  postId    Int?
+  comment   Comment? @relation(fields: [commentId], references: [id])
+  commentId Int?
+  type      LikeType
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("likes")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+}
+
+enum LikeType {
+  LIKE
+  DISLIKE
+}
