@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["omitApi"]
 }
 
 datasource db {
@@ -11,12 +12,12 @@ model User {
   id        Int       @id @default(autoincrement())
   login     String    @unique
   password  String
-  fullname  String
-  email     String
-  avatar    String
+  fullname  String?
+  email     String    @unique
+  avatar    String    @default("public/img/default-avatar.png")
   rating    Int       @default(0)
   role      Role      @default(USER)
-  ports     Post[]
+  posts     Post[]
   comments  Comment[]
   likes     Like[]
   createdAt DateTime  @default(now()) @map("created_at")
