@@ -5,9 +5,9 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 
-import config from './config/config';
-import auth from './config/auth.config';
-import mail from './config/mail.config';
+import config from './configs/config';
+import auth from './configs/auth.config';
+import mail from './configs/mail.config';
 
 @Module({
 	imports: [
@@ -15,16 +15,7 @@ import mail from './config/mail.config';
 			isGlobal: true,
 			load: [config, auth, mail],
 		}),
-		JwtModule.registerAsync({
-			useFactory: async (config: ConfigService) => ({
-				secret: config.get<string>('auth.jwt.secret'),
-				signOptions: {
-					expiresIn: config.get<string | number>(
-						'auth.jwt.expiration',
-					),
-				},
-			}),
-			inject: [ConfigService],
+		JwtModule.register({
 			global: true,
 		}),
 		PrismaModule,

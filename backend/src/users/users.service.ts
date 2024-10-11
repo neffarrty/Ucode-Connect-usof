@@ -13,9 +13,6 @@ export class UsersService {
 			where: {
 				id: id,
 			},
-			omit: {
-				password: true,
-			},
 		});
 	}
 
@@ -36,11 +33,7 @@ export class UsersService {
 	}
 
 	async findAll() {
-		return await this.prisma.user.findMany({
-			omit: {
-				password: true,
-			},
-		});
+		return await this.prisma.user.findMany();
 	}
 
 	async create(dto: CreateUserDto): Promise<User> {

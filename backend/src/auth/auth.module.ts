@@ -6,9 +6,12 @@ import { ConfigService } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import * as path from 'path';
+import { LocalAuthGuard } from './guards/local.guard';
+import { LocalStrategy } from './strategies/local.strategy';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
-	providers: [AuthService],
+	providers: [AuthService, LocalStrategy, LocalAuthGuard],
 	controllers: [AuthController],
 	imports: [
 		MailerModule.forRootAsync({
@@ -37,6 +40,7 @@ import * as path from 'path';
 			inject: [ConfigService],
 		}),
 		UsersModule,
+		PassportModule,
 	],
 })
 export class AuthModule {}
