@@ -7,18 +7,21 @@ import { JwtModule } from '@nestjs/jwt';
 
 import config from './config/config';
 import auth from './config/auth.config';
+import mail from './config/mail.config';
 
 @Module({
 	imports: [
 		ConfigModule.forRoot({
 			isGlobal: true,
-			load: [config, auth],
+			load: [config, auth, mail],
 		}),
 		JwtModule.registerAsync({
 			useFactory: async (config: ConfigService) => ({
 				secret: config.get<string>('auth.jwt.secret'),
 				signOptions: {
-					expiresIn: config.get<string>('auth.jwt.expiration'),
+					expiresIn: config.get<string | number>(
+						'auth.jwt.expiration',
+					),
 				},
 			}),
 			inject: [ConfigService],

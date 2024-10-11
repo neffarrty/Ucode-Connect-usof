@@ -1,27 +1,24 @@
-import {
-	Injectable,
-	ConflictException,
-	UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { UsersService } from 'src/users/users.service';
 import { RegisterDto } from './dto/register.dto';
+import { JwtService, TokenExpiredError } from '@nestjs/jwt';
+import { MailerService } from '@nestjs-modules/mailer';
 import * as bcrypt from 'bcrypt';
-import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
 	constructor(
 		private readonly usersService: UsersService,
-		private readonly jwt: JwtService,
+		private readonly jwtService: JwtService,
+		private readonly mailService: MailerService,
 	) {}
 
-	// TODO: check for email existence
 	async register(dto: RegisterDto): Promise<any> {
 		const candidate = await this.usersService.findByLogin(dto.login);
 
 		if (candidate) {
-			throw new UnauthorizedException('Username already exists');
+			throw new BadRequestException('Username already exists');
 		}
 
 		const user = await this.usersService.create({
@@ -29,13 +26,38 @@ export class AuthService {
 			password: await bcrypt.hash(dto.password, 10),
 		});
 
-		return {
-			access_token: this.jwt.sign({ sub: user.id, login: user.login }),
-			user: {
-				login: user.login,
-				email: user.email,
+		await this.mailService.sendMail({
+			to: user.email,
+			subject: 'Account activation',
+			template: 'activation',
+			context: {
+				username: user.login,
+				token: this.jwtService.sign(
+					{ sub: user.id },
+					{ expiresIn: '15m' },
+				),
 			},
-		};
+		});
+
+		// return {
+		// 	access_token: this.jwtService.sign({
+		// 		sub: user.id,
+		// 		login: user.login,
+		// 	}),
+		// 	user: {
+		// 		login: user.login,
+		// 		email: user.email,
+		// 	},
+		// };
+	}
+
+	async activate(token: string): Promise<any> {
+		try {
+			const { id } = this.jwtService.verify(token);
+			const user = this.usersService.findById(id);
+		} catch (error) {
+			if (error instanceof TokenExpiredError) console.log(error);
+		}
 	}
 
 	async login() {}
