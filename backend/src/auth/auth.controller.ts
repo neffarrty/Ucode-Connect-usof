@@ -11,9 +11,9 @@ export class AuthController {
 		return this.authService.register(dto);
 	}
 
-	@Get('activate/:token')
-	async activate(@Param('token') token: string) {
-		return this.authService.activate(token);
+	@Get('verify/:token')
+	async verify(@Param('token') token: string) {
+		return this.authService.verify(token);
 	}
 
 	@Post('login')

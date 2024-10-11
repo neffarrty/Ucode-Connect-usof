@@ -28,8 +28,8 @@ export class AuthService {
 
 		await this.mailService.sendMail({
 			to: user.email,
-			subject: 'Account activation',
-			template: 'activation',
+			subject: 'Account verification',
+			template: 'verification',
 			context: {
 				username: user.login,
 				token: this.jwtService.sign(
@@ -51,7 +51,7 @@ export class AuthService {
 		// };
 	}
 
-	async activate(token: string): Promise<any> {
+	async verify(token: string): Promise<any> {
 		try {
 			const { id } = this.jwtService.verify(token);
 			const user = this.usersService.findById(id);
