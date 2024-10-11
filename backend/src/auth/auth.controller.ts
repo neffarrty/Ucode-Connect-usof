@@ -8,6 +8,7 @@ import {
 	Res,
 	UseGuards,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { Response } from 'express';
@@ -15,6 +16,7 @@ import { LocalAuthGuard } from './guards/local.guard';
 import { ReqUser } from './decorators/req-user.decorator';
 import { User } from '@prisma/client';
 
+@ApiTags('Authentification')
 @Controller('auth')
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}
