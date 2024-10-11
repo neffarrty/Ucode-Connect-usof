@@ -17,6 +17,7 @@ model User {
   avatar    String    @default("public/img/default-avatar.png")
   rating    Int       @default(0)
   role      Role      @default(USER)
+  verified  Boolean   @default(false)
   posts     Post[]
   comments  Comment[]
   likes     Like[]
