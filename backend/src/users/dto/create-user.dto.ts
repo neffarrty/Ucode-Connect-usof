@@ -3,30 +3,45 @@ import {
 	IsEmail,
 	IsNotEmpty,
 	IsString,
+	IsInt,
+	IsBoolean,
 	IsStrongPassword,
-	Matches,
 } from 'class-validator';
+import { Role } from '@prisma/client';
 
 export class CreateUserDto {
-	@ApiProperty({
-		example: 'cooldev',
-		required: true,
-	})
+	@ApiProperty()
 	@IsString()
 	@IsNotEmpty()
 	login: string;
 
-	@ApiProperty({
-		example: 'cool.dev@example.com',
-		required: true,
-	})
+	@ApiProperty()
+	@IsStrongPassword()
+	password: string;
+
+	@ApiProperty()
+	@IsString()
+	@IsNotEmpty()
+	fullname?: string;
+
+	@ApiProperty()
 	@IsEmail()
 	email: string;
 
-	@ApiProperty({
-		example: 'aXK]ndh?',
-		required: true,
-	})
-	@IsStrongPassword()
-	password: string;
+	@ApiProperty()
+	@IsString()
+	@IsNotEmpty()
+	avatar?: string;
+
+	@ApiProperty()
+	@IsInt()
+	rating?: number;
+
+	role?: Role;
+
+	@IsBoolean()
+	verified?: boolean;
+
+	@IsString()
+	verifyToken?: string;
 }

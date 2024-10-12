@@ -5,10 +5,10 @@ import { UsersModule } from 'src/users/users.module';
 import { ConfigService } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
-import * as path from 'path';
-import { LocalAuthGuard } from './guards/local.guard';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 import { LocalStrategy } from './strategies/local.strategy';
 import { PassportModule } from '@nestjs/passport';
+import * as path from 'path';
 
 @Module({
 	providers: [AuthService, LocalStrategy, LocalAuthGuard],

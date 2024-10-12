@@ -8,7 +8,7 @@ import { User } from '@prisma/client';
 export class UsersService {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async findById(id: number) {
+	async findById(id: number): Promise<User | null> {
 		return await this.prisma.user.findUnique({
 			where: {
 				id: id,
@@ -16,7 +16,7 @@ export class UsersService {
 		});
 	}
 
-	async findByLogin(login: string) {
+	async findByLogin(login: string): Promise<User | null> {
 		return await this.prisma.user.findUnique({
 			where: {
 				login: login,
@@ -24,7 +24,7 @@ export class UsersService {
 		});
 	}
 
-	async findByEmail(email: string) {
+	async findByEmail(email: string): Promise<User | null> {
 		return await this.prisma.user.findUnique({
 			where: {
 				email: email,
@@ -32,7 +32,15 @@ export class UsersService {
 		});
 	}
 
-	async findAll() {
+	async findByVerifyToken(token: string): Promise<User | null> {
+		return await this.prisma.user.findUnique({
+			where: {
+				verifyToken: token,
+			},
+		});
+	}
+
+	async findAll(): Promise<User[] | null> {
 		return await this.prisma.user.findMany();
 	}
 

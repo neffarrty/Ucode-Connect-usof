@@ -2,6 +2,7 @@ import {
 	Injectable,
 	ConflictException,
 	BadRequestException,
+	UnauthorizedException,
 } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { RegisterDto } from './dto/register.dto';
@@ -10,7 +11,8 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { User } from '@prisma/client';
 import { Response } from 'express';
-import { hash, compare } from 'bcrypt';
+import * as bcrypt from 'bcrypt';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class AuthService {
@@ -30,46 +32,10 @@ export class AuthService {
 
 		const user = await this.usersService.create({
 			...dto,
-			password: await hash(dto.password, 10),
+			password: await bcrypt.hash(dto.password, 10),
 		});
 
-		const token = this.jwtService.sign(
-			{ sub: user.id },
-			{
-				secret: this.configService.get<string>(
-					'auth.jwt.access.secret',
-				),
-				expiresIn: '15m',
-			},
-		);
-
-		await this.mailService.sendMail({
-			to: user.email,
-			subject: 'Account verification',
-			template: 'verification',
-			context: {
-				username: user.login,
-				token: token,
-			},
-		});
-	}
-
-	async verify(token: string): Promise<any> {
-		try {
-			const { sub } = this.jwtService.verify(token);
-			const user = await this.usersService.findById(sub);
-
-			if (user) {
-				this.usersService.update(user.id, {
-					verified: true,
-				});
-			}
-		} catch (error) {
-			if (error instanceof TokenExpiredError) {
-				throw new BadRequestException('Verification time is expired');
-			}
-			throw new BadRequestException('Invalid token');
-		}
+		this.sendVerificationMail(user.email);
 	}
 
 	async login(user: User, res: Response): Promise<any> {
@@ -78,8 +44,6 @@ export class AuthService {
 			this.generateRefreshToken({ sub: user.id }),
 		]);
 
-		console.log(access_token);
-
 		res.cookie('refresh_token', refresh_token, {
 			httpOnly: true,
 		});
@@ -87,11 +51,111 @@ export class AuthService {
 		return res.json({ token: access_token });
 	}
 
-	async logout() {}
+	async logout(user: User, res: Response): Promise<void> {
+		res.clearCookie('refresh_token');
+	}
 
-	async sendResetLink() {}
+	async verify(token: string): Promise<void> {
+		// try {
+		// 	const { sub } = this.jwtService.verify(token, {
+		// 		secret: this.configService.get<string>(
+		// 			'auth.jwt.access.secret',
+		// 		),
+		// 	});
+		// 	const user = await this.usersService.findById(sub);
+		// 	if (user) {
+		// 		this.usersService.update(user.id, {
+		// 			verified: true,
+		// 		});
+		// 	}
+		// } catch (error) {
+		// 	if (error instanceof TokenExpiredError) {
+		// 		throw new BadRequestException('Verification time is expired');
+		// 	}
+		// 	throw new BadRequestException(error.message);
+		// }
+		const user = await this.usersService.findByVerifyToken(token);
 
-	async resetPassword(token: string, password: string) {}
+		if (!user) {
+			throw new BadRequestException('Invalid confirmation token');
+		}
+
+		this.usersService.update(user.id, {
+			verified: true,
+			verifyToken: null,
+		});
+	}
+
+	async refresh(): Promise<any> {}
+
+	async sendVerificationMail(email: string): Promise<void> {
+		const user = await this.usersService.findByEmail(email);
+
+		if (!user) {
+			throw new UnauthorizedException('Email does not exists');
+		}
+
+		const token = uuid();
+
+		this.usersService.update(user.id, {
+			verifyToken: token,
+		});
+
+		await this.mailService.sendMail({
+			to: user.email,
+			subject: 'Account verification',
+			template: 'verification',
+			context: {
+				username: user.login,
+				token,
+			},
+		});
+	}
+
+	async sendResetMail(email: string): Promise<void> {
+		const user = await this.usersService.findByEmail(email);
+
+		if (!user) {
+			throw new UnauthorizedException('Invalid email');
+		}
+
+		const token = await this.generateAccessToken({ sub: user.id });
+
+		await this.mailService.sendMail({
+			to: user.email,
+			subject: 'Password reset',
+			template: 'reset-password',
+			context: {
+				username: user.login,
+				token,
+			},
+		});
+	}
+
+	async resetPassword(token: string, password: string) {
+		try {
+			const { sub } = this.jwtService.verify(token, {
+				secret: this.configService.get<string>(
+					'auth.jwt.access.secret',
+				),
+			});
+			const user = await this.usersService.findById(sub);
+
+			if (user) {
+				const hash = await bcrypt.hash(password, 10);
+				this.usersService.update(user.id, {
+					password: hash,
+				});
+			}
+		} catch (error) {
+			if (error instanceof TokenExpiredError) {
+				throw new BadRequestException(
+					'Time for password reset is expired',
+				);
+			}
+			throw new BadRequestException(error.message);
+		}
+	}
 
 	async validateUser(email: string, password: string) {
 		const user = await this.usersService.findByEmail(email);
@@ -99,7 +163,10 @@ export class AuthService {
 		if (!user) {
 			throw new BadRequestException('User does not exists');
 		}
-		if (!(await compare(password, user.password))) {
+		if (!user.verified) {
+			throw new UnauthorizedException('User is not verified');
+		}
+		if (!(await bcrypt.compare(password, user.password))) {
 			throw new BadRequestException('Password does not match');
 		}
 
@@ -111,8 +178,6 @@ export class AuthService {
 		const exp = this.configService.get<string>(
 			'auth.jwt.access.expiration',
 		);
-
-		console.log(exp);
 
 		return await this.jwtService.signAsync(payload, {
 			secret: secret,
@@ -128,11 +193,13 @@ export class AuthService {
 			'auth.jwt.refresh.expiration',
 		);
 
-		console.log(exp);
-
 		return await this.jwtService.signAsync(payload, {
 			secret: secret,
 			expiresIn: exp,
 		});
+	}
+
+	async refreshToken(userId: number): Promise<string> {
+		return await this.generateAccessToken({ sub: userId });
 	}
 }
