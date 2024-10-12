@@ -1,27 +1,37 @@
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, ExtractJwt, JwtFromRequestFunction } from 'passport-jwt';
-import { Injectable } from '@nestjs/common';
+import { Strategy, ExtractJwt } from 'passport-jwt';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(
 	Strategy,
 	'jwt-refresh',
 ) {
-	constructor(private readonly configService: ConfigService) {
+	constructor(
+		private readonly configService: ConfigService,
+		private readonly usersService: UsersService,
+	) {
 		super({
 			jwtFromRequest: ExtractJwt.fromExtractors([
-				(req: Request) => req.cookies?.['refresh_token'],
+				(req: Request) => {
+					return req.cookies?.['refresh_token'];
+				},
 			]),
 			ignoreExpiration: false,
 			secretOrKey: configService.get<string>('auth.jwt.refresh.secret'),
 		});
 	}
 
-	async validate(req: Request, payload: any) {
-		return {
-			payload,
-		};
+	async validate(payload: any) {
+		const user = this.usersService.findById(payload.sub);
+
+		if (!user) {
+			throw new BadRequestException('Invalid token');
+		}
+
+		return user;
 	}
 }

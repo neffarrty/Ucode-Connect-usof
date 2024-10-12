@@ -9,9 +9,21 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 import { LocalStrategy } from './strategies/local.strategy';
 import { PassportModule } from '@nestjs/passport';
 import * as path from 'path';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { JwtRefreshAuthGuard } from './guards/jwt-refresh.guard';
+import { JwtStrategy } from './strategies/jwt-access.strategy';
+import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 
 @Module({
-	providers: [AuthService, LocalStrategy, LocalAuthGuard],
+	providers: [
+		AuthService,
+		LocalStrategy,
+		JwtStrategy,
+		JwtRefreshStrategy,
+		LocalAuthGuard,
+		JwtAuthGuard,
+		JwtRefreshAuthGuard,
+	],
 	controllers: [AuthController],
 	imports: [
 		MailerModule.forRootAsync({

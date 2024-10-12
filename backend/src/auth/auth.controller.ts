@@ -33,7 +33,10 @@ export class AuthController {
 	@UseGuards(LocalAuthGuard)
 	@HttpCode(200)
 	@Post('login')
-	async login(@GetUser() user: User, @Res() res: Response) {
+	async login(
+		@GetUser() user: User,
+		@Res({ passthrough: true }) res: Response,
+	) {
 		return this.authService.login(user, res);
 	}
 
@@ -56,21 +59,30 @@ export class AuthController {
 
 	@UseGuards(JwtRefreshAuthGuard)
 	@Post('refresh')
-	async refresh(@Req() req: Request) {
-		return this.authService.refresh();
+	async refresh(
+		@GetUser() user: User,
+		@Res({ passthrough: true }) res: Response,
+	) {
+		const tokens = await this.authService.refreshTokens(user.id);
+
+		res.cookie('refresh_token', tokens.refreshToken, {
+			httpOnly: true,
+		});
+
+		return { token: tokens.accessToken };
 	}
 
 	@Post('forgot-password')
 	@HttpCode(200)
-	async sendResetMail(@Body() dto: ForgotPasswordDto): Promise<void> {
-		return this.authService.sendResetMail(dto.email);
+	async sendResetMail(@Body() { email }: ForgotPasswordDto): Promise<void> {
+		return this.authService.sendResetMail(email);
 	}
 
 	@Post('password-reset/:token')
 	async resetPassword(
 		@Param('token') token: string,
-		@Body() dto: ResetPasswordDto,
+		@Body() { password }: ResetPasswordDto,
 	): Promise<void> {
-		return this.authService.resetPassword(token, dto.password);
+		return this.authService.resetPassword(token, password);
 	}
 }

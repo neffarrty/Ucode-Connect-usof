@@ -39,16 +39,18 @@ export class AuthService {
 	}
 
 	async login(user: User, res: Response): Promise<any> {
-		const [access_token, refresh_token] = await Promise.all([
+		const [accessToken, refreshToken] = await Promise.all([
 			this.generateAccessToken({ sub: user.id }),
 			this.generateRefreshToken({ sub: user.id }),
 		]);
 
-		res.cookie('refresh_token', refresh_token, {
+		console.log(user);
+
+		res.cookie('refresh_token', refreshToken, {
 			httpOnly: true,
 		});
 
-		return res.json({ token: access_token });
+		return res.json({ user, token: accessToken });
 	}
 
 	async logout(user: User, res: Response): Promise<void> {
@@ -56,24 +58,6 @@ export class AuthService {
 	}
 
 	async verify(token: string): Promise<void> {
-		// try {
-		// 	const { sub } = this.jwtService.verify(token, {
-		// 		secret: this.configService.get<string>(
-		// 			'auth.jwt.access.secret',
-		// 		),
-		// 	});
-		// 	const user = await this.usersService.findById(sub);
-		// 	if (user) {
-		// 		this.usersService.update(user.id, {
-		// 			verified: true,
-		// 		});
-		// 	}
-		// } catch (error) {
-		// 	if (error instanceof TokenExpiredError) {
-		// 		throw new BadRequestException('Verification time is expired');
-		// 	}
-		// 	throw new BadRequestException(error.message);
-		// }
 		const user = await this.usersService.findByVerifyToken(token);
 
 		if (!user) {
@@ -85,8 +69,6 @@ export class AuthService {
 			verifyToken: null,
 		});
 	}
-
-	async refresh(): Promise<any> {}
 
 	async sendVerificationMail(email: string): Promise<void> {
 		const user = await this.usersService.findByEmail(email);
@@ -199,7 +181,12 @@ export class AuthService {
 		});
 	}
 
-	async refreshToken(userId: number): Promise<string> {
-		return await this.generateAccessToken({ sub: userId });
+	async refreshTokens(userId: number): Promise<any> {
+		const [accessToken, refreshToken] = await Promise.all([
+			this.generateAccessToken({ sub: userId }),
+			this.generateRefreshToken({ sub: userId }),
+		]);
+
+		return { accessToken, refreshToken };
 	}
 }
