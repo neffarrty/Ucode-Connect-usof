@@ -18,7 +18,7 @@ import { GetUser } from './decorators/get-user.decorator';
 import { User } from '@prisma/client';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { JwtRefreshAuthGuard } from './guards/jwt-refresh.guard';
+import { JwtRefreshAuthGuard } from './guards/jwt-refresh-auth.guard';
 
 @ApiTags('Authentification')
 @Controller('auth')
@@ -42,34 +42,39 @@ export class AuthController {
 
 	@HttpCode(200)
 	@Post('logout')
-	async logout() {
-		return this.authService.logout(null, null);
+	async logout(
+		@GetUser() user: User,
+		@Res({ passthrough: true }) res: Response,
+	): Promise<void> {
+		return this.authService.logout(user, res);
 	}
 
 	@HttpCode(200)
 	@Post('verify')
-	async sendVerificationMail(@Body() dto: ForgotPasswordDto) {
+	async sendVerificationMail(@Body() dto: ForgotPasswordDto): Promise<void> {
 		return this.authService.sendVerificationMail(dto.email);
 	}
 
 	@Get('verify/:token')
-	async verify(@Param('token') token: string) {
+	async verify(@Param('token') token: string): Promise<void> {
 		return this.authService.verify(token);
 	}
 
 	@UseGuards(JwtRefreshAuthGuard)
-	@Post('refresh')
+	@Post('refresh-token')
 	async refresh(
 		@GetUser() user: User,
 		@Res({ passthrough: true }) res: Response,
-	) {
-		const tokens = await this.authService.refreshTokens(user.id);
+	): Promise<any> {
+		const { accessToken, refreshToken } =
+			await this.authService.refreshTokens(user.id);
 
-		res.cookie('refresh_token', tokens.refreshToken, {
+		res.cookie('refresh_token', refreshToken, {
 			httpOnly: true,
+			sameSite: 'strict',
 		});
 
-		return { token: tokens.accessToken };
+		return { token: accessToken };
 	}
 
 	@Post('forgot-password')

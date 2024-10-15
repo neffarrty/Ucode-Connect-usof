@@ -6,6 +6,7 @@ import {
 	IsInt,
 	IsBoolean,
 	IsStrongPassword,
+	IsEnum,
 } from 'class-validator';
 import { Role } from '@prisma/client';
 
@@ -37,6 +38,7 @@ export class CreateUserDto {
 	@IsInt()
 	rating?: number;
 
+	@IsEnum(Role)
 	role?: Role;
 
 	@IsBoolean()

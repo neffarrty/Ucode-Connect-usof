@@ -44,10 +44,9 @@ export class AuthService {
 			this.generateRefreshToken({ sub: user.id }),
 		]);
 
-		console.log(user);
-
 		res.cookie('refresh_token', refreshToken, {
 			httpOnly: true,
+			sameSite: 'strict',
 		});
 
 		return res.json({ user, token: accessToken });

@@ -14,17 +14,14 @@ export class RegisterDto {
 	login: string;
 
 	@ApiProperty()
-	@IsNotEmpty()
 	@IsEmail()
 	email: string;
 
 	@ApiProperty()
-	@IsNotEmpty()
 	@Matches(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,16}$/)
 	password: string;
 
 	@ApiProperty()
 	@Length(5, 32)
-	@IsOptional()
-	fullname: string;
+	fullname?: string;
 }

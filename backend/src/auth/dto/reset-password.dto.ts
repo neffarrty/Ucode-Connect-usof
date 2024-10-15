@@ -3,6 +3,6 @@ import { IsStrongPassword } from 'class-validator';
 
 export class ResetPasswordDto {
 	@ApiProperty()
-	@IsStrongPassword()
+	@IsStrongPassword({})
 	password: string;
 }
