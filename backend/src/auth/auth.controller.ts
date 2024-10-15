@@ -13,12 +13,12 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { Response } from 'express';
-import { LocalAuthGuard } from './guards/local-auth.guard';
 import { GetUser } from './decorators/get-user.decorator';
 import { User } from '@prisma/client';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { JwtRefreshAuthGuard } from './guards/jwt-refresh-auth.guard';
+import { LocalGuard } from './guards/local.guard';
+import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 
 @ApiTags('Authentification')
 @Controller('auth')
@@ -30,7 +30,7 @@ export class AuthController {
 		return this.authService.register(dto);
 	}
 
-	@UseGuards(LocalAuthGuard)
+	@UseGuards(LocalGuard)
 	@HttpCode(200)
 	@Post('login')
 	async login(
@@ -60,7 +60,7 @@ export class AuthController {
 		return this.authService.verify(token);
 	}
 
-	@UseGuards(JwtRefreshAuthGuard)
+	@UseGuards(JwtRefreshGuard)
 	@Post('refresh-token')
 	async refresh(
 		@GetUser() user: User,

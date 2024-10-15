@@ -5,12 +5,12 @@ import { UsersModule } from 'src/users/users.module';
 import { ConfigService } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
-import { LocalAuthGuard } from './guards/local-auth.guard';
+import { LocalAuthGuard } from './guards/local.guard';
 import { LocalStrategy } from './strategies/local.strategy';
 import { PassportModule } from '@nestjs/passport';
 import * as path from 'path';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { JwtRefreshAuthGuard } from './guards/jwt-refresh-auth.guard';
+import { JwtAuthGuard } from './guards/jwt.guard';
+import { JwtRefreshAuthGuard } from './guards/jwt-refresh.guard';
 import { JwtStrategy } from './strategies/jwt-access.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 
