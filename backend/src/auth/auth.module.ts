@@ -5,14 +5,14 @@ import { UsersModule } from 'src/users/users.module';
 import { ConfigService } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
-import { LocalAuthGuard } from './guards/local.guard';
-import { LocalStrategy } from './strategies/local.strategy';
 import { PassportModule } from '@nestjs/passport';
-import * as path from 'path';
-import { JwtAuthGuard } from './guards/jwt.guard';
-import { JwtRefreshAuthGuard } from './guards/jwt-refresh.guard';
+import { LocalGuard } from './guards/local.guard';
+import { JwtGuard } from './guards/jwt.guard';
+import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
+import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt-access.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
+import * as path from 'path';
 
 @Module({
 	providers: [
@@ -20,9 +20,9 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 		LocalStrategy,
 		JwtStrategy,
 		JwtRefreshStrategy,
-		LocalAuthGuard,
-		JwtAuthGuard,
-		JwtRefreshAuthGuard,
+		LocalGuard,
+		JwtGuard,
+		JwtRefreshGuard,
 	],
 	controllers: [AuthController],
 	imports: [

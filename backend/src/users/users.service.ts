@@ -59,10 +59,21 @@ export class UsersService {
 		});
 	}
 
-	async remove(id: number): Promise<User> {
+	async delete(id: number): Promise<User> {
 		return this.prisma.user.delete({
 			where: {
 				id: id,
+			},
+		});
+	}
+
+	async setAvatar(id: number, path: string): Promise<User> {
+		return this.prisma.user.update({
+			where: {
+				id: id,
+			},
+			data: {
+				avatar: path,
 			},
 		});
 	}
