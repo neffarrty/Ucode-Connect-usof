@@ -1,0 +1,76 @@
+<html lang='en'>
+	<head>
+		<meta charset='UTF-8' />
+		<meta name='viewport' content='width=device-width, initial-scale=1.0' />
+		<title>Confirm Your Email Address</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				background-color: #f4f4f4;
+				margin: 0;
+				padding: 0;
+			}
+			.container {
+				width: 100%;
+				max-width: 600px;
+				margin: 0 auto;
+				background-color: #ffffff;
+				padding: 20px;
+				text-align: left;
+			}
+			h1 {
+				font-size: 22px;
+				color: #333333;
+			}
+			p {
+				font-size: 16px;
+				color: #666666;
+				margin: 10px 0;
+			}
+			a {
+				color: #1a0dab;
+				text-decoration: none;
+			}
+			.button {
+				display: inline-block;
+				padding: 10px 20px;
+				margin: 20px 0;
+				font-size: 16px;
+				color: #ffffff;
+				background-color: #007bff;
+				border-radius: 5px;
+				text-decoration: none;
+				text-align: center;
+			}
+			.footer {
+				margin-top: 20px;
+				font-size: 14px;
+				color: #999999;
+			}
+		</style>
+	</head>
+	<body>
+		<div class='container'>
+			<h1>Registration confirm</h1>
+			<p>
+				Hi, {{username}}, tap the button below to confirm your email address. 
+				If you didn't create an account with
+				<a href='http://localhost:3000/{{token}}'>
+					BugTalk
+				</a>, you can safely delete this email.
+			</p>
+			<a
+				href='http://localhost:5000/api/auth/verify/{{token}}'
+				class='button'
+			>
+				Confirm email
+			</a>
+			<p>
+				If that doesn't work, copy and paste the following link in your
+				browser:
+			</p>
+				<p>Cheers, Paste</p>
+			</div>
+		</div>
+	</body>
+</html>
