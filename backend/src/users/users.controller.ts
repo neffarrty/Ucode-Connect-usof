@@ -9,11 +9,6 @@ import {
 	ParseIntPipe,
 	UseInterceptors,
 	UploadedFile,
-	ParseFilePipeBuilder,
-	ParseFilePipe,
-	MaxFileSizeValidator,
-	FileTypeValidator,
-	HttpStatus,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
@@ -21,7 +16,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { generateFilename } from 'src/helpers/generate-filename';
+import { generateFilename, imageFileFilter } from 'src/helpers/files-helper';
 
 @ApiTags('Users')
 @Controller('users')
@@ -48,24 +43,21 @@ export class UsersController {
 		FileInterceptor('image', {
 			storage: diskStorage({
 				destination: './public/avatars',
-				filename: (req, file, callback) => {
-					callback(null, generateFilename(file));
-				},
+				filename: generateFilename,
 			}),
+			fileFilter: imageFileFilter,
 		}),
 	)
 	setUserAvatar(
 		@Param('id', ParseIntPipe) id: number,
-		@UploadedFile(
-			new ParseFilePipe({
-				validators: [
-					new MaxFileSizeValidator({ maxSize: 1048576 }),
-					new FileTypeValidator({ fileType: '(png|jpeg|jpg)' }),
-				],
-				errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-			}),
-		)
-		image: Express.Multer.File,
+		@UploadedFile() // new ParseFilePipe({
+		image // 	validators: [
+		// 		new MaxFileSizeValidator({ maxSize: 1048576 }),
+		// 		new FileTypeValidator({ fileType: '(png|jpeg|jpg)' }),
+		// 	],
+		// 	errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+		// }),
+		: Express.Multer.File,
 	) {
 		return this.userService.setAvatar(id, image.path);
 	}
