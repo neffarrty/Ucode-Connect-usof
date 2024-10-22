@@ -67,8 +67,6 @@ export class UsersController {
 			throw new BadRequestException('Invalid file');
 		}
 
-		console.log(file.path);
-
 		return this.userService.setAvatar(id, file.originalname);
 	}
 
