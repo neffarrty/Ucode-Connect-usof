@@ -8,8 +8,16 @@ import { JwtModule } from '@nestjs/jwt';
 import config from './configs/config';
 import auth from './configs/auth.config';
 import mail from './configs/mail.config';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtGuard } from './auth/guards/jwt.guard';
 
 @Module({
+	providers: [
+		{
+			provide: APP_GUARD,
+			useClass: JwtGuard,
+		},
+	],
 	imports: [
 		ConfigModule.forRoot({
 			isGlobal: true,
