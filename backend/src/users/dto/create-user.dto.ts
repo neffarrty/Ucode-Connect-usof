@@ -38,12 +38,11 @@ export class CreateUserDto {
 	@IsInt()
 	rating?: number;
 
+	@ApiProperty()
 	@IsEnum(Role)
 	role?: Role;
 
+	@ApiProperty()
 	@IsBoolean()
 	verified?: boolean;
-
-	@IsString()
-	verifyToken?: string;
 }

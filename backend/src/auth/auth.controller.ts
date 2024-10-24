@@ -13,23 +13,26 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { Response } from 'express';
-import { GetUser } from './decorators/get-user.decorator';
+import { GetUser } from '../decorators/get-user.decorator';
 import { User } from '@prisma/client';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { LocalGuard } from './guards/local.guard';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
+import { Public } from 'src/decorators/public.decorator';
 
 @ApiTags('Authentification')
 @Controller('auth')
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}
 
+	@Public()
 	@Post('register')
 	async register(@Body() dto: RegisterDto): Promise<void> {
 		return this.authService.register(dto);
 	}
 
+	@Public()
 	@UseGuards(LocalGuard)
 	@HttpCode(200)
 	@Post('login')
@@ -40,6 +43,7 @@ export class AuthController {
 		return this.authService.login(user, res);
 	}
 
+	@Public()
 	@HttpCode(200)
 	@Post('logout')
 	async logout(
@@ -49,17 +53,20 @@ export class AuthController {
 		return this.authService.logout(user, res);
 	}
 
+	@Public()
 	@HttpCode(200)
 	@Post('verify')
 	async sendVerificationMail(@Body() dto: ForgotPasswordDto): Promise<void> {
 		return this.authService.sendVerificationMail(dto.email);
 	}
 
+	@Public()
 	@Get('verify/:token')
 	async verify(@Param('token') token: string): Promise<void> {
 		return this.authService.verify(token);
 	}
 
+	@Public()
 	@UseGuards(JwtRefreshGuard)
 	@Post('refresh-token')
 	async refresh(
@@ -77,12 +84,14 @@ export class AuthController {
 		return { token: accessToken };
 	}
 
+	@Public()
 	@Post('forgot-password')
 	@HttpCode(200)
 	async sendResetMail(@Body() { email }: ForgotPasswordDto): Promise<void> {
 		return this.authService.sendResetMail(email);
 	}
 
+	@Public()
 	@Post('password-reset/:token')
 	async resetPassword(
 		@Param('token') token: string,

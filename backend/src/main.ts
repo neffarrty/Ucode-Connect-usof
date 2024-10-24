@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
+import { join } from 'path';
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
@@ -25,6 +26,8 @@ async function bootstrap() {
 	});
 	app.setGlobalPrefix('api');
 	app.useGlobalPipes(new ValidationPipe());
+
+	console.log(join(__dirname, '..', '..', 'uploads'));
 
 	await app.listen(port);
 }
