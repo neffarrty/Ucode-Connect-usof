@@ -6,6 +6,7 @@ import {
 	Comment,
 	Category,
 	Like,
+	Status,
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import * as bcrypt from 'bcrypt';
@@ -33,6 +34,8 @@ function getRandomCategories(
 }
 
 async function cleanDatabase() {
+	await prisma.postsCategories.deleteMany();
+	await prisma.category.deleteMany();
 	await prisma.like.deleteMany();
 	await prisma.comment.deleteMany();
 	await prisma.post.deleteMany();
@@ -45,16 +48,16 @@ async function fakeUsers(): Promise<User[]> {
 			{
 				email: 'admin@example.com',
 				login: 'admin',
-				fullname: null,
 				password: await bcrypt.hash('admin', 10),
 				role: 'ADMIN',
+				verified: true,
 				avatar: '/avatar/default.webp',
 			},
 			{
 				email: 'neffarrty@example.com',
 				login: 'neffarrty',
-				fullname: null,
 				password: await bcrypt.hash('securepass', 10),
+				verified: true,
 				avatar: '/avatar/default.webp',
 			},
 		],
@@ -96,12 +99,15 @@ async function fakePosts(
 	users: User[],
 	categories: Category[],
 ): Promise<Post[]> {
+	const statuses = [Status.ACTIVE, Status.ACTIVE, Status.INACTIVE];
+
 	for (let i = 0; i < POSTS_NUMBER; i++) {
 		const user = users[Math.floor(Math.random() * users.length)];
 
 		const post = await prisma.post.create({
 			data: {
 				title: faker.word.words({ count: { min: 1, max: 5 } }),
+				status: statuses[Math.floor(Math.random() * statuses.length)],
 				content: faker.lorem.paragraphs({ min: 10, max: 25 }),
 				authorId: user.id,
 			},
@@ -170,9 +176,6 @@ async function fakeLikes(
 
 			await prisma.like.create({
 				data: {
-					content: faker.lorem.sentences(
-						Math.floor(Math.random() * 5) + 1,
-					),
 					postId: post.id,
 					authorId: user.id,
 					type: types[Math.floor(Math.random() * types.length)],
@@ -187,9 +190,6 @@ async function fakeLikes(
 
 			await prisma.like.create({
 				data: {
-					content: faker.lorem.sentences(
-						Math.floor(Math.random() * 5) + 1,
-					),
 					commentId: comment.id,
 					authorId: user.id,
 					type: types[Math.floor(Math.random() * types.length)],

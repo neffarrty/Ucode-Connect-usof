@@ -1,5 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { Post } from '@prisma/client';
+import {
+	BadRequestException,
+	Injectable,
+	NotFoundException,
+} from '@nestjs/common';
+import { Comment, Post } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -20,7 +24,7 @@ export class PostsService {
 		});
 	}
 
-	async findComments(id: number) {
+	async findComments(id: number): Promise<Comment[]> {
 		return this.prisma.comment.findMany({
 			where: {
 				postId: id,
@@ -28,22 +32,32 @@ export class PostsService {
 		});
 	}
 
-	async addComment(id: number, dto: any) {
+	async addComment(
+		postId: number,
+		authorId: number,
+		dto: any,
+	): Promise<Comment> {
 		return this.prisma.comment.create({
 			data: {
-				postId: id,
+				postId,
+				authorId,
 				...dto,
 			},
 		});
 	}
 
+	// TODO: remove nested 'category' object in 'categories' response
 	async findCategories(id: number) {
-		return this.prisma.post.findMany({
+		return this.prisma.post.findUnique({
 			where: {
 				id,
 			},
-			select: {
-				categories: true,
+			include: {
+				categories: {
+					select: {
+						category: true,
+					},
+				},
 			},
 		});
 	}
@@ -53,7 +67,7 @@ export class PostsService {
 			where: {
 				id,
 			},
-			select: {
+			include: {
 				likes: true,
 			},
 		});
@@ -72,7 +86,7 @@ export class PostsService {
 		const post = await this.findById(id);
 
 		if (!post) {
-			throw new BadRequestException(`Post with id ${id} doesn't exist`);
+			throw new NotFoundException(`Post with id ${id} doesn't exist`);
 		}
 
 		return this.prisma.post.update({
@@ -87,7 +101,7 @@ export class PostsService {
 		const post = await this.findById(id);
 
 		if (!post) {
-			throw new BadRequestException(`Post with id ${id} doesn't exist`);
+			throw new NotFoundException(`Post with id ${id} doesn't exist`);
 		}
 
 		return this.prisma.post.delete({
@@ -101,7 +115,7 @@ export class PostsService {
 		const post = await this.findById(id);
 
 		if (!post) {
-			throw new BadRequestException(`Post with id ${id} doesn't exist`);
+			throw new NotFoundException(`Post with id ${id} doesn't exist`);
 		}
 
 		return this.prisma.like.create({
@@ -112,17 +126,16 @@ export class PostsService {
 		});
 	}
 
-	async deleteLike(authorId: number, postId: number) {
-		const like = await this.prisma.like.findUnique({
+	async deleteLike(postId: number, authorId: number) {
+		const like = await this.prisma.like.findFirst({
 			where: {
-				authorId_postId: { authorId, postId },
+				authorId,
+				postId,
 			},
 		});
 
 		if (!like) {
-			throw new BadRequestException(
-				`Post with id ${like.id} doesn't exist`,
-			);
+			throw new NotFoundException(`Like doesn't exist`);
 		}
 
 		return this.prisma.like.delete({

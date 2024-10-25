@@ -55,6 +55,7 @@ model Post {
   @@map("posts")
 }
 
+// TODO: title unique constraint
 model Category {
   id          Int               @id @default(autoincrement())
   title       String
@@ -65,9 +66,9 @@ model Category {
 }
 
 model PostsCategories {
-  post       Post     @relation(fields: [postId], references: [id])
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId     Int      @map("post_id")
-  category   Category @relation(fields: [categoryId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   categoryId Int      @map("category_id")
 
   @@id([postId, categoryId])
@@ -79,7 +80,7 @@ model Comment {
   author    User     @relation(fields: [authorId], references: [id])
   authorId  Int      @map("author_id")
   content   String
-  Post      Post?    @relation(fields: [postId], references: [id])
+  Post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    Int?     @map("post_id")
   likes     Like[]
   createdAt DateTime @default(now()) @map("created_at")
@@ -92,10 +93,9 @@ model Like {
   id        Int      @id @default(autoincrement())
   author    User     @relation(fields: [authorId], references: [id])
   authorId  Int      @map("author_id")
-  content   String
-  post      Post?    @relation(fields: [postId], references: [id])
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    Int?     @map("post_id")
-  comment   Comment? @relation(fields: [commentId], references: [id])
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
   commentId Int?
   type      LikeType
   createdAt DateTime @default(now()) @map("created_at")

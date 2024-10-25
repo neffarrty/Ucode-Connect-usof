@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+	ConflictException,
+	Injectable,
+	NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -58,7 +62,7 @@ export class UsersService {
 		const user = await this.findById(id);
 
 		if (!user) {
-			throw new BadRequestException(`User with id ${id} doesn't exist`);
+			throw new NotFoundException(`User with id ${id} doesn't exist`);
 		}
 
 		await this.checkIfNotExist(dto.login, dto.email);
@@ -75,7 +79,7 @@ export class UsersService {
 		const user = await this.findById(id);
 
 		if (!user) {
-			throw new BadRequestException(`User with id ${id} doesn't exist`);
+			throw new NotFoundException(`User with id ${id} doesn't exist`);
 		}
 
 		return this.prisma.user.delete({
@@ -89,7 +93,7 @@ export class UsersService {
 		const user = await this.findById(id);
 
 		if (!user) {
-			throw new BadRequestException(`User with id ${id} doesn't exist`);
+			throw new NotFoundException(`User with id ${id} doesn't exist`);
 		}
 
 		return this.prisma.user.update({
@@ -106,7 +110,7 @@ export class UsersService {
 		if (login) {
 			const userByLogin = await this.findByLogin(login);
 			if (userByLogin) {
-				throw new BadRequestException(
+				throw new ConflictException(
 					`User with login ${login} already exists`,
 				);
 			}
@@ -115,7 +119,7 @@ export class UsersService {
 		if (email) {
 			const userByEmail = await this.findByEmail(email);
 			if (userByEmail) {
-				throw new BadRequestException(
+				throw new ConflictException(
 					`User with email ${email} already exists`,
 				);
 			}
