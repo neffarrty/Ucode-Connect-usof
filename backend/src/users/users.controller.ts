@@ -29,12 +29,12 @@ export class UsersController {
 	constructor(private readonly userService: UsersService) {}
 
 	@Get(':id')
-	findUserById(@Param('id', ParseIntPipe) id: number) {
+	getUserById(@Param('id', ParseIntPipe) id: number) {
 		return this.userService.findById(id);
 	}
 
 	@Get()
-	findAllUsers() {
+	getAllUsers() {
 		return this.userService.findAll();
 	}
 

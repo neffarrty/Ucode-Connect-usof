@@ -8,6 +8,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtGuard } from './auth/guards/jwt.guard';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { PostsModule } from './posts/posts.module';
 
 import config from './configs/config';
 import auth from './configs/auth.config';
@@ -36,6 +37,7 @@ import mail from './configs/mail.config';
 		PrismaModule,
 		UsersModule,
 		AuthModule,
+		PostsModule,
 	],
 })
 export class AppModule {}

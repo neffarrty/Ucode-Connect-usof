@@ -9,36 +9,35 @@ datasource db {
 }
 
 model User {
-  id           Int           @id @default(autoincrement())
-  login        String        @unique
-  password     String
-  fullname     String?
-  email        String        @unique
-  avatar       String        @default("public/avatars/default.png")
-  rating       Int           @default(0)
-  role         Role          @default(USER)
-  verified     Boolean       @default(false)
-  verifyToken  String?       @unique @map("verify_token")
-  refreshToken RefreshToken?
-  posts        Post[]
-  comments     Comment[]
-  likes        Like[]
-  createdAt    DateTime      @default(now()) @map("created_at")
-  updatedAt    DateTime      @updatedAt @map("updated_at")
+  id          Int       @id @default(autoincrement())
+  login       String    @unique
+  password    String
+  fullname    String?
+  email       String    @unique
+  avatar      String    @default("public/avatars/default.png")
+  rating      Int       @default(0)
+  role        Role      @default(USER)
+  verified    Boolean   @default(false)
+  verifyToken String?   @unique @map("verify_token")
+  posts       Post[]
+  comments    Comment[]
+  likes       Like[]
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
 
   @@map("users")
 }
 
-model RefreshToken {
-  id        Int      @id @default(autoincrement())
-  token     String
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int      @unique @map("user_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+// model RefreshToken {
+//   id        Int      @id @default(autoincrement())
+//   token     String
+//   user      User     @relation(fields: [userId], references: [id])
+//   userId    Int      @unique @map("user_id")
+//   createdAt DateTime @default(now()) @map("created_at")
+//   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("refresh_tokens")
-}
+//   @@map("refresh_tokens")
+// }
 
 model Post {
   id         Int               @id @default(autoincrement())
@@ -46,7 +45,7 @@ model Post {
   authorId   Int               @map("author_id")
   title      String
   status     Status            @default(ACTIVE)
-  content    String
+  content    String            @db.Text
   categories PostsCategories[]
   comments   Comment[]
   likes      Like[]
@@ -95,7 +94,7 @@ model Like {
   authorId  Int      @map("author_id")
   content   String
   post      Post?    @relation(fields: [postId], references: [id])
-  postId    Int?
+  postId    Int?     @map("post_id")
   comment   Comment? @relation(fields: [commentId], references: [id])
   commentId Int?
   type      LikeType
