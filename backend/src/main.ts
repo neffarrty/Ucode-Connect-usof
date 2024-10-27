@@ -27,7 +27,7 @@ async function bootstrap() {
 	app.setGlobalPrefix('api');
 	app.useGlobalPipes(new ValidationPipe());
 
-	console.log(join(__dirname, '..', '..', 'uploads'));
+	// console.log(join(__dirname, '..', '..', 'uploads'));
 
 	await app.listen(port);
 }

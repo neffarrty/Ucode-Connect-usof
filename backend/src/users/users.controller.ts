@@ -29,12 +29,12 @@ export class UsersController {
 	constructor(private readonly userService: UsersService) {}
 
 	@Get(':id')
-	findUserById(@Param('id', ParseIntPipe) id: number) {
+	getUserById(@Param('id', ParseIntPipe) id: number) {
 		return this.userService.findById(id);
 	}
 
 	@Get()
-	findAllUsers() {
+	getAllUsers() {
 		return this.userService.findAll();
 	}
 
@@ -59,15 +59,11 @@ export class UsersController {
 		@UploadedFile() file: Express.Multer.File,
 		@GetUser() user: User,
 	) {
-		if (user.id !== id && user.role !== Role.ADMIN) {
-			throw new ForbiddenException('Cannot set user avatar');
-		}
-
 		if (!file) {
 			throw new BadRequestException('Invalid file');
 		}
 
-		return this.userService.setAvatar(id, file.originalname);
+		return this.userService.setAvatar(id, user, file.originalname);
 	}
 
 	@Patch(':id')
@@ -79,7 +75,7 @@ export class UsersController {
 		if (user.id !== id && user.role !== Role.ADMIN) {
 			throw new ForbiddenException('Cannot update user');
 		}
-		return this.userService.update(id, updateUserDto);
+		return this.userService.update(id, user, updateUserDto);
 	}
 
 	@Delete(':id')
@@ -87,6 +83,6 @@ export class UsersController {
 		if (user.id !== id && user.role !== Role.ADMIN) {
 			throw new ForbiddenException('Cannot delete user');
 		}
-		return this.userService.delete(id);
+		return this.userService.delete(id, user);
 	}
 }

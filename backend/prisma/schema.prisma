@@ -9,36 +9,35 @@ datasource db {
 }
 
 model User {
-  id           Int           @id @default(autoincrement())
-  login        String        @unique
-  password     String
-  fullname     String?
-  email        String        @unique
-  avatar       String        @default("public/avatars/default.png")
-  rating       Int           @default(0)
-  role         Role          @default(USER)
-  verified     Boolean       @default(false)
-  verifyToken  String?       @unique @map("verify_token")
-  refreshToken RefreshToken?
-  posts        Post[]
-  comments     Comment[]
-  likes        Like[]
-  createdAt    DateTime      @default(now()) @map("created_at")
-  updatedAt    DateTime      @updatedAt @map("updated_at")
+  id          Int       @id @default(autoincrement())
+  login       String    @unique
+  password    String
+  fullname    String?
+  email       String    @unique
+  avatar      String    @default("public/avatars/default.png")
+  rating      Int       @default(0)
+  role        Role      @default(USER)
+  verified    Boolean   @default(false)
+  verifyToken String?   @unique @map("verify_token")
+  posts       Post[]
+  comments    Comment[]
+  likes       Like[]
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
 
   @@map("users")
 }
 
-model RefreshToken {
-  id        Int      @id @default(autoincrement())
-  token     String
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int      @unique @map("user_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+// model RefreshToken {
+//   id        Int      @id @default(autoincrement())
+//   token     String
+//   user      User     @relation(fields: [userId], references: [id])
+//   userId    Int      @unique @map("user_id")
+//   createdAt DateTime @default(now()) @map("created_at")
+//   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("refresh_tokens")
-}
+//   @@map("refresh_tokens")
+// }
 
 model Post {
   id         Int               @id @default(autoincrement())
@@ -46,7 +45,7 @@ model Post {
   authorId   Int               @map("author_id")
   title      String
   status     Status            @default(ACTIVE)
-  content    String
+  content    String            @db.Text
   categories PostsCategories[]
   comments   Comment[]
   likes      Like[]
@@ -56,9 +55,10 @@ model Post {
   @@map("posts")
 }
 
+// TODO: title unique constraint
 model Category {
   id          Int               @id @default(autoincrement())
-  title       String
+  title       String            @unique()
   description String
   posts       PostsCategories[]
 
@@ -66,9 +66,9 @@ model Category {
 }
 
 model PostsCategories {
-  post       Post     @relation(fields: [postId], references: [id])
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId     Int      @map("post_id")
-  category   Category @relation(fields: [categoryId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   categoryId Int      @map("category_id")
 
   @@id([postId, categoryId])
@@ -80,7 +80,7 @@ model Comment {
   author    User     @relation(fields: [authorId], references: [id])
   authorId  Int      @map("author_id")
   content   String
-  Post      Post?    @relation(fields: [postId], references: [id])
+  Post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    Int?     @map("post_id")
   likes     Like[]
   createdAt DateTime @default(now()) @map("created_at")
@@ -93,10 +93,9 @@ model Like {
   id        Int      @id @default(autoincrement())
   author    User     @relation(fields: [authorId], references: [id])
   authorId  Int      @map("author_id")
-  content   String
-  post      Post?    @relation(fields: [postId], references: [id])
-  postId    Int?
-  comment   Comment? @relation(fields: [commentId], references: [id])
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    Int?     @map("post_id")
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
   commentId Int?
   type      LikeType
   createdAt DateTime @default(now()) @map("created_at")
