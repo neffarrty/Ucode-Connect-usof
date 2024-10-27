@@ -15,7 +15,6 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { CreatePostDto } from './dto/create-post.dto';
 import { GetUser } from 'src/decorators/get-user.decorator';
 import { User } from '@prisma/client';
-import { NotFoundError } from 'rxjs';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -29,41 +28,7 @@ export class PostsController {
 
 	@Get(':id')
 	async getPostById(@Param('id', ParseIntPipe) id: number) {
-		await this.checkPostExistence(id);
-
 		return this.postService.findById(id);
-	}
-
-	@Get(':id/comments')
-	async getPostComments(@Param('id', ParseIntPipe) id: number) {
-		await this.checkPostExistence(id);
-
-		return this.postService.findComments(id);
-	}
-
-	@Post(':id/comments')
-	async createPostComments(
-		@Param('id', ParseIntPipe) id: number,
-		@Body() dto: any,
-		@GetUser() user: User,
-	) {
-		await this.checkPostExistence(id);
-
-		return this.postService.addComment(id, user.id, dto);
-	}
-
-	@Get(':id/categories')
-	async getPostCategories(@Param('id', ParseIntPipe) id: number) {
-		await this.checkPostExistence(id);
-
-		return this.postService.findCategories(id);
-	}
-
-	@Get(':id/like')
-	async getPostLikes(@Param('id', ParseIntPipe) id: number) {
-		await this.checkPostExistence(id);
-
-		return this.postService.findLikes(id);
 	}
 
 	@Post()
@@ -75,17 +40,51 @@ export class PostsController {
 	async updatePost(
 		@Param('id', ParseIntPipe) id: number,
 		@Body() dto: UpdatePostDto,
+		@GetUser() user: User,
 	) {
-		await this.checkPostExistence(id);
-
-		return this.postService.update(id, dto);
+		return this.postService.update(id, user, dto);
 	}
 
 	@Delete(':id')
-	async deletePost(@Param('id', ParseIntPipe) id: number) {
-		await this.checkPostExistence(id);
+	async deletePost(
+		@Param('id', ParseIntPipe) id: number,
+		@GetUser() user: User,
+	) {
+		return this.postService.delete(id, user);
+	}
 
-		return this.postService.delete(id);
+	@Get(':id/comments')
+	async getPostComments(@Param('id', ParseIntPipe) id: number) {
+		return this.postService.findComments(id);
+	}
+
+	// TODO: patch comment endpoint
+	@Post(':id/comments')
+	async createPostComment(
+		@Param('id', ParseIntPipe) id: number,
+		@Body() dto: any,
+		@GetUser() user: User,
+	) {
+		return this.postService.addComment(id, user, dto);
+	}
+
+	@Get(':id/categories')
+	async getPostCategories(@Param('id', ParseIntPipe) id: number) {
+		return this.postService.findCategories(id);
+	}
+
+	@Get(':id/like')
+	async getPostLikes(@Param('id', ParseIntPipe) id: number) {
+		return this.postService.findLikes(id);
+	}
+
+	@Post(':id/like')
+	async addPostLike(
+		@Param('id', ParseIntPipe) id: number,
+		@Body() dto: any,
+		@GetUser() user: User,
+	) {
+		return this.postService.addLike(id, user, dto);
 	}
 
 	@Delete(':id/like')
@@ -93,16 +92,6 @@ export class PostsController {
 		@Param('id', ParseIntPipe) id: number,
 		@GetUser() user: User,
 	) {
-		await this.checkPostExistence(id);
-
-		return this.postService.deleteLike(id, user.id);
-	}
-
-	async checkPostExistence(id: number) {
-		const post = await this.postService.findById(id);
-
-		if (!post) {
-			throw new NotFoundException(`Post with id ${id} doesn't exist`);
-		}
+		return this.postService.deleteLike(id, user);
 	}
 }

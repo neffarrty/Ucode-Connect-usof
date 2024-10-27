@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Category, Status } from '@prisma/client';
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+	IsArray,
+	IsEnum,
+	IsNotEmpty,
+	IsOptional,
+	IsString,
+} from 'class-validator';
 
 export class CreatePostDto {
 	@ApiProperty()
@@ -18,7 +24,10 @@ export class CreatePostDto {
 	@IsNotEmpty()
 	content: string;
 
-	// @ApiProperty()
-	// @IsOptional()
-	// categories?: Category[];
+	@ApiProperty()
+	@IsArray()
+	@IsString({ each: true })
+	@IsNotEmpty({ each: true })
+	@IsOptional()
+	categories?: string[];
 }
