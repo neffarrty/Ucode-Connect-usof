@@ -58,7 +58,7 @@ model Post {
 // TODO: title unique constraint
 model Category {
   id          Int               @id @default(autoincrement())
-  title       String
+  title       String            @unique()
   description String
   posts       PostsCategories[]
 
