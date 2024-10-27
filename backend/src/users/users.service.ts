@@ -1,23 +1,30 @@
 import {
 	ConflictException,
+	ForbiddenException,
 	Injectable,
 	NotFoundException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { User } from '@prisma/client';
+import { Role, User } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async findById(id: number): Promise<User | null> {
-		return this.prisma.user.findUnique({
+		const user = await this.prisma.user.findUnique({
 			where: {
 				id: id,
 			},
 		});
+
+		if (!user) {
+			throw new NotFoundException(`User with id ${id} doesn't exist`);
+		}
+
+		return user;
 	}
 
 	async findByLogin(login: string): Promise<User | null> {
@@ -58,11 +65,11 @@ export class UsersService {
 		});
 	}
 
-	async update(id: number, dto: UpdateUserDto): Promise<User> {
-		const user = await this.findById(id);
+	async update(id: number, user: User, dto: UpdateUserDto): Promise<User> {
+		await this.findById(id);
 
-		if (!user) {
-			throw new NotFoundException(`User with id ${id} doesn't exist`);
+		if (user.id !== id && user.role !== Role.ADMIN) {
+			throw new ForbiddenException('Cannot set user avatar');
 		}
 
 		await this.checkIfNotExist(dto.login, dto.email);
@@ -75,11 +82,11 @@ export class UsersService {
 		});
 	}
 
-	async delete(id: number): Promise<User> {
-		const user = await this.findById(id);
+	async delete(id: number, user: User): Promise<User> {
+		await this.findById(id);
 
-		if (!user) {
-			throw new NotFoundException(`User with id ${id} doesn't exist`);
+		if (user.id !== id && user.role !== Role.ADMIN) {
+			throw new ForbiddenException('Cannot set user avatar');
 		}
 
 		return this.prisma.user.delete({
@@ -89,11 +96,11 @@ export class UsersService {
 		});
 	}
 
-	async setAvatar(id: number, path: string): Promise<User> {
-		const user = await this.findById(id);
+	async setAvatar(id: number, user: User, path: string): Promise<User> {
+		await this.findById(id);
 
-		if (!user) {
-			throw new NotFoundException(`User with id ${id} doesn't exist`);
+		if (user.id !== id && user.role !== Role.ADMIN) {
+			throw new ForbiddenException('Cannot set user avatar');
 		}
 
 		return this.prisma.user.update({
