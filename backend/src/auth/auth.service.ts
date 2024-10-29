@@ -4,7 +4,6 @@ import {
 	BadRequestException,
 	UnauthorizedException,
 } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
 import { RegisterDto } from './dto/register.dto';
 import { JwtService, TokenExpiredError } from '@nestjs/jwt';
 import { MailerService } from '@nestjs-modules/mailer';

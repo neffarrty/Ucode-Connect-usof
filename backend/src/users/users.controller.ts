@@ -9,10 +9,9 @@ import {
 	ParseIntPipe,
 	UseInterceptors,
 	UploadedFile,
-	ForbiddenException,
 	BadRequestException,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -23,7 +22,8 @@ import { GetUser } from 'src/decorators/get-user.decorator';
 import { Roles } from 'src/decorators/role.decorator';
 import { generateFilename, imageFileFilter } from 'src/helpers/files-helper';
 
-@ApiTags('Users')
+@ApiTags('users')
+@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
 	constructor(private readonly userService: UsersService) {}

@@ -21,7 +21,7 @@ import { LocalGuard } from './guards/local.guard';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 import { Public } from 'src/decorators/public.decorator';
 
-@ApiTags('Authentification')
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}
