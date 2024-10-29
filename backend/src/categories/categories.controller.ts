@@ -35,13 +35,13 @@ export class CategoriesController {
 		return this.categoriesService.findPosts(id);
 	}
 
-	@Roles([Role.ADMIN])
+	@Roles(Role.ADMIN)
 	@Post()
 	async createCategory(dto: CreateCategoryDto) {
 		return this.categoriesService.create(dto);
 	}
 
-	@Roles([Role.ADMIN])
+	@Roles(Role.ADMIN)
 	@Patch(':id')
 	async updateCategory(
 		@Param('id', ParseIntPipe) id: number,
@@ -50,7 +50,7 @@ export class CategoriesController {
 		return this.categoriesService.update(id, dto);
 	}
 
-	@Roles([Role.ADMIN])
+	@Roles(Role.ADMIN)
 	@Delete(':id')
 	async deleteCategory(@Param('id', ParseIntPipe) id: number) {
 		return this.categoriesService.delete(id);

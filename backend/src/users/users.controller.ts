@@ -38,7 +38,7 @@ export class UsersController {
 		return this.userService.findAll();
 	}
 
-	@Roles([Role.ADMIN])
+	@Roles(Role.ADMIN)
 	@Post()
 	createUser(@Body() createUserDto: CreateUserDto) {
 		return this.userService.create(createUserDto);
