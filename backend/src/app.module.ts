@@ -9,6 +9,7 @@ import { JwtGuard } from './auth/guards/jwt.guard';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { PostsModule } from './posts/posts.module';
+import { CategoriesModule } from './categories/categories.module';
 
 import config from './configs/config';
 import auth from './configs/auth.config';
@@ -38,6 +39,7 @@ import mail from './configs/mail.config';
 		UsersModule,
 		AuthModule,
 		PostsModule,
+		CategoriesModule,
 	],
 })
 export class AppModule {}

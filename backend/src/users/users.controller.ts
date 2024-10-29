@@ -72,17 +72,11 @@ export class UsersController {
 		@Body() updateUserDto: UpdateUserDto,
 		@GetUser() user: User,
 	) {
-		if (user.id !== id && user.role !== Role.ADMIN) {
-			throw new ForbiddenException('Cannot update user');
-		}
 		return this.userService.update(id, user, updateUserDto);
 	}
 
 	@Delete(':id')
 	deleteUser(@Param('id', ParseIntPipe) id: number, @GetUser() user: User) {
-		if (user.id !== id && user.role !== Role.ADMIN) {
-			throw new ForbiddenException('Cannot delete user');
-		}
 		return this.userService.delete(id, user);
 	}
 }
