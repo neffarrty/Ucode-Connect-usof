@@ -33,8 +33,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 			},
 		});
 
-		console.log(user);
-
 		if (!user) {
 			user = await this.prisma.user.create({
 				data: {

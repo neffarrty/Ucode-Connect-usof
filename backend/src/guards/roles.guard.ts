@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { Role } from '@prisma/client';
 
 @Injectable()
-export class RoleGuard implements CanActivate {
+export class RolesGuard implements CanActivate {
 	constructor(private readonly reflector: Reflector) {}
 
 	canActivate(context: ExecutionContext) {
