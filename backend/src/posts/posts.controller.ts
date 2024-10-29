@@ -9,14 +9,17 @@ import {
 	Patch,
 	Post,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { PostsService } from './posts.service';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { CreatePostDto } from './dto/create-post.dto';
 import { GetUser } from 'src/decorators/get-user.decorator';
 import { User } from '@prisma/client';
+import { CreateLikeDto } from './dto/create-like.dto';
+import { CreateCommentDto } from 'src/comments/dto/create-comment.dto';
 
-@ApiTags('Posts')
+@ApiTags('posts')
+@ApiBearerAuth()
 @Controller('posts')
 export class PostsController {
 	constructor(readonly postService: PostsService) {}
@@ -58,12 +61,11 @@ export class PostsController {
 		return this.postService.findComments(id);
 	}
 
-	// TODO: patch comment endpoint
 	@Post(':id/comments')
 	async createPostComment(
 		@Param('id', ParseIntPipe) id: number,
-		@Body() dto: any,
 		@GetUser() user: User,
+		@Body() dto: CreateCommentDto,
 	) {
 		return this.postService.addComment(id, user, dto);
 	}
@@ -81,8 +83,8 @@ export class PostsController {
 	@Post(':id/like')
 	async addPostLike(
 		@Param('id', ParseIntPipe) id: number,
-		@Body() dto: any,
 		@GetUser() user: User,
+		@Body() dto: CreateLikeDto,
 	) {
 		return this.postService.addLike(id, user, dto);
 	}

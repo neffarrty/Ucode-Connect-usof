@@ -1,4 +1,5 @@
 import {
+	ConflictException,
 	ForbiddenException,
 	Injectable,
 	NotFoundException,
@@ -7,6 +8,8 @@ import { Category, Comment, Post, Role, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { CreateLikeDto } from './dto/create-like.dto';
+import { CreateCommentDto } from 'src/comments/dto/create-comment.dto';
 
 @Injectable()
 export class PostsService {
@@ -99,7 +102,11 @@ export class PostsService {
 		});
 	}
 
-	async addComment(id: number, user: User, dto: any): Promise<Comment> {
+	async addComment(
+		id: number,
+		user: User,
+		dto: CreateCommentDto,
+	): Promise<Comment> {
 		const post = await this.findById(id);
 
 		if (post.authorId !== user.id) {
@@ -149,11 +156,22 @@ export class PostsService {
 		});
 	}
 
-	async addLike(id: number, user: User, dto: any) {
+	async addLike(id: number, user: User, dto: CreateLikeDto) {
 		const post = await this.findById(id);
 
 		if (post.authorId !== user.id) {
 			throw new ForbiddenException();
+		}
+
+		const like = await this.prisma.like.findFirst({
+			where: {
+				postId: id,
+				authorId: user.id,
+			},
+		});
+
+		if (like) {
+			throw new ConflictException('Like already exists');
 		}
 
 		return this.prisma.like.create({

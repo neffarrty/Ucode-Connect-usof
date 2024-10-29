@@ -7,14 +7,15 @@ import {
 	Patch,
 	Post,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CategoriesService } from './categories.service';
 import { Roles } from 'src/decorators/role.decorator';
 import { Role } from '@prisma/client';
 import { CreateCategoryDto } from './dto/update-category.dto';
 import { UpdateCategoryDto } from './dto/create-category.dto';
 
-@ApiTags('Categories')
+@ApiTags('categories')
+@ApiBearerAuth()
 @Controller('categories')
 export class CategoriesController {
 	constructor(readonly categoriesService: CategoriesService) {}

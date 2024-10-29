@@ -13,6 +13,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt-access.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import * as path from 'path';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
 	providers: [
@@ -52,6 +53,7 @@ import * as path from 'path';
 			inject: [ConfigService],
 		}),
 		UsersModule,
+		PrismaModule,
 		PassportModule,
 	],
 })

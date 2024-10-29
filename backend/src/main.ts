@@ -4,7 +4,6 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
-import { join } from 'path';
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
@@ -16,6 +15,11 @@ async function bootstrap() {
 		.setDescription('The Q&A app for developers')
 		.setVersion('1.0')
 		.addTag('api')
+		.addBearerAuth({
+			type: 'http',
+			scheme: 'bearer',
+			in: 'header',
+		})
 		.build();
 	const document = SwaggerModule.createDocument(app, builder);
 	SwaggerModule.setup('docs', app, document);
