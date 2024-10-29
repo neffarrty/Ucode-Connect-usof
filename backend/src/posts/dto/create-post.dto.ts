@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Category, Status } from '@prisma/client';
+import { Status } from '@prisma/client';
 import {
 	IsArray,
 	IsEnum,
@@ -9,22 +9,40 @@ import {
 } from 'class-validator';
 
 export class CreatePostDto {
-	@ApiProperty()
+	@ApiProperty({
+		description: 'Title of the post',
+		example: 'Understanding Dependency Injection in TypeScript',
+		type: String,
+	})
 	@IsString()
 	@IsNotEmpty()
 	title: string;
 
-	@ApiProperty()
+	@ApiProperty({
+		description: 'Status of the post, defining its publication state',
+		example: 'published',
+		type: String,
+		enum: Status,
+	})
 	@IsOptional()
 	@IsEnum(Status)
 	status?: Status;
 
-	@ApiProperty()
+	@ApiProperty({
+		description: 'Main content of the post',
+		example: 'Dependency Injection is a powerful design pattern that...',
+		type: String,
+	})
 	@IsString()
 	@IsNotEmpty()
 	content: string;
 
-	@ApiProperty()
+	@ApiProperty({
+		description: 'List of categories or tags',
+		example: ['Programming', 'TypeScript', 'Dependency Injection'],
+		type: [String],
+		required: false,
+	})
 	@IsArray()
 	@IsString({ each: true })
 	@IsNotEmpty({ each: true })
