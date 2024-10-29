@@ -166,10 +166,6 @@ export class PostsService {
 			},
 		});
 
-		if (like.authorId !== user.id) {
-			throw new ForbiddenException();
-		}
-
 		if (like) {
 			throw new ConflictException('Like already exists');
 		}
