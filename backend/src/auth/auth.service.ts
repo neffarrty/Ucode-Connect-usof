@@ -13,26 +13,33 @@ import { User } from '@prisma/client';
 import { Response } from 'express';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
 	constructor(
-		private readonly usersService: UsersService,
+		private readonly prisma: PrismaService,
 		private readonly configService: ConfigService,
 		private readonly jwtService: JwtService,
 		private readonly mailService: MailerService,
 	) {}
 
 	async register(dto: RegisterDto): Promise<any> {
-		const candidate = await this.usersService.findByLogin(dto.login);
+		const candidate = await this.prisma.user.findUnique({
+			where: {
+				login: dto.login,
+			},
+		});
 
 		if (candidate) {
 			throw new ConflictException('Username already exists');
 		}
 
-		const user = await this.usersService.create({
-			...dto,
-			password: await bcrypt.hash(dto.password, 10),
+		const user = await this.prisma.user.create({
+			data: {
+				...dto,
+				password: await bcrypt.hash(dto.password, 10),
+			},
 		});
 
 		this.sendVerificationMail(user.email);
@@ -57,29 +64,49 @@ export class AuthService {
 	}
 
 	async verify(token: string): Promise<void> {
-		const user = await this.usersService.findByVerifyToken(token);
+		const user = await this.prisma.user.findUnique({
+			where: {
+				verifyToken: token,
+			},
+		});
 
 		if (!user) {
 			throw new BadRequestException('Invalid confirmation token');
 		}
 
-		this.usersService.update(user.id, {
-			verified: true,
-			verifyToken: null,
+		this.prisma.user.update({
+			where: {
+				id: user.id,
+			},
+			data: {
+				verified: true,
+				verifyToken: null,
+			},
 		});
 	}
 
 	async sendVerificationMail(email: string): Promise<void> {
-		const user = await this.usersService.findByEmail(email);
+		const user = await this.prisma.user.findUnique({
+			where: {
+				email,
+			},
+		});
 
 		if (!user) {
-			throw new UnauthorizedException('Email does not exists');
+			throw new UnauthorizedException(
+				`User with email '${email}' does not exists`,
+			);
 		}
 
 		const token = uuid();
 
-		this.usersService.update(user.id, {
-			verifyToken: token,
+		this.prisma.user.update({
+			where: {
+				id: user.id,
+			},
+			data: {
+				verifyToken: token,
+			},
 		});
 
 		await this.mailService.sendMail({
@@ -94,10 +121,16 @@ export class AuthService {
 	}
 
 	async sendResetMail(email: string): Promise<void> {
-		const user = await this.usersService.findByEmail(email);
+		const user = await this.prisma.user.findUnique({
+			where: {
+				email,
+			},
+		});
 
 		if (!user) {
-			throw new UnauthorizedException('Invalid email');
+			throw new UnauthorizedException(
+				`User with email '${email}' does not exists`,
+			);
 		}
 
 		const token = await this.generateAccessToken({ sub: user.id });
@@ -120,12 +153,17 @@ export class AuthService {
 					'auth.jwt.access.secret',
 				),
 			});
-			const user = await this.usersService.findById(sub);
+			const user = await this.prisma.user.findUnique({
+				where: { id: sub },
+			});
 
 			if (user) {
 				const hash = await bcrypt.hash(password, 10);
-				this.usersService.update(user.id, {
-					password: hash,
+				this.prisma.user.update({
+					where: { id: user.id },
+					data: {
+						password: hash,
+					},
 				});
 			}
 		} catch (error) {
@@ -139,10 +177,16 @@ export class AuthService {
 	}
 
 	async validateUser(email: string, password: string) {
-		const user = await this.usersService.findByEmail(email);
+		const user = await this.prisma.user.findUnique({
+			where: {
+				email,
+			},
+		});
 
 		if (!user) {
-			throw new BadRequestException('User does not exists');
+			throw new UnauthorizedException(
+				`User with email '${email}' does not exists`,
+			);
 		}
 		if (!user.verified) {
 			throw new UnauthorizedException('User is not verified');
