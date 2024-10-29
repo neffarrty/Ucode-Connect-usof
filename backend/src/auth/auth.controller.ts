@@ -20,6 +20,7 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import { LocalGuard } from './guards/local.guard';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 import { Public } from 'src/decorators/public.decorator';
+import { GoogleGuard } from './guards/google.guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -40,6 +41,18 @@ export class AuthController {
 		@GetUser() user: User,
 		@Res({ passthrough: true }) res: Response,
 	) {
+		return this.authService.login(user, res);
+	}
+
+	@Public()
+	@Get('google')
+	@UseGuards(GoogleGuard)
+	async googleAuth(@Req() req: Request) {}
+
+	@Public()
+	@Get('google/callback')
+	@UseGuards(GoogleGuard)
+	googleAuthRedirect(@GetUser() user: User, @Res() res: Response) {
 		return this.authService.login(user, res);
 	}
 

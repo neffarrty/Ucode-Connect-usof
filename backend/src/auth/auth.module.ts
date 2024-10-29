@@ -14,6 +14,8 @@ import { JwtStrategy } from './strategies/jwt-access.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import * as path from 'path';
 import { PrismaModule } from 'src/prisma/prisma.module';
+import { GoogleStrategy } from './strategies/google.strategy';
+import { GoogleGuard } from './guards/google.guard';
 
 @Module({
 	providers: [
@@ -21,9 +23,11 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 		LocalStrategy,
 		JwtStrategy,
 		JwtRefreshStrategy,
+		GoogleStrategy,
 		LocalGuard,
 		JwtGuard,
 		JwtRefreshGuard,
+		GoogleGuard,
 	],
 	controllers: [AuthController],
 	imports: [
