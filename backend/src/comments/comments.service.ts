@@ -27,46 +27,6 @@ export class CommentsService {
 		return comment;
 	}
 
-	async findLikes(id: number) {
-		await this.findById(id);
-
-		return this.prisma.comment.findUnique({
-			where: {
-				id,
-			},
-			include: {
-				likes: true,
-			},
-		});
-	}
-
-	async addLike(id: number, user: User, dto: CreateLikeDto): Promise<Like> {
-		const comment = await this.findById(id);
-
-		if (comment.authorId !== user.id) {
-			throw new ForbiddenException();
-		}
-
-		const like = await this.prisma.like.findFirst({
-			where: {
-				commentId: id,
-				authorId: user.id,
-			},
-		});
-
-		if (like) {
-			throw new ConflictException('Like already exists');
-		}
-
-		return this.prisma.like.create({
-			data: {
-				commentId: id,
-				authorId: user.id,
-				...dto,
-			},
-		});
-	}
-
 	async update(
 		id: number,
 		user: User,
@@ -100,12 +60,48 @@ export class CommentsService {
 		});
 	}
 
-	async deleteLike(id: number, user: User): Promise<Like> {
-		const comment = await this.findById(id);
+	async findLikes(id: number) {
+		await this.findById(id);
 
-		if (comment.authorId !== user.id) {
+		return this.prisma.comment.findUnique({
+			where: {
+				id,
+			},
+			include: {
+				likes: true,
+			},
+		});
+	}
+
+	async addLike(id: number, user: User, dto: CreateLikeDto): Promise<Like> {
+		await this.findById(id);
+
+		const like = await this.prisma.like.findFirst({
+			where: {
+				commentId: id,
+				authorId: user.id,
+			},
+		});
+
+		if (like.authorId !== user.id) {
 			throw new ForbiddenException();
 		}
+
+		if (like) {
+			throw new ConflictException('Like already exists');
+		}
+
+		return this.prisma.like.create({
+			data: {
+				commentId: id,
+				authorId: user.id,
+				...dto,
+			},
+		});
+	}
+
+	async deleteLike(id: number, user: User): Promise<Like> {
+		await this.findById(id);
 
 		const like = await this.prisma.like.findFirst({
 			where: {
@@ -116,6 +112,10 @@ export class CommentsService {
 
 		if (!like) {
 			throw new NotFoundException(`Like doesn't exist`);
+		}
+
+		if (like.authorId !== user.id) {
+			throw new ForbiddenException();
 		}
 
 		return this.prisma.like.delete({

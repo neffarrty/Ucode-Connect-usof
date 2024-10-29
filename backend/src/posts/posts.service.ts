@@ -157,11 +157,7 @@ export class PostsService {
 	}
 
 	async addLike(id: number, user: User, dto: CreateLikeDto) {
-		const post = await this.findById(id);
-
-		if (post.authorId !== user.id) {
-			throw new ForbiddenException();
-		}
+		await this.findById(id);
 
 		const like = await this.prisma.like.findFirst({
 			where: {
@@ -169,6 +165,10 @@ export class PostsService {
 				authorId: user.id,
 			},
 		});
+
+		if (like.authorId !== user.id) {
+			throw new ForbiddenException();
+		}
 
 		if (like) {
 			throw new ConflictException('Like already exists');
@@ -184,11 +184,7 @@ export class PostsService {
 	}
 
 	async deleteLike(id: number, user: User) {
-		const post = await this.findById(id);
-
-		if (post.authorId !== user.id) {
-			throw new ForbiddenException();
-		}
+		await this.findById(id);
 
 		const like = await this.prisma.like.findFirst({
 			where: {
@@ -199,6 +195,10 @@ export class PostsService {
 
 		if (!like) {
 			throw new NotFoundException(`Like doesn't exist`);
+		}
+
+		if (like.authorId !== user.id) {
+			throw new ForbiddenException();
 		}
 
 		return this.prisma.like.delete({
