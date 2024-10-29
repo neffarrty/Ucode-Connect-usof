@@ -7,7 +7,7 @@ import {
 	Patch,
 	Post,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CommentsService } from './comments.service';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { GetUser } from 'src/decorators/get-user.decorator';
@@ -15,6 +15,7 @@ import { Comment, Like, User } from '@prisma/client';
 import { CreateLikeDto } from 'src/posts/dto/create-like.dto';
 
 @ApiTags('comments')
+@ApiBearerAuth()
 @Controller('comments')
 export class CommentsController {
 	constructor(readonly commentsService: CommentsService) {}

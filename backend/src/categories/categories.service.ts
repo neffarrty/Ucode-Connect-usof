@@ -40,30 +40,22 @@ export class CategoriesService {
 	}
 
 	async create(dto: CreateCategoryDto): Promise<Category> {
+		await this.checkIfTitleExists(dto.title);
+
 		return this.prisma.category.create({ data: dto });
 	}
 
-	// TODO: check if title exists in dto
 	async update(id: number, dto: UpdateCategoryDto): Promise<Category> {
 		await this.findById(id);
 
-		const category = this.prisma.category.findFirst({
-			where: {
-				title: {
-					equals: dto.title,
-					mode: 'insensitive',
-				},
-			},
-		});
-
-		if (category) {
-			throw new ConflictException(
-				`Category with title ${dto.title} already exists`,
-			);
+		if (dto.title) {
+			await this.checkIfTitleExists(dto.title);
 		}
 
 		return this.prisma.category.update({
-			where: { id },
+			where: {
+				id,
+			},
 			data: dto,
 		});
 	}
@@ -74,5 +66,22 @@ export class CategoriesService {
 		return this.prisma.category.delete({
 			where: { id },
 		});
+	}
+
+	private async checkIfTitleExists(title: string) {
+		const category = this.prisma.category.findFirst({
+			where: {
+				title: {
+					equals: title,
+					mode: 'insensitive',
+				},
+			},
+		});
+
+		if (category) {
+			throw new ConflictException(
+				`Category with title ${title} already exists`,
+			);
+		}
 	}
 }
