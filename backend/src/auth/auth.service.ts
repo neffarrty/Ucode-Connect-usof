@@ -24,14 +24,14 @@ export class AuthService {
 	) {}
 
 	async register(dto: RegisterDto): Promise<any> {
-		const candidate = await this.prisma.user.findUnique({
+		const candidate = await this.prisma.user.findFirst({
 			where: {
-				login: dto.login,
+				OR: [{ login: dto.login }, { email: dto.email }],
 			},
 		});
 
 		if (candidate) {
-			throw new ConflictException('Username already exists');
+			throw new ConflictException('User already exists');
 		}
 
 		const user = await this.prisma.user.create({
@@ -45,17 +45,16 @@ export class AuthService {
 	}
 
 	async login(user: User, res: Response): Promise<any> {
-		const [accessToken, refreshToken] = await Promise.all([
-			this.generateAccessToken({ sub: user.id }),
-			this.generateRefreshToken({ sub: user.id }),
-		]);
+		const { accessToken, refreshToken } = await this.generateTokens(
+			user.id,
+		);
 
 		res.cookie('refresh_token', refreshToken, {
 			httpOnly: true,
 			sameSite: 'strict',
 		});
 
-		return res.json({ user, token: accessToken });
+		return { token: accessToken };
 	}
 
 	async logout(user: User, res: Response): Promise<void> {
@@ -191,7 +190,7 @@ export class AuthService {
 			throw new UnauthorizedException('User is not verified');
 		}
 		if (!(await bcrypt.compare(password, user.password))) {
-			throw new BadRequestException('Password does not match');
+			throw new UnauthorizedException('Password does not match');
 		}
 
 		return user;
@@ -223,7 +222,7 @@ export class AuthService {
 		});
 	}
 
-	async refreshTokens(userId: number): Promise<any> {
+	async generateTokens(userId: number): Promise<any> {
 		const [accessToken, refreshToken] = await Promise.all([
 			this.generateAccessToken({ sub: userId }),
 			this.generateRefreshToken({ sub: userId }),

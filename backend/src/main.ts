@@ -10,11 +10,17 @@ async function bootstrap() {
 	const config = app.get(ConfigService);
 	const port = config.get<string>('port');
 
+	app.use(cookieParser());
+	app.enableCors({
+		credentials: true,
+	});
+	app.setGlobalPrefix('api');
+	app.useGlobalPipes(new ValidationPipe());
+
 	const builder = new DocumentBuilder()
 		.setTitle('BugTalk')
 		.setDescription('The Q&A app for developers')
 		.setVersion('1.0')
-		.addTag('api')
 		.addBearerAuth({
 			type: 'http',
 			scheme: 'bearer',
@@ -23,15 +29,6 @@ async function bootstrap() {
 		.build();
 	const document = SwaggerModule.createDocument(app, builder);
 	SwaggerModule.setup('docs', app, document);
-
-	app.use(cookieParser());
-	app.enableCors({
-		credentials: true,
-	});
-	app.setGlobalPrefix('api');
-	app.useGlobalPipes(new ValidationPipe());
-
-	// console.log(join(__dirname, '..', '..', 'uploads'));
 
 	await app.listen(port);
 }
