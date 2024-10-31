@@ -10,6 +10,7 @@ import {
 	UseInterceptors,
 	UploadedFile,
 	BadRequestException,
+	Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
@@ -21,6 +22,7 @@ import { Role, User } from '@prisma/client';
 import { GetUser } from 'src/decorators/get-user.decorator';
 import { Roles } from 'src/decorators/role.decorator';
 import { generateFilename, imageFileFilter } from 'src/helpers/files-helper';
+import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -28,14 +30,14 @@ import { generateFilename, imageFileFilter } from 'src/helpers/files-helper';
 export class UsersController {
 	constructor(private readonly userService: UsersService) {}
 
+	@Get()
+	getAllUsers(@Query() paginationOptions: PaginationOptionsDto) {
+		return this.userService.findAll(paginationOptions);
+	}
+
 	@Get(':id')
 	getUserById(@Param('id', ParseIntPipe) id: number) {
 		return this.userService.findById(id);
-	}
-
-	@Get()
-	getAllUsers() {
-		return this.userService.findAll();
 	}
 
 	@Roles(Role.ADMIN)

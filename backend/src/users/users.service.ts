@@ -8,6 +8,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Role, User } from '@prisma/client';
+import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
+import { Paginated } from 'src/pagination/paginated';
 
 @Injectable()
 export class UsersService {
@@ -51,8 +53,29 @@ export class UsersService {
 		});
 	}
 
-	async findAll(): Promise<User[] | null> {
-		return await this.prisma.user.findMany();
+	async findAll({
+		page,
+		limit,
+	}: PaginationOptionsDto): Promise<Paginated<User>> {
+		const [users, count] = await this.prisma.$transaction([
+			this.prisma.user.findMany({
+				take: limit,
+				skip: (page - 1) * limit,
+			}),
+			this.prisma.user.count(),
+		]);
+		const pages = Math.ceil(count / limit);
+
+		return {
+			data: users,
+			meta: {
+				page,
+				count: limit,
+				pages,
+				next: page < pages ? page + 1 : null,
+				prev: page > 1 ? page - 1 : null,
+			},
+		};
 	}
 
 	async create(dto: CreateUserDto): Promise<User> {
