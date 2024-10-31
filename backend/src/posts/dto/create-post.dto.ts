@@ -19,8 +19,8 @@ export class CreatePostDto {
 	title: string;
 
 	@ApiProperty({
-		description: 'Status of the post, defining its publication state',
-		example: 'published',
+		description: 'Status of the post',
+		example: 'ACTIVE',
 		type: String,
 		enum: Status,
 	})
