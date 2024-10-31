@@ -55,7 +55,7 @@ export class PostsController {
 	}
 
 	@Get(':id')
-	@ApiOperation({ summary: 'Get specified post by id' })
+	@ApiOperation({ summary: 'Get specified post' })
 	@ApiParam({
 		name: 'id',
 		description: 'id of the post',
@@ -72,9 +72,6 @@ export class PostsController {
 	@ApiOperation({ summary: 'Create new post' })
 	@ApiBody({ type: CreatePostDto })
 	@ApiOkResponse({ type: PostDto })
-	@ApiNotFoundResponse({
-		description: "Post doesn't exist",
-	})
 	async createPost(
 		@Body() dto: CreatePostDto,
 		@GetUser() user: User,

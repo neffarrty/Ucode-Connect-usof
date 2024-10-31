@@ -44,8 +44,8 @@ export class PostsService {
 				page,
 				count: limit,
 				pages,
-				next: page < pages ? page + 1 : null,
 				prev: page > 1 ? page - 1 : null,
+				next: page < pages ? page + 1 : null,
 			},
 		};
 	}
