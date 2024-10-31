@@ -92,7 +92,7 @@ export class PostsService {
 		const post = await this.findById(id);
 
 		if (post.authorId !== user.id && user.role !== Role.ADMIN) {
-			throw new ForbiddenException();
+			throw new ForbiddenException('Forbidden to update posts');
 		}
 
 		const categories = await this.getCategoriesByTitles(dto.categories);
@@ -121,7 +121,7 @@ export class PostsService {
 		const post = await this.findById(id);
 
 		if (post.authorId !== user.id && user.role !== Role.ADMIN) {
-			throw new ForbiddenException();
+			throw new ForbiddenException('Forbidden to delete post');
 		}
 
 		return this.prisma.post.delete({
@@ -146,11 +146,7 @@ export class PostsService {
 		user: User,
 		dto: CreateCommentDto,
 	): Promise<CommentDto> {
-		const post = await this.findById(id);
-
-		if (post.authorId !== user.id) {
-			throw new ForbiddenException();
-		}
+		await this.findById(id);
 
 		return this.prisma.comment.create({
 			data: {
@@ -232,7 +228,7 @@ export class PostsService {
 		}
 
 		if (like.authorId !== user.id) {
-			throw new ForbiddenException();
+			throw new ForbiddenException('Forbidden to delete like');
 		}
 
 		return this.prisma.like.delete({

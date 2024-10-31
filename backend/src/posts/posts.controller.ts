@@ -17,6 +17,8 @@ import {
 	ApiBadRequestResponse,
 	ApiNotFoundResponse,
 	ApiParam,
+	ApiForbiddenResponse,
+	ApiConflictResponse,
 } from '@nestjs/swagger';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -90,6 +92,9 @@ export class PostsController {
 	@ApiOkResponse({
 		type: PostDto,
 	})
+	@ApiForbiddenResponse({
+		description: 'Forbidden to update post',
+	})
 	@ApiNotFoundResponse({
 		description: "Post doesn't exist",
 	})
@@ -108,6 +113,9 @@ export class PostsController {
 		description: 'id of the post',
 	})
 	@ApiOkResponse({ type: PostDto })
+	@ApiForbiddenResponse({
+		description: 'Forbidden to delete post',
+	})
 	@ApiNotFoundResponse({
 		description: "Post doesn't exist",
 	})
@@ -195,6 +203,9 @@ export class PostsController {
 	@ApiNotFoundResponse({
 		description: "Post doesn't exist",
 	})
+	@ApiConflictResponse({
+		description: 'Like already exists',
+	})
 	async addPostLike(
 		@Param('id', ParseIntPipe) id: number,
 		@GetUser() user: User,
@@ -210,6 +221,9 @@ export class PostsController {
 		description: 'id of the post',
 	})
 	@ApiOkResponse({ type: LikeDto })
+	@ApiForbiddenResponse({
+		description: 'Forbidden to delete like',
+	})
 	@ApiNotFoundResponse({
 		description: "Post doesn't exist",
 	})
