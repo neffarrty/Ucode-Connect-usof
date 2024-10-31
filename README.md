@@ -1,6 +1,10 @@
+﻿# BugTalk
+
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+  <img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" />
 </p>
+
+A brief description of what this project does and who it's for
 
 [circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
 [circleci-url]: https://circleci.com/gh/nestjs/nest
@@ -22,17 +26,31 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
 ## Project setup
+
+Clone the project
+
+```bash
+$ git clone https://github.com/neffarrty/Ucode-Connect-usof.git
+```
+
+Go to the project directory
+
+```bash
+$ cd Ucode-Connect-usof/
+```
+
+Install dependencies
 
 ```bash
 $ npm install
 ```
 
-## Compile and run the project
+```bash
+$ npx prisma generate
+```
+
+Start the server
 
 ```bash
 # development
@@ -82,4 +100,4 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Project is licensed under [MIT](LICENSE).
