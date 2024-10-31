@@ -2,44 +2,43 @@ import {
 	Controller,
 	Get,
 	Post,
-	Body,
 	Patch,
-	Param,
 	Delete,
+	Body,
+	Query,
+	Param,
 	ParseIntPipe,
 	UseInterceptors,
 	UploadedFile,
 	BadRequestException,
-	Query,
 } from '@nestjs/common';
 import {
-	ApiBadRequestResponse,
-	ApiBearerAuth,
-	ApiBody,
-	ApiConflictResponse,
+	ApiTags,
 	ApiConsumes,
-	ApiForbiddenResponse,
-	ApiNotFoundResponse,
-	ApiOkResponse,
 	ApiOperation,
 	ApiParam,
-	ApiTags,
+	ApiBody,
+	ApiOkResponse,
+	ApiBadRequestResponse,
+	ApiForbiddenResponse,
+	ApiNotFoundResponse,
+	ApiConflictResponse,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { FileUploadDto } from './dto/file-upload.dto';
+import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
+import { UserDto } from './dto/user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Role, User } from '@prisma/client';
 import { GetUser } from 'src/decorators/get-user.decorator';
 import { Roles } from 'src/decorators/role.decorator';
 import { generateFilename, imageFileFilter } from 'src/helpers/files-helper';
-import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
 import { ApiAuth } from 'src/decorators/api-auth.decorator';
 import { ApiPaginatedResponse, Paginated } from 'src/pagination/paginated';
-import { UserDto } from './dto/user.dto';
-import { FileUploadDto } from './dto/file-upload.dto';
 
 @ApiTags('users')
 @ApiAuth()

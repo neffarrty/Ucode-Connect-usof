@@ -1,18 +1,10 @@
 import {
-	ConflictException,
-	ForbiddenException,
 	Injectable,
+	ForbiddenException,
 	NotFoundException,
+	ConflictException,
 } from '@nestjs/common';
-import {
-	Category,
-	Comment,
-	Like,
-	Post,
-	Role,
-	Status,
-	User,
-} from '@prisma/client';
+import { Category, Post, Role, Status, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';

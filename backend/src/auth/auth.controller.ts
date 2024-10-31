@@ -151,7 +151,6 @@ export class AuthController {
 	@Public()
 	@Post('refresh-token')
 	@UseGuards(JwtRefreshGuard)
-	@ApiBearerAuth()
 	@ApiOperation({ summary: 'Refresh access token' })
 	@ApiOkResponse({
 		description: 'Access token refreshed successfully',

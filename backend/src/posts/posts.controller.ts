@@ -11,13 +11,13 @@ import {
 } from '@nestjs/common';
 import {
 	ApiTags,
-	ApiBody,
 	ApiOperation,
+	ApiParam,
+	ApiBody,
 	ApiOkResponse,
 	ApiBadRequestResponse,
-	ApiNotFoundResponse,
-	ApiParam,
 	ApiForbiddenResponse,
+	ApiNotFoundResponse,
 	ApiConflictResponse,
 } from '@nestjs/swagger';
 import { PostsService } from './posts.service';
@@ -83,7 +83,7 @@ export class PostsController {
 	}
 
 	@Patch(':id')
-	@ApiOperation({ summary: 'Update specified post by id' })
+	@ApiOperation({ summary: 'Update specified post' })
 	@ApiParam({
 		name: 'id',
 		description: 'id of the post',
@@ -107,7 +107,7 @@ export class PostsController {
 	}
 
 	@Delete(':id')
-	@ApiOperation({ summary: 'Delete specified post by id' })
+	@ApiOperation({ summary: 'Delete specified post' })
 	@ApiParam({
 		name: 'id',
 		description: 'id of the post',
