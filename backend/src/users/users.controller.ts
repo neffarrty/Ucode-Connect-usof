@@ -12,7 +12,20 @@ import {
 	BadRequestException,
 	Query,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+	ApiBadRequestResponse,
+	ApiBearerAuth,
+	ApiBody,
+	ApiConflictResponse,
+	ApiConsumes,
+	ApiForbiddenResponse,
+	ApiNotFoundResponse,
+	ApiOkResponse,
+	ApiOperation,
+	ApiParam,
+	ApiTags,
+	ApiUnprocessableEntityResponse,
+} from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -23,30 +36,77 @@ import { GetUser } from 'src/decorators/get-user.decorator';
 import { Roles } from 'src/decorators/role.decorator';
 import { generateFilename, imageFileFilter } from 'src/helpers/files-helper';
 import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
+import { ApiAuth } from 'src/decorators/api-auth.decorator';
+import { ApiPaginatedResponse } from 'src/pagination/paginated';
+import { UserDto } from './dto/user.dto';
+import { FileUploadDto } from './dto/file-upload.dto';
 
 @ApiTags('users')
-@ApiBearerAuth()
+@ApiAuth()
+@ApiBadRequestResponse({
+	description: 'Invalid data',
+})
 @Controller('users')
 export class UsersController {
 	constructor(private readonly userService: UsersService) {}
 
 	@Get()
+	@ApiOperation({ summary: 'Get all users' })
+	@ApiPaginatedResponse(UserDto)
 	getAllUsers(@Query() paginationOptions: PaginationOptionsDto) {
 		return this.userService.findAll(paginationOptions);
 	}
 
 	@Get(':id')
+	@ApiOperation({ summary: 'Get specified user' })
+	@ApiParam({
+		name: 'id',
+		description: 'id of the user',
+	})
+	@ApiOkResponse({ type: UserDto })
+	@ApiNotFoundResponse({
+		description: "User doesn't exist",
+	})
 	getUserById(@Param('id', ParseIntPipe) id: number) {
 		return this.userService.findById(id);
 	}
 
-	@Roles(Role.ADMIN)
 	@Post()
+	@Roles(Role.ADMIN)
+	@ApiOperation({ summary: 'Create new user' })
+	@ApiBody({ type: CreateUserDto })
+	@ApiOkResponse({ type: UserDto })
+	@ApiForbiddenResponse({
+		description: 'Forbiden',
+	})
+	@ApiConflictResponse({
+		description: 'Email or username is already taken',
+	})
 	createUser(@Body() createUserDto: CreateUserDto) {
 		return this.userService.create(createUserDto);
 	}
 
 	@Patch(':id/avatar')
+	@ApiOperation({ summary: 'Set profile image for specified user' })
+	@ApiParam({
+		name: 'id',
+		description: 'id of the user',
+	})
+	@ApiConsumes('multipart/form-data')
+	@ApiBody({
+		description: 'A new avatar for the user',
+		type: FileUploadDto,
+	})
+	@ApiOkResponse({ type: UserDto })
+	@ApiForbiddenResponse({
+		description: 'Forbiden',
+	})
+	@ApiNotFoundResponse({
+		description: "User doesn't exist",
+	})
+	@ApiUnprocessableEntityResponse({
+		description: 'Invalid file type',
+	})
 	@UseInterceptors(
 		FileInterceptor('image', {
 			storage: diskStorage({
@@ -69,6 +129,22 @@ export class UsersController {
 	}
 
 	@Patch(':id')
+	@ApiOperation({ summary: 'Update specified user' })
+	@ApiParam({
+		name: 'id',
+		description: 'id of the user',
+	})
+	@ApiBody({ type: UpdateUserDto })
+	@ApiOkResponse({ type: UserDto })
+	@ApiForbiddenResponse({
+		description: 'Forbiden',
+	})
+	@ApiNotFoundResponse({
+		description: "User doesn't exist",
+	})
+	@ApiConflictResponse({
+		description: 'Email or username is already taken',
+	})
 	updateUser(
 		@Param('id', ParseIntPipe) id: number,
 		@Body() updateUserDto: UpdateUserDto,
@@ -78,6 +154,18 @@ export class UsersController {
 	}
 
 	@Delete(':id')
+	@ApiOperation({ summary: 'Delete specified user' })
+	@ApiParam({
+		name: 'id',
+		description: 'id of the user',
+	})
+	@ApiOkResponse({ type: UserDto })
+	@ApiForbiddenResponse({
+		description: 'Forbiden',
+	})
+	@ApiNotFoundResponse({
+		description: "User doesn't exist",
+	})
 	deleteUser(@Param('id', ParseIntPipe) id: number, @GetUser() user: User) {
 		return this.userService.delete(id, user);
 	}

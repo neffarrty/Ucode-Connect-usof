@@ -43,7 +43,6 @@ export class PostsController {
 	constructor(readonly postService: PostsService) {}
 
 	@Get()
-	@Get(':id')
 	@ApiOperation({ summary: 'Get all posts' })
 	@ApiPaginatedResponse(PostDto)
 	async getAllPosts(

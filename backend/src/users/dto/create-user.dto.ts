@@ -13,7 +13,7 @@ import { Role } from '@prisma/client';
 export class CreateUserDto {
 	@ApiProperty({
 		description: 'User login, used for authentication',
-		example: 'john_doe123',
+		example: 'john.smith',
 		type: String,
 	})
 	@IsString()

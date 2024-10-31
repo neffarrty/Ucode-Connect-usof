@@ -92,7 +92,7 @@ export class UsersService {
 		await this.findById(id);
 
 		if (user.id !== id && user.role !== Role.ADMIN) {
-			throw new ForbiddenException('Cannot set user avatar');
+			throw new ForbiddenException('Cannot update user');
 		}
 
 		await this.checkIfNotExist(dto.login, dto.email);
@@ -109,7 +109,7 @@ export class UsersService {
 		await this.findById(id);
 
 		if (user.id !== id && user.role !== Role.ADMIN) {
-			throw new ForbiddenException('Cannot set user avatar');
+			throw new ForbiddenException('Cannot delete user');
 		}
 
 		return this.prisma.user.delete({
