@@ -37,7 +37,7 @@ import { Roles } from 'src/decorators/role.decorator';
 import { generateFilename, imageFileFilter } from 'src/helpers/files-helper';
 import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
 import { ApiAuth } from 'src/decorators/api-auth.decorator';
-import { ApiPaginatedResponse } from 'src/pagination/paginated';
+import { ApiPaginatedResponse, Paginated } from 'src/pagination/paginated';
 import { UserDto } from './dto/user.dto';
 import { FileUploadDto } from './dto/file-upload.dto';
 
@@ -53,7 +53,9 @@ export class UsersController {
 	@Get()
 	@ApiOperation({ summary: 'Get all users' })
 	@ApiPaginatedResponse(UserDto)
-	getAllUsers(@Query() paginationOptions: PaginationOptionsDto) {
+	getAllUsers(
+		@Query() paginationOptions: PaginationOptionsDto,
+	): Promise<Paginated<UserDto>> {
 		return this.userService.findAll(paginationOptions);
 	}
 
@@ -67,7 +69,7 @@ export class UsersController {
 	@ApiNotFoundResponse({
 		description: "User doesn't exist",
 	})
-	getUserById(@Param('id', ParseIntPipe) id: number) {
+	getUserById(@Param('id', ParseIntPipe) id: number): Promise<UserDto> {
 		return this.userService.findById(id);
 	}
 
@@ -82,17 +84,17 @@ export class UsersController {
 	@ApiConflictResponse({
 		description: 'Email or username is already taken',
 	})
-	createUser(@Body() createUserDto: CreateUserDto) {
+	createUser(@Body() createUserDto: CreateUserDto): Promise<UserDto> {
 		return this.userService.create(createUserDto);
 	}
 
 	@Patch(':id/avatar')
 	@ApiOperation({ summary: 'Set profile image for specified user' })
+	@ApiConsumes('multipart/form-data')
 	@ApiParam({
 		name: 'id',
 		description: 'id of the user',
 	})
-	@ApiConsumes('multipart/form-data')
 	@ApiBody({
 		description: 'A new avatar for the user',
 		type: FileUploadDto,
@@ -149,7 +151,7 @@ export class UsersController {
 		@Param('id', ParseIntPipe) id: number,
 		@Body() updateUserDto: UpdateUserDto,
 		@GetUser() user: User,
-	) {
+	): Promise<UserDto> {
 		return this.userService.update(id, user, updateUserDto);
 	}
 
@@ -166,7 +168,10 @@ export class UsersController {
 	@ApiNotFoundResponse({
 		description: "User doesn't exist",
 	})
-	deleteUser(@Param('id', ParseIntPipe) id: number, @GetUser() user: User) {
+	deleteUser(
+		@Param('id', ParseIntPipe) id: number,
+		@GetUser() user: User,
+	): Promise<UserDto> {
 		return this.userService.delete(id, user);
 	}
 }

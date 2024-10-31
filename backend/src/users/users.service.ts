@@ -10,6 +10,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Role, User } from '@prisma/client';
 import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
 import { Paginated } from 'src/pagination/paginated';
+import { UserDto } from './dto/user.dto';
 
 @Injectable()
 export class UsersService {
@@ -78,7 +79,7 @@ export class UsersService {
 		};
 	}
 
-	async create(dto: CreateUserDto): Promise<User> {
+	async create(dto: CreateUserDto): Promise<UserDto> {
 		const { login, email } = dto;
 
 		await this.checkIfNotExist(login, email);
@@ -88,7 +89,7 @@ export class UsersService {
 		});
 	}
 
-	async update(id: number, user: User, dto: UpdateUserDto): Promise<User> {
+	async update(id: number, user: User, dto: UpdateUserDto): Promise<UserDto> {
 		await this.findById(id);
 
 		if (user.id !== id && user.role !== Role.ADMIN) {
@@ -105,7 +106,7 @@ export class UsersService {
 		});
 	}
 
-	async delete(id: number, user: User): Promise<User> {
+	async delete(id: number, user: User): Promise<UserDto> {
 		await this.findById(id);
 
 		if (user.id !== id && user.role !== Role.ADMIN) {
@@ -119,7 +120,7 @@ export class UsersService {
 		});
 	}
 
-	async setAvatar(id: number, user: User, path: string): Promise<User> {
+	async setAvatar(id: number, user: User, path: string): Promise<UserDto> {
 		await this.findById(id);
 
 		if (user.id !== id && user.role !== Role.ADMIN) {
