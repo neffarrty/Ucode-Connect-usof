@@ -11,6 +11,7 @@ import { join } from 'path';
 import { PostsModule } from './posts/posts.module';
 import { CategoriesModule } from './categories/categories.module';
 import { CommentsModule } from './comments/comments.module';
+import { AdminModule } from './admin/admin.module';
 
 import config from './configs/config';
 import auth from './configs/auth.config';
@@ -37,11 +38,12 @@ import mail from './configs/mail.config';
 			serveStaticOptions: { index: false },
 		}),
 		PrismaModule,
-		UsersModule,
 		AuthModule,
+		UsersModule,
 		PostsModule,
-		CategoriesModule,
 		CommentsModule,
+		CategoriesModule,
+		AdminModule.forRootAsync(),
 	],
 })
 export class AppModule {}

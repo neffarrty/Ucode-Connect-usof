@@ -123,7 +123,7 @@ export class UsersService {
 	async setAvatar(id: number, user: User, path: string): Promise<UserDto> {
 		await this.findById(id);
 
-		if (user.id !== id && user.role !== Role.ADMIN) {
+		if (user.id !== id) {
 			throw new ForbiddenException('Cannot set user avatar');
 		}
 
