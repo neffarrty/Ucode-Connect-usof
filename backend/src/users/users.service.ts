@@ -1,7 +1,9 @@
 import {
+	BadRequestException,
 	ConflictException,
 	ForbiddenException,
 	Injectable,
+	InternalServerErrorException,
 	NotFoundException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -11,6 +13,8 @@ import { Role, User } from '@prisma/client';
 import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
 import { Paginated } from 'src/pagination/paginated';
 import { UserDto } from './dto/user.dto';
+import fs from 'fs/promises';
+import path from 'path';
 
 @Injectable()
 export class UsersService {
@@ -120,19 +124,23 @@ export class UsersService {
 		});
 	}
 
-	async setAvatar(id: number, user: User, path: string): Promise<UserDto> {
-		await this.findById(id);
+	async setAvatar(user: User, file: Express.Multer.File): Promise<UserDto> {
+		if (!file) {
+			throw new BadRequestException('Invalid file');
+		}
 
-		if (user.id !== id && user.role !== Role.ADMIN) {
-			throw new ForbiddenException('Cannot set user avatar');
+		try {
+			await fs.unlink(`uploads/avatars/${path.basename(user.avatar)}`);
+		} catch (err) {
+			throw new InternalServerErrorException('Failed to delete file');
 		}
 
 		return this.prisma.user.update({
 			where: {
-				id: id,
+				id: user.id,
 			},
 			data: {
-				avatar: path,
+				avatar: `http://localhost:3000/avatars/${file.filename}`,
 			},
 		});
 	}

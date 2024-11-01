@@ -30,7 +30,7 @@ model User {
 
 model Post {
   id         Int               @id @default(autoincrement())
-  author     User              @relation(fields: [authorId], references: [id])
+  author     User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId   Int               @map("author_id")
   title      String
   status     Status            @default(ACTIVE)
@@ -49,6 +49,8 @@ model Category {
   title       String            @unique()
   description String
   posts       PostsCategories[]
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
 
   @@map("categories")
 }
@@ -65,10 +67,10 @@ model PostsCategories {
 
 model Comment {
   id        Int      @id @default(autoincrement())
-  author    User     @relation(fields: [authorId], references: [id])
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  Int      @map("author_id")
   content   String
-  Post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    Int?     @map("post_id")
   likes     Like[]
   createdAt DateTime @default(now()) @map("created_at")
@@ -79,7 +81,7 @@ model Comment {
 
 model Like {
   id        Int      @id @default(autoincrement())
-  author    User     @relation(fields: [authorId], references: [id])
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  Int      @map("author_id")
   post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    Int?     @map("post_id")

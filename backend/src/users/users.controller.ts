@@ -87,13 +87,9 @@ export class UsersController {
 		return this.userService.create(createUserDto);
 	}
 
-	@Patch(':id/avatar')
+	@Patch('avatar')
 	@ApiOperation({ summary: 'Set profile image for specified user' })
 	@ApiConsumes('multipart/form-data')
-	@ApiParam({
-		name: 'id',
-		description: 'id of the user',
-	})
 	@ApiBody({
 		description: 'A new avatar for the user',
 		type: FileUploadDto,
@@ -111,22 +107,17 @@ export class UsersController {
 	@UseInterceptors(
 		FileInterceptor('image', {
 			storage: diskStorage({
-				destination: './uploads/avatar',
+				destination: './uploads/avatars',
 				filename: generateFilename,
 			}),
 			fileFilter: imageFileFilter,
 		}),
 	)
 	setUserAvatar(
-		@Param('id', ParseIntPipe) id: number,
 		@UploadedFile() file: Express.Multer.File,
 		@GetUser() user: User,
 	) {
-		if (!file) {
-			throw new BadRequestException('Invalid file');
-		}
-
-		return this.userService.setAvatar(id, user, file.originalname);
+		return this.userService.setAvatar(user, file);
 	}
 
 	@Patch(':id')
