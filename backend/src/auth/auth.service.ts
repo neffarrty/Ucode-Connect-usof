@@ -14,7 +14,7 @@ import * as bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthResponseDto } from './dto/auth-response.dto';
-import { use } from 'passport';
+import { UserDto } from 'src/users/dto/user.dto';
 
 @Injectable()
 export class AuthService {
@@ -50,7 +50,6 @@ export class AuthService {
 		const { accessToken, refreshToken } = await this.generateTokens(
 			user.id,
 		);
-		const { verifyToken, password, ...userResponse } = user;
 
 		res.cookie('refresh_token', refreshToken, {
 			httpOnly: true,
@@ -58,7 +57,7 @@ export class AuthService {
 		});
 
 		return {
-			user: userResponse,
+			user: new UserDto(user),
 			token: accessToken,
 		};
 	}

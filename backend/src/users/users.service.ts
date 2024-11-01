@@ -15,12 +15,13 @@ import { Paginated } from 'src/pagination/paginated';
 import { UserDto } from './dto/user.dto';
 import fs from 'fs/promises';
 import path from 'path';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async findById(id: number): Promise<User | null> {
+	async findById(id: number): Promise<User> {
 		const user = await this.prisma.user.findUnique({
 			where: {
 				id: id,
@@ -61,7 +62,7 @@ export class UsersService {
 	async findAll({
 		page,
 		limit,
-	}: PaginationOptionsDto): Promise<Paginated<User>> {
+	}: PaginationOptionsDto): Promise<Paginated<UserDto>> {
 		const [users, count] = await this.prisma.$transaction([
 			this.prisma.user.findMany({
 				take: limit,
@@ -89,7 +90,10 @@ export class UsersService {
 		await this.checkIfNotExist(login, email);
 
 		return this.prisma.user.create({
-			data: dto,
+			data: {
+				...dto,
+				password: await bcrypt.hash(dto.password, 10),
+			},
 		});
 	}
 
@@ -101,6 +105,10 @@ export class UsersService {
 		}
 
 		await this.checkIfNotExist(dto.login, dto.email);
+
+		if (dto.password) {
+			dto.password = await bcrypt.hash(dto.password, 10);
+		}
 
 		return this.prisma.user.update({
 			where: {

@@ -34,6 +34,7 @@ import { Public } from 'src/decorators/public.decorator';
 import { GoogleGuard } from './guards/google.guard';
 import { LoginDto } from './dto/login.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
+import { UserDto } from 'src/users/dto/user.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -162,15 +163,13 @@ export class AuthController {
 		const { accessToken, refreshToken } =
 			await this.authService.generateTokens(user.id);
 
-		const { verifyToken, password, ...userResponse } = user;
-
 		res.cookie('refresh_token', refreshToken, {
 			httpOnly: true,
 			sameSite: 'strict',
 		});
 
 		return {
-			user: userResponse,
+			user: new UserDto(user),
 			token: accessToken,
 		};
 	}

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Role } from '@prisma/client';
+import { Role, User } from '@prisma/client';
 
 export class UserDto {
 	@ApiProperty({
@@ -61,4 +61,9 @@ export class UserDto {
 		example: '2024-10-27T10:53:57.740Z',
 	})
 	updatedAt: Date;
+
+	constructor(user: User) {
+		const { verifyToken, password, ...dto } = user;
+		Object.assign(this, dto);
+	}
 }
