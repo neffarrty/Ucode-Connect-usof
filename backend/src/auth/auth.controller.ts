@@ -33,6 +33,7 @@ import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 import { Public } from 'src/decorators/public.decorator';
 import { GoogleGuard } from './guards/google.guard';
 import { LoginDto } from './dto/login.dto';
+import { AuthResponseDto } from './dto/auth-response.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -67,7 +68,7 @@ export class AuthController {
 		type: [LoginDto],
 	})
 	@ApiOkResponse({
-		description: 'Login successful',
+		type: AuthResponseDto,
 	})
 	@ApiBadRequestResponse({
 		description: 'Invalid credentials',
@@ -78,7 +79,7 @@ export class AuthController {
 	async login(
 		@GetUser() user: User,
 		@Res({ passthrough: true }) res: Response,
-	) {
+	): Promise<AuthResponseDto> {
 		return this.authService.login(user, res);
 	}
 
@@ -94,10 +95,6 @@ export class AuthController {
 	@Public()
 	@Get('google/callback')
 	@UseGuards(GoogleGuard)
-	@ApiOperation({ summary: 'Google authentication callback' })
-	@ApiOkResponse({
-		description: 'Login successful with Google',
-	})
 	@ApiExcludeEndpoint()
 	async googleAuthRedirect(@GetUser() user: User, @Res() res: Response) {
 		return this.authService.login(user, res);
@@ -153,7 +150,7 @@ export class AuthController {
 	@UseGuards(JwtRefreshGuard)
 	@ApiOperation({ summary: 'Refresh access token' })
 	@ApiOkResponse({
-		description: 'Access token refreshed successfully',
+		type: AuthResponseDto,
 	})
 	@ApiUnauthorizedResponse({
 		description: 'Invalid refresh token',
@@ -161,16 +158,21 @@ export class AuthController {
 	async refresh(
 		@GetUser() user: User,
 		@Res({ passthrough: true }) res: Response,
-	): Promise<any> {
+	): Promise<AuthResponseDto> {
 		const { accessToken, refreshToken } =
 			await this.authService.generateTokens(user.id);
+
+		const { verifyToken, password, ...userResponse } = user;
 
 		res.cookie('refresh_token', refreshToken, {
 			httpOnly: true,
 			sameSite: 'strict',
 		});
 
-		return { user, token: accessToken };
+		return {
+			user: userResponse,
+			token: accessToken,
+		};
 	}
 
 	@Public()

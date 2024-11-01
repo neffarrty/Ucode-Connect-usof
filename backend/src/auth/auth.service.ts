@@ -13,6 +13,8 @@ import { Response } from 'express';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { AuthResponseDto } from './dto/auth-response.dto';
+import { use } from 'passport';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +25,7 @@ export class AuthService {
 		private readonly mailService: MailerService,
 	) {}
 
-	async register(dto: RegisterDto): Promise<any> {
+	async register(dto: RegisterDto): Promise<void> {
 		const candidate = await this.prisma.user.findFirst({
 			where: {
 				OR: [{ login: dto.login }, { email: dto.email }],
@@ -44,17 +46,21 @@ export class AuthService {
 		this.sendVerificationMail(user.email);
 	}
 
-	async login(user: User, res: Response): Promise<any> {
+	async login(user: User, res: Response): Promise<AuthResponseDto> {
 		const { accessToken, refreshToken } = await this.generateTokens(
 			user.id,
 		);
+		const { verifyToken, password, ...userResponse } = user;
 
 		res.cookie('refresh_token', refreshToken, {
 			httpOnly: true,
 			sameSite: 'strict',
 		});
 
-		return { token: accessToken };
+		return {
+			user: userResponse,
+			token: accessToken,
+		};
 	}
 
 	async logout(user: User, res: Response): Promise<void> {
