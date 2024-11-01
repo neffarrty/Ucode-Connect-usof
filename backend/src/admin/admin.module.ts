@@ -4,7 +4,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { PrismaClient } from '@prisma/client';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import * as bcrypt from 'bcrypt';
-import { title } from 'process';
 
 @Module({})
 export class AdminModule {

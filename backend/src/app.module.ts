@@ -33,8 +33,8 @@ import mail from './configs/mail.config';
 			global: true,
 		}),
 		ServeStaticModule.forRoot({
-			rootPath: join(__dirname, '..', '..', 'uploads', 'avatar'),
-			serveRoot: '/avatar',
+			rootPath: join(process.cwd(), 'uploads', 'avatars'),
+			serveRoot: '/avatars',
 			serveStaticOptions: { index: false },
 		}),
 		PrismaModule,
