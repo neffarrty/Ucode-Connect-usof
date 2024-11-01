@@ -129,14 +129,15 @@ export class PostsController {
 		name: 'id',
 		description: 'id of the post',
 	})
-	@ApiOkResponse({ type: [CommentDto] })
+	@ApiPaginatedResponse(PostDto)
 	@ApiNotFoundResponse({
 		description: "Post doesn't exist",
 	})
 	async getPostComments(
 		@Param('id', ParseIntPipe) id: number,
-	): Promise<CommentDto[]> {
-		return this.postService.findComments(id);
+		@Query() paginationOptions: PaginationOptionsDto,
+	): Promise<Paginated<CommentDto>> {
+		return this.postService.findComments(id, paginationOptions);
 	}
 
 	@Post(':id/comments')

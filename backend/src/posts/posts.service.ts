@@ -123,14 +123,35 @@ export class PostsService {
 		});
 	}
 
-	async findComments(id: number): Promise<CommentDto[]> {
+	async findComments(
+		id: number,
+		{ page, limit }: PaginationOptionsDto,
+	): Promise<Paginated<CommentDto>> {
 		await this.findById(id);
 
-		return this.prisma.comment.findMany({
-			where: {
-				postId: id,
+		const where = {
+			postId: id,
+		};
+		const [comments, count] = await this.prisma.$transaction([
+			this.prisma.comment.findMany({
+				where,
+				take: limit,
+				skip: (page - 1) * limit,
+			}),
+			this.prisma.comment.count({ where }),
+		]);
+		const pages = Math.ceil(count / limit);
+
+		return {
+			data: comments,
+			meta: {
+				page,
+				count: limit,
+				pages,
+				prev: page > 1 ? page - 1 : null,
+				next: page < pages ? page + 1 : null,
 			},
-		});
+		};
 	}
 
 	async addComment(
