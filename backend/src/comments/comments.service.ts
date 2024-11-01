@@ -1,8 +1,8 @@
 import {
-	ConflictException,
-	ForbiddenException,
 	Injectable,
+	ForbiddenException,
 	NotFoundException,
+	ConflictException,
 } from '@nestjs/common';
 import { Comment, Like, Role, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -35,7 +35,7 @@ export class CommentsService {
 		const comment = await this.findById(id);
 
 		if (comment.authorId !== user.id) {
-			throw new ForbiddenException();
+			throw new ForbiddenException('Forbidden to update comment');
 		}
 
 		return this.prisma.comment.update({
@@ -50,7 +50,7 @@ export class CommentsService {
 		const comment = await this.findById(id);
 
 		if (comment.authorId !== user.id && user.role !== Role.ADMIN) {
-			throw new ForbiddenException();
+			throw new ForbiddenException('Forbidden to delete comment');
 		}
 
 		return this.prisma.comment.delete({

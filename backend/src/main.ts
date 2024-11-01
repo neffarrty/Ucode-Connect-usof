@@ -15,7 +15,7 @@ async function bootstrap() {
 		credentials: true,
 	});
 	app.setGlobalPrefix('api');
-	app.useGlobalPipes(new ValidationPipe());
+	app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
 	const builder = new DocumentBuilder()
 		.setTitle('BugTalk')

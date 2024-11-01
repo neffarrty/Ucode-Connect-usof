@@ -1,22 +1,53 @@
 import {
-	ConflictException,
-	ForbiddenException,
 	Injectable,
+	ForbiddenException,
 	NotFoundException,
+	ConflictException,
 } from '@nestjs/common';
-import { Category, Comment, Post, Role, User } from '@prisma/client';
+import { Category, Post, Role, Status, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { CreateLikeDto } from './dto/create-like.dto';
 import { CreateCommentDto } from 'src/comments/dto/create-comment.dto';
+import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
+import { Paginated } from 'src/pagination/paginated';
+import { PostDto } from './dto/post.dto';
+import { LikeDto } from './dto/like.dto';
+import { CommentDto } from 'src/comments/dto/comment.dto';
+import { CategoryDto } from 'src/categories/dto/category.dto';
 
 @Injectable()
 export class PostsService {
 	constructor(readonly prisma: PrismaService) {}
 
-	async findAll(): Promise<Post[]> {
-		return this.prisma.post.findMany();
+	async findAll(
+		{ page, limit }: PaginationOptionsDto,
+		user: User,
+	): Promise<Paginated<PostDto>> {
+		const where = {
+			status: user.role === Role.USER ? Status.ACTIVE : undefined,
+		};
+		const [posts, count] = await this.prisma.$transaction([
+			this.prisma.post.findMany({
+				where,
+				take: limit,
+				skip: (page - 1) * limit,
+			}),
+			this.prisma.post.count({ where }),
+		]);
+		const pages = Math.ceil(count / limit);
+
+		return {
+			data: posts,
+			meta: {
+				page,
+				count: limit,
+				pages,
+				prev: page > 1 ? page - 1 : null,
+				next: page < pages ? page + 1 : null,
+			},
+		};
 	}
 
 	async findById(id: number): Promise<Post> {
@@ -53,7 +84,7 @@ export class PostsService {
 		const post = await this.findById(id);
 
 		if (post.authorId !== user.id && user.role !== Role.ADMIN) {
-			throw new ForbiddenException();
+			throw new ForbiddenException('Forbidden to update posts');
 		}
 
 		const categories = await this.getCategoriesByTitles(dto.categories);
@@ -82,7 +113,7 @@ export class PostsService {
 		const post = await this.findById(id);
 
 		if (post.authorId !== user.id && user.role !== Role.ADMIN) {
-			throw new ForbiddenException();
+			throw new ForbiddenException('Forbidden to delete post');
 		}
 
 		return this.prisma.post.delete({
@@ -92,26 +123,43 @@ export class PostsService {
 		});
 	}
 
-	async findComments(id: number): Promise<Comment[]> {
+	async findComments(
+		id: number,
+		{ page, limit }: PaginationOptionsDto,
+	): Promise<Paginated<CommentDto>> {
 		await this.findById(id);
 
-		return this.prisma.comment.findMany({
-			where: {
-				postId: id,
+		const where = {
+			postId: id,
+		};
+		const [comments, count] = await this.prisma.$transaction([
+			this.prisma.comment.findMany({
+				where,
+				take: limit,
+				skip: (page - 1) * limit,
+			}),
+			this.prisma.comment.count({ where }),
+		]);
+		const pages = Math.ceil(count / limit);
+
+		return {
+			data: comments,
+			meta: {
+				page,
+				count: limit,
+				pages,
+				prev: page > 1 ? page - 1 : null,
+				next: page < pages ? page + 1 : null,
 			},
-		});
+		};
 	}
 
 	async addComment(
 		id: number,
 		user: User,
 		dto: CreateCommentDto,
-	): Promise<Comment> {
-		const post = await this.findById(id);
-
-		if (post.authorId !== user.id) {
-			throw new ForbiddenException();
-		}
+	): Promise<CommentDto> {
+		await this.findById(id);
 
 		return this.prisma.comment.create({
 			data: {
@@ -122,41 +170,40 @@ export class PostsService {
 		});
 	}
 
-	async findCategories(id: number) {
+	async findCategories(id: number): Promise<CategoryDto[]> {
 		await this.findById(id);
 
-		return this.prisma.post
-			.findUnique({
-				where: {
-					id,
-				},
-				include: {
-					categories: {
-						select: {
-							category: true,
-						},
+		return this.prisma.category.findMany({
+			where: {
+				posts: {
+					some: {
+						postId: id,
 					},
 				},
-			})
-			.then((result) => ({
-				categories: result.categories.map((c) => c.category),
-			}));
+			},
+			select: {
+				id: true,
+				title: true,
+				description: true,
+			},
+		});
 	}
 
 	async findLikes(id: number) {
 		await this.findById(id);
 
-		return this.prisma.post.findMany({
+		return this.prisma.like.findMany({
 			where: {
-				id,
-			},
-			include: {
-				likes: true,
+				postId: id,
 			},
 		});
 	}
 
-	async addLike(id: number, user: User, dto: CreateLikeDto) {
+	async addLike(
+		id: number,
+		user: User,
+		dto: CreateLikeDto,
+	): Promise<LikeDto> {
 		await this.findById(id);
 
 		const like = await this.prisma.like.findFirst({
@@ -179,7 +226,7 @@ export class PostsService {
 		});
 	}
 
-	async deleteLike(id: number, user: User) {
+	async deleteLike(id: number, user: User): Promise<LikeDto> {
 		await this.findById(id);
 
 		const like = await this.prisma.like.findFirst({
@@ -194,7 +241,7 @@ export class PostsService {
 		}
 
 		if (like.authorId !== user.id) {
-			throw new ForbiddenException();
+			throw new ForbiddenException('Forbidden to delete like');
 		}
 
 		return this.prisma.like.delete({

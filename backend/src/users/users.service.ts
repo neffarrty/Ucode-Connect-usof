@@ -8,6 +8,9 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Role, User } from '@prisma/client';
+import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
+import { Paginated } from 'src/pagination/paginated';
+import { UserDto } from './dto/user.dto';
 
 @Injectable()
 export class UsersService {
@@ -51,11 +54,32 @@ export class UsersService {
 		});
 	}
 
-	async findAll(): Promise<User[] | null> {
-		return await this.prisma.user.findMany();
+	async findAll({
+		page,
+		limit,
+	}: PaginationOptionsDto): Promise<Paginated<User>> {
+		const [users, count] = await this.prisma.$transaction([
+			this.prisma.user.findMany({
+				take: limit,
+				skip: (page - 1) * limit,
+			}),
+			this.prisma.user.count(),
+		]);
+		const pages = Math.ceil(count / limit);
+
+		return {
+			data: users,
+			meta: {
+				page,
+				count: limit,
+				pages,
+				next: page < pages ? page + 1 : null,
+				prev: page > 1 ? page - 1 : null,
+			},
+		};
 	}
 
-	async create(dto: CreateUserDto): Promise<User> {
+	async create(dto: CreateUserDto): Promise<UserDto> {
 		const { login, email } = dto;
 
 		await this.checkIfNotExist(login, email);
@@ -65,11 +89,11 @@ export class UsersService {
 		});
 	}
 
-	async update(id: number, user: User, dto: UpdateUserDto): Promise<User> {
+	async update(id: number, user: User, dto: UpdateUserDto): Promise<UserDto> {
 		await this.findById(id);
 
 		if (user.id !== id && user.role !== Role.ADMIN) {
-			throw new ForbiddenException('Cannot set user avatar');
+			throw new ForbiddenException('Cannot update user');
 		}
 
 		await this.checkIfNotExist(dto.login, dto.email);
@@ -82,11 +106,11 @@ export class UsersService {
 		});
 	}
 
-	async delete(id: number, user: User): Promise<User> {
+	async delete(id: number, user: User): Promise<UserDto> {
 		await this.findById(id);
 
 		if (user.id !== id && user.role !== Role.ADMIN) {
-			throw new ForbiddenException('Cannot set user avatar');
+			throw new ForbiddenException('Cannot delete user');
 		}
 
 		return this.prisma.user.delete({
@@ -96,7 +120,7 @@ export class UsersService {
 		});
 	}
 
-	async setAvatar(id: number, user: User, path: string): Promise<User> {
+	async setAvatar(id: number, user: User, path: string): Promise<UserDto> {
 		await this.findById(id);
 
 		if (user.id !== id && user.role !== Role.ADMIN) {
