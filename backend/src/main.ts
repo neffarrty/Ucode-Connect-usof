@@ -21,6 +21,7 @@ async function bootstrap() {
 		.setTitle('BugTalk')
 		.setDescription('The Q&A app for developers')
 		.setVersion('1.0')
+		.setLicense('MIT', 'https://opensource.org/licenses/MIT')
 		.addBearerAuth({
 			type: 'http',
 			scheme: 'bearer',
