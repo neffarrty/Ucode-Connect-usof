@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { UsersModule } from 'src/users/users.module';
+import { UsersModule } from 'src/modules/users/users.module';
 import { ConfigService } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
@@ -13,7 +13,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt-access.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import * as path from 'path';
-import { PrismaModule } from 'src/prisma/prisma.module';
+import { PrismaModule } from 'src/modules/prisma/prisma.module';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { GoogleGuard } from './guards/google.guard';
 
@@ -47,7 +47,7 @@ import { GoogleGuard } from './guards/google.guard';
 					from: '"BugTalk" <no-reply@usof.com>',
 				},
 				template: {
-					dir: path.join(__dirname, '..', 'templates'),
+					dir: path.join(__dirname, '..', '..', 'templates'),
 					adapter: new HandlebarsAdapter(),
 					options: {
 						strict: true,

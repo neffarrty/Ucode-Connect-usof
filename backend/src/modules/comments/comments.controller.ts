@@ -23,10 +23,10 @@ import { CommentsService } from './comments.service';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { GetUser } from 'src/decorators/get-user.decorator';
 import { User } from '@prisma/client';
-import { CreateLikeDto } from 'src/posts/dto/create-like.dto';
+import { CreateLikeDto } from 'src/modules/posts/dto/create-like.dto';
 import { ApiAuth } from 'src/decorators/api-auth.decorator';
 import { CommentDto } from './dto/comment.dto';
-import { LikeDto } from 'src/posts/dto/like.dto';
+import { LikeDto } from 'src/modules/posts/dto/like.dto';
 
 @ApiTags('comments')
 @ApiAuth()

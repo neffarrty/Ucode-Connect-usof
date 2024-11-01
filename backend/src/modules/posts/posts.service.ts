@@ -5,17 +5,17 @@ import {
 	ConflictException,
 } from '@nestjs/common';
 import { Category, Post, Role, Status, User } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { CreateLikeDto } from './dto/create-like.dto';
-import { CreateCommentDto } from 'src/comments/dto/create-comment.dto';
+import { CreateCommentDto } from 'src/modules/comments/dto/create-comment.dto';
 import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
 import { Paginated } from 'src/pagination/paginated';
 import { PostDto } from './dto/post.dto';
 import { LikeDto } from './dto/like.dto';
-import { CommentDto } from 'src/comments/dto/comment.dto';
-import { CategoryDto } from 'src/categories/dto/category.dto';
+import { CommentDto } from 'src/modules/comments/dto/comment.dto';
+import { CategoryDto } from 'src/modules/categories/dto/category.dto';
 
 @Injectable()
 export class PostsService {

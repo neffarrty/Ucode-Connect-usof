@@ -28,8 +28,8 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
 import { ApiPaginatedResponse, Paginated } from 'src/pagination/paginated';
 import { CategoryDto } from './dto/category.dto';
-import { PostDto } from 'src/posts/dto/post.dto';
-import { CreateCommentDto } from 'src/comments/dto/create-comment.dto';
+import { PostDto } from 'src/modules/posts/dto/post.dto';
+import { CreateCommentDto } from 'src/modules/comments/dto/create-comment.dto';
 
 @ApiTags('categories')
 @ApiBearerAuth()

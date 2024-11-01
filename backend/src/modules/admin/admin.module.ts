@@ -1,8 +1,8 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { Role } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { PrismaClient } from '@prisma/client';
-import { PrismaModule } from 'src/prisma/prisma.module';
+import { PrismaModule } from 'src/modules/prisma/prisma.module';
 import * as bcrypt from 'bcrypt';
 
 @Module({})

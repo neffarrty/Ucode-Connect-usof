@@ -5,9 +5,9 @@ import {
 	ConflictException,
 } from '@nestjs/common';
 import { Comment, Like, Role, User } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { CreateLikeDto } from 'src/posts/dto/create-like.dto';
+import { CreateLikeDto } from 'src/modules/posts/dto/create-like.dto';
 
 @Injectable()
 export class CommentsService {

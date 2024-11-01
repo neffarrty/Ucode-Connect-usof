@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { Role, User } from '@prisma/client';
 import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
 import { Paginated } from 'src/pagination/paginated';

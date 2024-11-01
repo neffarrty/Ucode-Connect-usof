@@ -4,13 +4,13 @@ import {
 	NotFoundException,
 } from '@nestjs/common';
 import { Category } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
 import { Paginated } from 'src/pagination/paginated';
 import { CategoryDto } from './dto/category.dto';
-import { PostDto } from 'src/posts/dto/post.dto';
+import { PostDto } from 'src/modules/posts/dto/post.dto';
 
 @Injectable()
 export class CategoriesService {
