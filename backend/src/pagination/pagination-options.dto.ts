@@ -1,25 +1,29 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNumber, IsOptional, IsPositive } from 'class-validator';
+import {
+	PAGINATION_DEFAULT_LIMIT,
+	PAGINATION_DEFAULT_PAGE,
+} from './pagination-constants';
 
 export class PaginationOptionsDto {
 	@ApiProperty({
-		default: 1,
+		default: PAGINATION_DEFAULT_PAGE,
 		required: false,
 	})
 	@IsNumber()
 	@Type(() => Number)
 	@IsPositive()
 	@IsOptional()
-	page: number = 1;
+	page: number = PAGINATION_DEFAULT_PAGE;
 
 	@ApiProperty({
-		default: 15,
+		default: PAGINATION_DEFAULT_LIMIT,
 		required: false,
 	})
 	@IsNumber()
 	@Type(() => Number)
 	@IsPositive()
 	@IsOptional()
-	limit: number = 15;
+	limit: number = PAGINATION_DEFAULT_LIMIT;
 }
