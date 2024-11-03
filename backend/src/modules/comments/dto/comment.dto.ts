@@ -26,6 +26,12 @@ export class CommentDto {
 	content: string;
 
 	@ApiProperty({
+		description: 'Rating of the comments',
+		example: 15,
+	})
+	rating: number;
+
+	@ApiProperty({
 		description: 'Time when the comment was created',
 		example: '2024-10-27T10:53:57.740Z',
 	})

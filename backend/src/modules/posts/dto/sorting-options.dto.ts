@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsOptional } from 'class-validator';
 
 export enum SortType {
-	LIKES = 'likes',
+	RATING = 'rating',
 	DATE = 'createdAt',
 }
 
@@ -14,12 +14,12 @@ export enum SortOrder {
 export class SortingOptionsDto {
 	@ApiProperty({
 		type: SortType,
-		default: SortType.LIKES,
+		default: SortType.RATING,
 		required: false,
 	})
 	@IsEnum(SortType)
 	@IsOptional()
-	sort: SortType = SortType.LIKES;
+	sort: SortType = SortType.RATING;
 
 	@ApiProperty({
 		type: SortOrder,

@@ -26,14 +26,12 @@ export class PostsService {
 	async findAll(
 		{ page, limit }: PaginationOptionsDto,
 		{ sort, order }: SortingOptionsDto,
-		{ createdAt, categories }: FilteringOptionsDto,
+		{ createdAt, categories, status }: FilteringOptionsDto,
 		user: User,
 	): Promise<Paginated<PostDto>> {
 		const where = {
 			AND: [
-				{
-					createdAt,
-				},
+				{ createdAt },
 				{
 					categories: {
 						some: {
@@ -45,9 +43,7 @@ export class PostsService {
 						},
 					},
 				},
-				{
-					status: user.role === Role.USER ? Status.ACTIVE : undefined,
-				},
+				{ status: user.role === Role.ADMIN ? status : Status.ACTIVE },
 			],
 		};
 
@@ -55,13 +51,6 @@ export class PostsService {
 			this.prisma.post.findMany({
 				where,
 				include: {
-					_count: {
-						select: {
-							likes: {
-								where: { type: LikeType.LIKE },
-							},
-						},
-					},
 					categories: {
 						select: {
 							category: {
@@ -84,10 +73,7 @@ export class PostsService {
 		const pages = Math.ceil(count / limit);
 
 		return {
-			data: posts.map(({ _count, ...post }) => ({
-				...post,
-				likes: _count.likes,
-			})),
+			data: posts,
 			meta: {
 				page,
 				count: limit,
@@ -185,6 +171,9 @@ export class PostsService {
 				where,
 				take: limit,
 				skip: (page - 1) * limit,
+				orderBy: {
+					rating: 'desc',
+				},
 			}),
 			this.prisma.comment.count({ where }),
 		]);

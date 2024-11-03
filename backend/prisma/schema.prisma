@@ -14,7 +14,7 @@ model User {
   password    String?
   fullname    String?
   email       String    @unique
-  avatar      String    @default("public/avatars/default.png")
+  avatar      String?
   rating      Int       @default(0)
   role        Role      @default(USER)
   verified    Boolean   @default(false)
