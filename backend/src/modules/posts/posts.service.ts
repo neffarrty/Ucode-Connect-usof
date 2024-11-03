@@ -4,7 +4,7 @@ import {
 	NotFoundException,
 	ConflictException,
 } from '@nestjs/common';
-import { Category, LikeType, Post, Role, Status, User } from '@prisma/client';
+import { Category, LikeType, Prisma, Role, Status, User } from '@prisma/client';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -26,12 +26,11 @@ export class PostsService {
 	async findAll(
 		{ page, limit }: PaginationOptionsDto,
 		{ sort, order }: SortingOptionsDto,
-		{ createdAt, categories, status }: FilteringOptionsDto,
+		{ createdAt, categories, status, title }: FilteringOptionsDto,
 		user: User,
 	): Promise<Paginated<PostDto>> {
-		const where = {
+		const where: Prisma.PostWhereInput = {
 			AND: [
-				{ createdAt },
 				{
 					categories: {
 						some: {
@@ -43,6 +42,13 @@ export class PostsService {
 						},
 					},
 				},
+				{
+					title: {
+						contains: title,
+						mode: 'insensitive',
+					},
+				},
+				{ createdAt },
 				{ status: user.role === Role.ADMIN ? status : Status.ACTIVE },
 			],
 		};
@@ -163,7 +169,7 @@ export class PostsService {
 	): Promise<Paginated<CommentDto>> {
 		await this.findById(id);
 
-		const where = {
+		const where: Prisma.CommentWhereInput = {
 			postId: id,
 		};
 		const [comments, count] = await this.prisma.$transaction([

@@ -3,6 +3,7 @@ import { IsEnum, IsOptional } from 'class-validator';
 
 export enum SortType {
 	RATING = 'rating',
+	TITLE = 'title',
 	DATE = 'createdAt',
 }
 
@@ -16,6 +17,7 @@ export class SortingOptionsDto {
 		type: SortType,
 		default: SortType.RATING,
 		required: false,
+		description: 'Field to sort by',
 	})
 	@IsEnum(SortType)
 	@IsOptional()
@@ -25,6 +27,7 @@ export class SortingOptionsDto {
 		type: SortOrder,
 		default: SortOrder.DESC,
 		required: false,
+		description: 'Sort order',
 	})
 	@IsEnum(SortOrder)
 	@IsOptional()

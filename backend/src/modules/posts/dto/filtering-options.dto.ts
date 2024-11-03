@@ -4,7 +4,6 @@ import { Transform, Type } from 'class-transformer';
 import {
 	IsArray,
 	IsDate,
-	IsDefined,
 	IsEnum,
 	IsNotEmpty,
 	IsOptional,
@@ -12,13 +11,19 @@ import {
 } from 'class-validator';
 
 export class DateFilterDto {
-	@ApiProperty({})
+	@ApiProperty({
+		required: false,
+		description: 'Max date of post creating (inclusive)',
+	})
 	@IsOptional()
 	@IsDate()
 	@Type(() => Date)
 	lte?: Date;
 
-	@ApiProperty({})
+	@ApiProperty({
+		required: false,
+		description: 'Min date of post creating (inclusive)',
+	})
 	@IsOptional()
 	@IsDate()
 	@Type(() => Date)
@@ -28,26 +33,41 @@ export class DateFilterDto {
 export class FilteringOptionsDto {
 	@ApiProperty({
 		type: DateFilterDto,
+		required: false,
+		description: 'Filter by creation date using lte and gte',
 	})
 	@IsOptional()
 	@Type(() => DateFilterDto)
 	createdAt?: DateFilterDto;
 
 	@ApiProperty({
-		type: [String],
+		type: String,
+		required: false,
+		description: 'Array of category titles to filter by',
 	})
 	@IsOptional()
 	@IsArray()
 	@IsString({ each: true })
 	@IsNotEmpty({ each: true })
-	@IsDefined()
-	@Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+	@Transform(({ value }) => [...value.split(',')])
 	categories?: string[];
 
 	@ApiProperty({
 		type: Status,
+		required: false,
+		description: 'Filter by status (ACTIVE or INACTIVE)',
 	})
 	@IsOptional()
 	@IsEnum(Status)
 	status?: Status;
+
+	@ApiProperty({
+		type: String,
+		required: false,
+		description: 'Filter by title',
+	})
+	@IsOptional()
+	@IsString()
+	@IsNotEmpty()
+	title?: string;
 }

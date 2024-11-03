@@ -14,7 +14,6 @@ import { v4 as uuid } from 'uuid';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { UserDto } from 'src/modules/users/dto/user.dto';
-import path from 'path';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
