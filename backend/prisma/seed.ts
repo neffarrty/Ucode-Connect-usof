@@ -198,6 +198,9 @@ async function fakeLikes(
 							},
 						},
 					},
+					rating: {
+						increment,
+					},
 				},
 			});
 		} else {
@@ -222,6 +225,9 @@ async function fakeLikes(
 								increment,
 							},
 						},
+					},
+					rating: {
+						increment,
 					},
 				},
 			});
