@@ -2,13 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Status } from '@prisma/client';
 import { Transform, Type } from 'class-transformer';
 import {
-	ArrayMinSize,
-	ArrayNotEmpty,
 	IsArray,
 	IsDate,
 	IsDefined,
 	IsEnum,
-	IsNotEmpty,
 	IsOptional,
 	IsString,
 } from 'class-validator';

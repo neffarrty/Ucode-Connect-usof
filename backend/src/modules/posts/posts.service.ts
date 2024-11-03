@@ -250,7 +250,7 @@ export class PostsService {
 	async addLike(
 		id: number,
 		user: User,
-		dto: CreateLikeDto,
+		{ type }: CreateLikeDto,
 	): Promise<LikeDto> {
 		await this.findById(id);
 
@@ -265,13 +265,35 @@ export class PostsService {
 			throw new ConflictException('Like already exists');
 		}
 
-		return this.prisma.like.create({
-			data: {
-				postId: id,
-				authorId: user.id,
-				...dto,
-			},
-		});
+		const increment = type === LikeType.LIKE ? 1 : -1;
+		const [result] = await this.prisma.$transaction([
+			this.prisma.like.create({
+				data: {
+					postId: id,
+					authorId: user.id,
+					type,
+				},
+			}),
+			this.prisma.post.update({
+				where: {
+					id,
+				},
+				data: {
+					rating: {
+						increment,
+					},
+					author: {
+						update: {
+							rating: {
+								increment,
+							},
+						},
+					},
+				},
+			}),
+		]);
+
+		return result;
 	}
 
 	async deleteLike(id: number, user: User): Promise<LikeDto> {
@@ -288,15 +310,33 @@ export class PostsService {
 			throw new NotFoundException(`Like doesn't exist`);
 		}
 
-		if (like.authorId !== user.id) {
-			throw new ForbiddenException('Forbidden to delete like');
-		}
+		const increment = like.type === LikeType.LIKE ? -1 : 1;
+		const [result] = await this.prisma.$transaction([
+			this.prisma.like.delete({
+				where: {
+					id: like.id,
+				},
+			}),
+			this.prisma.post.update({
+				where: {
+					id,
+				},
+				data: {
+					rating: {
+						increment,
+					},
+					author: {
+						update: {
+							rating: {
+								increment,
+							},
+						},
+					},
+				},
+			}),
+		]);
 
-		return this.prisma.like.delete({
-			where: {
-				id: like.id,
-			},
-		});
+		return result;
 	}
 
 	private async getCategoriesByTitles(titles: string[]): Promise<Category[]> {
