@@ -78,7 +78,7 @@ export class AuthService {
 			throw new BadRequestException('Invalid confirmation token');
 		}
 
-		this.prisma.user.update({
+		await this.prisma.user.update({
 			where: {
 				id: user.id,
 			},
@@ -104,7 +104,9 @@ export class AuthService {
 
 		const token = uuid();
 
-		this.prisma.user.update({
+		console.log(token);
+
+		await this.prisma.user.update({
 			where: {
 				id: user.id,
 			},

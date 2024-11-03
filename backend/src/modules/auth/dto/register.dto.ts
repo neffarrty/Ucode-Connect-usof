@@ -5,6 +5,8 @@ import {
 	IsEmail,
 	IsString,
 	IsStrongPassword,
+	IsOptional,
+	Matches,
 } from 'class-validator';
 
 export class RegisterDto {
@@ -31,11 +33,8 @@ export class RegisterDto {
 		example: 'E08ev2SI',
 		type: String,
 	})
-	@IsStrongPassword({
-		minLength: 8,
-		minLowercase: 1,
-		minUppercase: 1,
-		minNumbers: 1,
+	@Matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/, {
+		message: 'Password is not strong enough',
 	})
 	password: string;
 
@@ -45,6 +44,7 @@ export class RegisterDto {
 		example: 'John Smith',
 		required: false,
 	})
+	@IsOptional()
 	@Length(5, 32)
 	fullname?: string;
 }
