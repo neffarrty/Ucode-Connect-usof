@@ -23,9 +23,11 @@ import {
 	ApiNotFoundResponse,
 	ApiConflictResponse,
 	ApiUnprocessableEntityResponse,
+	ApiInternalServerErrorResponse,
 } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { UserDto, CreateUserDto, UpdateUserDto, FileUploadDto } from './dto';
+import { PostDto } from 'src/modules/posts/dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Role, User } from '@prisma/client';
 import { diskStorage } from 'multer';
@@ -35,7 +37,6 @@ import { ApiAuth } from 'src/decorators/api-auth.decorator';
 import { generateFilename, imageFileFilter } from 'src/helpers/files-helper';
 import { ApiPaginatedResponse, Paginated } from 'src/pagination/paginated';
 import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
-import { PostDto } from '../posts/dto/post.dto';
 
 @ApiTags('users')
 @ApiAuth()
@@ -110,6 +111,9 @@ export class UsersController {
 	})
 	@ApiUnprocessableEntityResponse({
 		description: 'Invalid file type',
+	})
+	@ApiInternalServerErrorResponse({
+		description: 'Failed to delete file',
 	})
 	@UseInterceptors(
 		FileInterceptor('image', {
