@@ -25,18 +25,19 @@ import {
 	ApiUnprocessableEntityResponse,
 	ApiInternalServerErrorResponse,
 } from '@nestjs/swagger';
-import { UsersService } from './users.service';
+import { UsersService } from 'src/modules/users/users.service';
 import { UserDto, CreateUserDto, UpdateUserDto, FileUploadDto } from './dto';
 import { PostDto } from 'src/modules/posts/dto';
+import { diskStorage } from 'multer';
+import { GetUser, Roles, ApiAuth } from 'src/decorators';
+import { generateFilename, imageFileFilter } from 'src/helpers/files-helper';
+import {
+	ApiPaginatedResponse,
+	Paginated,
+	PaginationOptionsDto,
+} from 'src/pagination';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Role, User } from '@prisma/client';
-import { diskStorage } from 'multer';
-import { GetUser } from 'src/decorators/get-user.decorator';
-import { Roles } from 'src/decorators/role.decorator';
-import { ApiAuth } from 'src/decorators/api-auth.decorator';
-import { generateFilename, imageFileFilter } from 'src/helpers/files-helper';
-import { ApiPaginatedResponse, Paginated } from 'src/pagination/paginated';
-import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
 
 @ApiTags('users')
 @ApiAuth()

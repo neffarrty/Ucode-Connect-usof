@@ -10,27 +10,29 @@ import {
 	Body,
 } from '@nestjs/common';
 import {
-	ApiBearerAuth,
-	ApiBody,
-	ApiConflictResponse,
-	ApiForbiddenResponse,
-	ApiNotFoundResponse,
-	ApiOkResponse,
+	ApiTags,
 	ApiOperation,
 	ApiParam,
-	ApiTags,
+	ApiBody,
+	ApiOkResponse,
+	ApiForbiddenResponse,
+	ApiNotFoundResponse,
+	ApiConflictResponse,
 } from '@nestjs/swagger';
 import { CategoriesService } from 'src/modules/categories/categories.service';
 import { CategoryDto, CreateCategoryDto, UpdateCategoryDto } from './dto';
-import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
-import { ApiPaginatedResponse, Paginated } from 'src/pagination/paginated';
-import { Roles } from 'src/decorators/role.decorator';
+import { PostDto } from 'src/modules/posts/dto';
+import { CreateCommentDto } from 'src/modules/comments/dto';
+import {
+	ApiPaginatedResponse,
+	Paginated,
+	PaginationOptionsDto,
+} from 'src/pagination';
+import { ApiAuth, Roles } from 'src/decorators';
 import { Role } from '@prisma/client';
-import { PostDto } from 'src/modules/posts/dto/post.dto';
-import { CreateCommentDto } from 'src/modules/comments/dto/create-comment.dto';
 
 @ApiTags('categories')
-@ApiBearerAuth()
+@ApiAuth()
 @Controller('categories')
 export class CategoriesController {
 	constructor(readonly categoriesService: CategoriesService) {}

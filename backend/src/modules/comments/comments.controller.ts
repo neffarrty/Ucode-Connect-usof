@@ -22,8 +22,7 @@ import {
 import { CommentsService } from './comments.service';
 import { CommentDto, UpdateCommentDto } from './dto';
 import { LikeDto, CreateLikeDto } from 'src/modules/posts/dto';
-import { GetUser } from 'src/decorators/get-user.decorator';
-import { ApiAuth } from 'src/decorators/api-auth.decorator';
+import { GetUser, ApiAuth } from 'src/decorators';
 import { User } from '@prisma/client';
 
 @ApiTags('comments')

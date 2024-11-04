@@ -22,21 +22,23 @@ import {
 } from '@nestjs/swagger';
 import { PostsService } from './posts.service';
 import {
+	PostDto,
 	CreatePostDto,
 	UpdatePostDto,
 	CreateLikeDto,
-	PostDto,
 	LikeDto,
 	SortingOptionsDto,
 	FilteringOptionsDto,
 } from './dto';
 import { CommentDto, CreateCommentDto } from 'src/modules/comments/dto';
 import { CategoryDto } from 'src/modules/categories/dto/category.dto';
-import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
-import { ApiPaginatedResponse, Paginated } from 'src/pagination/paginated';
+import {
+	ApiPaginatedResponse,
+	PaginationOptionsDto,
+	Paginated,
+} from 'src/pagination';
+import { GetUser, ApiAuth } from 'src/decorators';
 import { User } from '@prisma/client';
-import { GetUser } from 'src/decorators/get-user.decorator';
-import { ApiAuth } from 'src/decorators/api-auth.decorator';
 
 @ApiTags('posts')
 @ApiAuth()

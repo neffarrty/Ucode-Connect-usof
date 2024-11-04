@@ -4,7 +4,6 @@ import {
 	NotFoundException,
 	ConflictException,
 } from '@nestjs/common';
-import { Category, LikeType, Prisma, Role, Status, User } from '@prisma/client';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import {
 	PostDto,
@@ -12,13 +11,13 @@ import {
 	CreatePostDto,
 	UpdatePostDto,
 	CreateLikeDto,
-} from 'src/modules/posts/dto';
-import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
-import { Paginated } from 'src/pagination/paginated';
+	SortingOptionsDto,
+	FilteringOptionsDto,
+} from './dto';
 import { CommentDto, CreateCommentDto } from 'src/modules/comments/dto';
 import { CategoryDto } from 'src/modules/categories/dto/category.dto';
-import { SortingOptionsDto } from './dto/sorting-options.dto';
-import { FilteringOptionsDto } from './dto/filtering-options.dto';
+import { Paginated, PaginationOptionsDto } from 'src/pagination';
+import { Category, LikeType, Prisma, Role, Status, User } from '@prisma/client';
 
 @Injectable()
 export class PostsService {
