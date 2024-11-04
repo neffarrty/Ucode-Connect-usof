@@ -6,6 +6,7 @@
   <img src="https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white" height="30"/>
   <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" height="30"/>
   <img src="https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=Swagger&logoColor=white" height="30"/>
+  <img src="https://img.shields.io/badge/redis-%23DD0031.svg?&style=for-the-badge&logo=redis&logoColor=white" height="30"/>
   <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white" height="30"/>
 </div>
 
@@ -17,6 +18,7 @@ BugTalk is a Q&A web application built using NestJS. The platform is designed to
 
  - NestJS, Node.js
  - PostgreSQL
+ - Redis
  - Prisma
  - JWT with Passport.js for secure user authentication.
  - Swagger for API documentation.
