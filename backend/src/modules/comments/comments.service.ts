@@ -4,16 +4,16 @@ import {
 	NotFoundException,
 	ConflictException,
 } from '@nestjs/common';
-import { Comment, Like, LikeType, Role, User } from '@prisma/client';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { UpdateCommentDto } from './dto/update-comment.dto';
-import { CreateLikeDto } from 'src/modules/posts/dto/create-like.dto';
+import { LikeType, Role, User } from '@prisma/client';
+import { CommentDto, UpdateCommentDto } from './dto';
+import { LikeDto, CreateLikeDto } from 'src/modules/posts/dto';
 
 @Injectable()
 export class CommentsService {
 	constructor(readonly prisma: PrismaService) {}
 
-	async findById(id: number): Promise<Comment> {
+	async findById(id: number): Promise<CommentDto> {
 		const comment = await this.prisma.comment.findUnique({
 			where: {
 				id,
@@ -31,7 +31,7 @@ export class CommentsService {
 		id: number,
 		user: User,
 		dto: UpdateCommentDto,
-	): Promise<Comment> {
+	): Promise<CommentDto> {
 		const comment = await this.findById(id);
 
 		if (comment.authorId !== user.id) {
@@ -46,7 +46,7 @@ export class CommentsService {
 		});
 	}
 
-	async delete(id: number, user: User): Promise<Comment> {
+	async delete(id: number, user: User): Promise<CommentDto> {
 		const comment = await this.findById(id);
 
 		if (comment.authorId !== user.id && user.role !== Role.ADMIN) {
@@ -77,7 +77,7 @@ export class CommentsService {
 		id: number,
 		user: User,
 		{ type }: CreateLikeDto,
-	): Promise<Like> {
+	): Promise<LikeDto> {
 		await this.findById(id);
 
 		const like = await this.prisma.like.findFirst({
@@ -122,7 +122,7 @@ export class CommentsService {
 		return result;
 	}
 
-	async deleteLike(id: number, user: User): Promise<Like> {
+	async deleteLike(id: number, user: User): Promise<LikeDto> {
 		await this.findById(id);
 
 		const like = await this.prisma.like.findFirst({

@@ -1,15 +1,12 @@
 import {
-	ConflictException,
 	Injectable,
 	NotFoundException,
+	ConflictException,
 } from '@nestjs/common';
-import { Category } from '@prisma/client';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
+import { CategoryDto, CreateCategoryDto, UpdateCategoryDto } from './dto';
 import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
 import { Paginated } from 'src/pagination/paginated';
-import { CategoryDto } from './dto/category.dto';
 import { PostDto } from 'src/modules/posts/dto/post.dto';
 
 @Injectable()

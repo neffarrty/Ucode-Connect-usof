@@ -39,10 +39,4 @@ export class LikeDto {
 		example: '2024-10-27T10:53:57.740Z',
 	})
 	createdAt: Date;
-
-	@ApiProperty({
-		description: 'Time when the like was last updated',
-		example: '2024-10-27T10:53:57.740Z',
-	})
-	updatedAt: Date;
 }

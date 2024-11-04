@@ -6,17 +6,18 @@ import {
 } from '@nestjs/common';
 import { Category, LikeType, Prisma, Role, Status, User } from '@prisma/client';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
-import { CreateLikeDto } from './dto/create-like.dto';
-import { CreateCommentDto } from 'src/modules/comments/dto/create-comment.dto';
+import {
+	PostDto,
+	LikeDto,
+	CreatePostDto,
+	UpdatePostDto,
+	CreateLikeDto,
+} from 'src/modules/posts/dto';
 import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
 import { Paginated } from 'src/pagination/paginated';
-import { PostDto } from './dto/post.dto';
-import { LikeDto } from './dto/like.dto';
-import { CommentDto } from 'src/modules/comments/dto/comment.dto';
+import { CommentDto, CreateCommentDto } from 'src/modules/comments/dto';
 import { CategoryDto } from 'src/modules/categories/dto/category.dto';
-import { SortingOptionsDto, SortType } from './dto/sorting-options.dto';
+import { SortingOptionsDto } from './dto/sorting-options.dto';
 import { FilteringOptionsDto } from './dto/filtering-options.dto';
 
 @Injectable()
@@ -67,6 +68,11 @@ export class PostsService {
 							},
 						},
 					},
+					bookmarks: {
+						where: {
+							userId: user.id,
+						},
+					},
 				},
 				orderBy: {
 					[sort]: order,
@@ -79,7 +85,10 @@ export class PostsService {
 		const pages = Math.ceil(count / limit);
 
 		return {
-			data: posts,
+			data: posts.map(({ bookmarks, ...post }) => ({
+				...post,
+				bookmarked: bookmarks.some((fav) => fav.userId === user.id),
+			})),
 			meta: {
 				page,
 				count: limit,
@@ -90,22 +99,34 @@ export class PostsService {
 		};
 	}
 
-	async findById(id: number): Promise<PostDto> {
-		const post = await this.prisma.post.findUnique({ where: { id } });
+	async findById(id: number, user?: User): Promise<PostDto> {
+		const post = await this.prisma.post.findUnique({
+			where: {
+				id,
+			},
+			include: user
+				? { bookmarks: { where: { userId: user.id } } }
+				: undefined,
+		});
 
 		if (!post) {
 			throw new NotFoundException(`Post with id ${id} doesn't exist`);
 		}
 
-		return post;
+		const { bookmarks, ...result } = post;
+
+		return {
+			...result,
+			bookmarked: user ? bookmarks.length > 0 : false,
+		};
 	}
 
-	async create(userId: number, dto: CreatePostDto): Promise<PostDto> {
+	async create(dto: CreatePostDto, user: User): Promise<PostDto> {
 		const categories = await this.getCategoriesByTitles(dto.categories);
 
 		return this.prisma.post.create({
 			data: {
-				authorId: userId,
+				authorId: user.id,
 				...dto,
 				categories: {
 					create: categories.map((category) => ({
@@ -120,7 +141,7 @@ export class PostsService {
 		});
 	}
 
-	async update(id: number, user: User, dto: UpdatePostDto): Promise<PostDto> {
+	async update(id: number, dto: UpdatePostDto, user: User): Promise<PostDto> {
 		const post = await this.findById(id);
 
 		if (post.authorId !== user.id && user.role !== Role.ADMIN) {
@@ -199,8 +220,8 @@ export class PostsService {
 
 	async addComment(
 		id: number,
-		user: User,
 		dto: CreateCommentDto,
+		user: User,
 	): Promise<CommentDto> {
 		await this.findById(id);
 
@@ -244,8 +265,8 @@ export class PostsService {
 
 	async addLike(
 		id: number,
-		user: User,
 		{ type }: CreateLikeDto,
+		user: User,
 	): Promise<LikeDto> {
 		await this.findById(id);
 
@@ -332,6 +353,79 @@ export class PostsService {
 		]);
 
 		return result;
+	}
+
+	async addToBookmarks(id: number, user: User): Promise<PostDto> {
+		const post = await this.findById(id);
+
+		if (post.status === Status.INACTIVE) {
+			throw new ForbiddenException('Post is inactive');
+		}
+
+		const bookmark = await this.prisma.bookmark.findFirst({
+			where: {
+				postId: id,
+				userId: user.id,
+			},
+		});
+
+		if (bookmark) {
+			throw new ConflictException('Post already in bookmarks');
+		}
+
+		const result = await this.prisma.post.update({
+			where: {
+				id,
+			},
+			data: {
+				bookmarks: {
+					create: {
+						userId: user.id,
+					},
+				},
+			},
+		});
+
+		return {
+			...result,
+			bookmarked: true,
+		};
+	}
+
+	async deleteFromBookmarks(id: number, user: User): Promise<PostDto> {
+		await this.findById(id);
+
+		const bookmark = await this.prisma.bookmark.findFirst({
+			where: {
+				postId: id,
+				userId: user.id,
+			},
+		});
+
+		if (!bookmark) {
+			throw new NotFoundException("Post doesn't in bookmarks");
+		}
+
+		const post = await this.prisma.post.update({
+			where: {
+				id,
+			},
+			data: {
+				bookmarks: {
+					delete: {
+						userId_postId: {
+							userId: user.id,
+							postId: id,
+						},
+					},
+				},
+			},
+		});
+
+		return {
+			...post,
+			bookmarked: false,
+		};
 	}
 
 	private async getCategoriesByTitles(titles: string[]): Promise<Category[]> {

@@ -25,19 +25,17 @@ import {
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { FileUploadDto } from './dto/file-upload.dto';
-import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
-import { UserDto } from './dto/user.dto';
+import { UserDto, CreateUserDto, UpdateUserDto, FileUploadDto } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
 import { Role, User } from '@prisma/client';
+import { diskStorage } from 'multer';
 import { GetUser } from 'src/decorators/get-user.decorator';
 import { Roles } from 'src/decorators/role.decorator';
-import { generateFilename, imageFileFilter } from 'src/helpers/files-helper';
 import { ApiAuth } from 'src/decorators/api-auth.decorator';
+import { generateFilename, imageFileFilter } from 'src/helpers/files-helper';
 import { ApiPaginatedResponse, Paginated } from 'src/pagination/paginated';
+import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
+import { PostDto } from '../posts/dto/post.dto';
 
 @ApiTags('users')
 @ApiAuth()
@@ -55,6 +53,16 @@ export class UsersController {
 		@Query() paginationOptions: PaginationOptionsDto,
 	): Promise<Paginated<UserDto>> {
 		return this.userService.findAll(paginationOptions);
+	}
+
+	@Get('bookmarks')
+	@ApiOperation({ summary: 'Get all bookmarked posts for the current user' })
+	@ApiPaginatedResponse(PostDto)
+	async deletePostToBookmarks(
+		@Query() paginationOptions: PaginationOptionsDto,
+		@GetUser() user: User,
+	) {
+		return this.userService.findBookmarks(paginationOptions, user);
 	}
 
 	@Get(':id')

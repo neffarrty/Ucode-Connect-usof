@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
-	ApiBearerAuth,
 	ApiBody,
 	ApiConflictResponse,
 	ApiExcludeEndpoint,
@@ -22,18 +21,20 @@ import {
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { RegisterDto } from './dto/register.dto';
+import {
+	RegisterDto,
+	LoginDto,
+	ForgotPasswordDto,
+	ResetPasswordDto,
+	AuthResponseDto,
+} from './dto';
+import { GetUser } from 'src/decorators/get-user.decorator';
+import { Public } from 'src/decorators/public.decorator';
 import { Response } from 'express';
-import { GetUser } from '../../decorators/get-user.decorator';
 import { User } from '@prisma/client';
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { ResetPasswordDto } from './dto/reset-password.dto';
 import { LocalGuard } from './guards/local.guard';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
-import { Public } from 'src/decorators/public.decorator';
 import { GoogleGuard } from './guards/google.guard';
-import { LoginDto } from './dto/login.dto';
-import { AuthResponseDto } from './dto/auth-response.dto';
 import { UserDto } from 'src/modules/users/dto/user.dto';
 
 @ApiTags('auth')

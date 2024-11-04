@@ -39,6 +39,12 @@ export class PostDto {
 	rating: number;
 
 	@ApiProperty({
+		description: 'Whether the post in bookmarks of the current user',
+		example: true,
+	})
+	bookmarked?: boolean;
+
+	@ApiProperty({
 		description: 'Time when the post was created',
 		example: '2024-10-27T10:53:57.740Z',
 	})

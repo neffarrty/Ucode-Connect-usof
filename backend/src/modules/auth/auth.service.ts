@@ -1,19 +1,18 @@
 import {
 	Injectable,
-	ConflictException,
 	BadRequestException,
 	UnauthorizedException,
+	ConflictException,
 } from '@nestjs/common';
-import { RegisterDto } from './dto/register.dto';
+import { RegisterDto, AuthResponseDto } from './dto';
+import { UserDto } from 'src/modules/users/dto/user.dto';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { JwtService, TokenExpiredError } from '@nestjs/jwt';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { User } from '@prisma/client';
 import { Response } from 'express';
 import { v4 as uuid } from 'uuid';
-import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { AuthResponseDto } from './dto/auth-response.dto';
-import { UserDto } from 'src/modules/users/dto/user.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -25,10 +24,10 @@ export class AuthService {
 		private readonly mailService: MailerService,
 	) {}
 
-	async register(dto: RegisterDto): Promise<void> {
+	async register({ login, email, password }: RegisterDto): Promise<void> {
 		const candidate = await this.prisma.user.findFirst({
 			where: {
-				OR: [{ login: dto.login }, { email: dto.email }],
+				OR: [{ login }, { email }],
 			},
 		});
 
@@ -38,8 +37,9 @@ export class AuthService {
 
 		const user = await this.prisma.user.create({
 			data: {
-				...dto,
-				password: await bcrypt.hash(dto.password, 10),
+				login,
+				email,
+				password: await bcrypt.hash(password, 10),
 				avatar: process.env.DEFAULT_AVATAR_URL,
 			},
 		});
@@ -103,8 +103,6 @@ export class AuthService {
 		}
 
 		const token = uuid();
-
-		console.log(token);
 
 		await this.prisma.user.update({
 			where: {

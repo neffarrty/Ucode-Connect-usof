@@ -21,21 +21,22 @@ import {
 	ApiConflictResponse,
 } from '@nestjs/swagger';
 import { PostsService } from './posts.service';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
-import { CreateLikeDto } from './dto/create-like.dto';
-import { CreateCommentDto } from 'src/modules/comments/dto/create-comment.dto';
-import { PostDto } from './dto/post.dto';
-import { LikeDto } from './dto/like.dto';
-import { CommentDto } from 'src/modules/comments/dto/comment.dto';
+import {
+	CreatePostDto,
+	UpdatePostDto,
+	CreateLikeDto,
+	PostDto,
+	LikeDto,
+	SortingOptionsDto,
+	FilteringOptionsDto,
+} from './dto';
+import { CommentDto, CreateCommentDto } from 'src/modules/comments/dto';
 import { CategoryDto } from 'src/modules/categories/dto/category.dto';
 import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
 import { ApiPaginatedResponse, Paginated } from 'src/pagination/paginated';
-import { GetUser } from 'src/decorators/get-user.decorator';
 import { User } from '@prisma/client';
+import { GetUser } from 'src/decorators/get-user.decorator';
 import { ApiAuth } from 'src/decorators/api-auth.decorator';
-import { SortingOptionsDto } from './dto/sorting-options.dto';
-import { FilteringOptionsDto } from './dto/filtering-options.dto';
 
 @ApiTags('posts')
 @ApiAuth()
@@ -73,8 +74,11 @@ export class PostsController {
 	@ApiNotFoundResponse({
 		description: "Post doesn't exist",
 	})
-	async getPostById(@Param('id', ParseIntPipe) id: number): Promise<PostDto> {
-		return this.postService.findById(id);
+	async getPostById(
+		@Param('id', ParseIntPipe) id: number,
+		@GetUser() user: User,
+	): Promise<PostDto> {
+		return this.postService.findById(id, user);
 	}
 
 	@Post()
@@ -85,7 +89,7 @@ export class PostsController {
 		@Body() dto: CreatePostDto,
 		@GetUser() user: User,
 	): Promise<PostDto> {
-		return this.postService.create(user.id, dto);
+		return this.postService.create(dto, user);
 	}
 
 	@Patch(':id')
@@ -109,7 +113,7 @@ export class PostsController {
 		@Body() dto: UpdatePostDto,
 		@GetUser() user: User,
 	): Promise<PostDto> {
-		return this.postService.update(id, user, dto);
+		return this.postService.update(id, dto, user);
 	}
 
 	@Delete(':id')
@@ -164,7 +168,7 @@ export class PostsController {
 		@GetUser() user: User,
 		@Body() dto: CreateCommentDto,
 	): Promise<CommentDto> {
-		return this.postService.addComment(id, user, dto);
+		return this.postService.addComment(id, dto, user);
 	}
 
 	@Get(':id/categories')
@@ -218,7 +222,7 @@ export class PostsController {
 		@GetUser() user: User,
 		@Body() dto: CreateLikeDto,
 	): Promise<LikeDto> {
-		return this.postService.addLike(id, user, dto);
+		return this.postService.addLike(id, dto, user);
 	}
 
 	@Delete(':id/like')
@@ -239,5 +243,48 @@ export class PostsController {
 		@GetUser() user: User,
 	): Promise<LikeDto> {
 		return this.postService.deleteLike(id, user);
+	}
+
+	@Post(':id/bookmarks')
+	@ApiOperation({ summary: 'Add post to bookmarks' })
+	@ApiParam({
+		name: 'id',
+		description: 'id of the post',
+	})
+	@ApiOkResponse({ type: PostDto })
+	@ApiNotFoundResponse({
+		description: "Post doesn't exist",
+	})
+	@ApiConflictResponse({
+		description: 'Post already in bookmarks',
+	})
+	async addPostToBookmarks(
+		@Param('id', ParseIntPipe) id: number,
+		@GetUser() user: User,
+	) {
+		return this.postService.addToBookmarks(id, user);
+	}
+
+	@Delete(':id/bookmarks')
+	@ApiOperation({ summary: 'Delete like under the specified post' })
+	@ApiParam({
+		name: 'id',
+		description: 'id of the post',
+	})
+	@ApiOkResponse({ type: PostDto })
+	@ApiForbiddenResponse({
+		description: 'Post is inactive',
+	})
+	@ApiNotFoundResponse({
+		description: "Post doesn't exist",
+	})
+	@ApiNotFoundResponse({
+		description: "Post doesn't in bookmarks",
+	})
+	async deletePostToBookmarks(
+		@Param('id', ParseIntPipe) id: number,
+		@GetUser() user: User,
+	) {
+		return this.postService.deleteFromBookmarks(id, user);
 	}
 }

@@ -16,6 +16,7 @@ import { UserDto } from './dto/user.dto';
 import fs from 'fs/promises';
 import path from 'path';
 import * as bcrypt from 'bcrypt';
+import { PostDto } from '../posts/dto/post.dto';
 
 @Injectable()
 export class UsersService {
@@ -74,6 +75,40 @@ export class UsersService {
 
 		return {
 			data: users,
+			meta: {
+				page,
+				count: limit,
+				pages,
+				next: page < pages ? page + 1 : null,
+				prev: page > 1 ? page - 1 : null,
+			},
+		};
+	}
+
+	async findBookmarks(
+		{ page, limit }: PaginationOptionsDto,
+		user: User,
+	): Promise<Paginated<PostDto>> {
+		const where = {
+			bookmarks: {
+				some: {
+					userId: user.id,
+				},
+			},
+		};
+
+		const [posts, count] = await this.prisma.$transaction([
+			this.prisma.post.findMany({
+				where,
+				take: limit,
+				skip: (page - 1) * limit,
+			}),
+			this.prisma.post.count({ where }),
+		]);
+		const pages = Math.ceil(count / limit);
+
+		return {
+			data: posts,
 			meta: {
 				page,
 				count: limit,
