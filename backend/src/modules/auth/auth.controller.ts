@@ -8,12 +8,15 @@ import {
 	Req,
 	Res,
 	UseGuards,
+	HttpStatus,
 } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
 	ApiBody,
 	ApiConflictResponse,
+	ApiCreatedResponse,
 	ApiExcludeEndpoint,
+	ApiNoContentResponse,
 	ApiOkResponse,
 	ApiOperation,
 	ApiParam,
@@ -47,7 +50,7 @@ export class AuthController {
 	@ApiBody({
 		type: [RegisterDto],
 	})
-	@ApiOkResponse({
+	@ApiCreatedResponse({
 		description: 'Registration successful',
 	})
 	@ApiBadRequestResponse({
@@ -62,7 +65,7 @@ export class AuthController {
 
 	@Public()
 	@Post('login')
-	@HttpCode(200)
+	@HttpCode(HttpStatus.OK)
 	@UseGuards(LocalGuard)
 	@ApiOperation({ summary: 'Authenticate with email and password' })
 	@ApiBody({
@@ -102,10 +105,10 @@ export class AuthController {
 	}
 
 	@Public()
-	@HttpCode(200)
+	@HttpCode(HttpStatus.NO_CONTENT)
 	@Post('logout')
 	@ApiOperation({ summary: 'Logout the user' })
-	@ApiOkResponse({
+	@ApiNoContentResponse({
 		description: 'Logout successful',
 	})
 	async logout(
@@ -116,14 +119,14 @@ export class AuthController {
 	}
 
 	@Public()
-	@HttpCode(200)
+	@HttpCode(HttpStatus.NO_CONTENT)
 	@Post('verify')
 	@ApiOperation({ summary: 'Send verification email' })
 	@ApiBody({
 		type: [ForgotPasswordDto],
 		description: 'Email to send verification',
 	})
-	@ApiOkResponse({
+	@ApiNoContentResponse({
 		description: 'Verification email sent',
 	})
 	@ApiUnauthorizedResponse({
@@ -134,9 +137,10 @@ export class AuthController {
 	}
 
 	@Public()
+	@HttpCode(HttpStatus.NO_CONTENT)
 	@Get('verify/:token')
 	@ApiOperation({ summary: 'Verify email with token' })
-	@ApiOkResponse({
+	@ApiNoContentResponse({
 		description: 'Email verification successful',
 	})
 	@ApiBadRequestResponse({
@@ -150,7 +154,7 @@ export class AuthController {
 	@Post('refresh-token')
 	@UseGuards(JwtRefreshGuard)
 	@ApiOperation({ summary: 'Refresh access token' })
-	@ApiOkResponse({
+	@ApiCreatedResponse({
 		type: AuthResponseDto,
 	})
 	@ApiUnauthorizedResponse({
@@ -179,7 +183,7 @@ export class AuthController {
 
 	@Public()
 	@Post('forgot-password')
-	@HttpCode(200)
+	@HttpCode(HttpStatus.OK)
 	@ApiOperation({ summary: 'Send reset password email' })
 	@ApiBody({
 		type: [ForgotPasswordDto],
@@ -196,6 +200,7 @@ export class AuthController {
 	}
 
 	@Public()
+	@HttpCode(HttpStatus.NO_CONTENT)
 	@Post('password-reset/:token')
 	@ApiOperation({ summary: 'Reset password' })
 	@ApiParam({ name: 'token', required: true, description: 'Reset token' })
@@ -203,7 +208,7 @@ export class AuthController {
 		type: [ResetPasswordDto],
 		description: 'New password',
 	})
-	@ApiOkResponse({
+	@ApiNoContentResponse({
 		description: 'Password reset successful',
 	})
 	@ApiBadRequestResponse({

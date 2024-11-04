@@ -24,6 +24,7 @@ import {
 	ApiConflictResponse,
 	ApiUnprocessableEntityResponse,
 	ApiInternalServerErrorResponse,
+	ApiCreatedResponse,
 } from '@nestjs/swagger';
 import { UsersService } from 'src/modules/users/users.service';
 import { UserDto, CreateUserDto, UpdateUserDto, FileUploadDto } from './dto';
@@ -85,7 +86,7 @@ export class UsersController {
 	@Roles(Role.ADMIN)
 	@ApiOperation({ summary: 'Create new user' })
 	@ApiBody({ type: CreateUserDto })
-	@ApiOkResponse({ type: UserDto })
+	@ApiCreatedResponse({ type: UserDto })
 	@ApiForbiddenResponse({
 		description: 'Forbiden',
 	})
