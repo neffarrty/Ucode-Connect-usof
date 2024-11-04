@@ -21,7 +21,7 @@ import { Category, LikeType, Prisma, Role, Status, User } from '@prisma/client';
 
 @Injectable()
 export class PostsService {
-	constructor(readonly prisma: PrismaService) {}
+	constructor(private readonly prisma: PrismaService) {}
 
 	async findAll(
 		{ page, limit }: PaginationOptionsDto,

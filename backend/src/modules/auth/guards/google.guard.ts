@@ -4,7 +4,7 @@ import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
 export class GoogleGuard extends AuthGuard('google') {
-	constructor(private configService: ConfigService) {
+	constructor(private config: ConfigService) {
 		super({
 			accessType: 'offline',
 		});

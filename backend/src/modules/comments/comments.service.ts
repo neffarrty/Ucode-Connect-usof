@@ -11,7 +11,7 @@ import { LikeType, Role, User } from '@prisma/client';
 
 @Injectable()
 export class CommentsService {
-	constructor(readonly prisma: PrismaService) {}
+	constructor(private readonly prisma: PrismaService) {}
 
 	async findById(id: number): Promise<CommentDto> {
 		const comment = await this.prisma.comment.findUnique({

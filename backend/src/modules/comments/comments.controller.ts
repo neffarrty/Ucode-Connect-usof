@@ -33,7 +33,7 @@ import { User } from '@prisma/client';
 })
 @Controller('comments')
 export class CommentsController {
-	constructor(readonly commentsService: CommentsService) {}
+	constructor(private readonly commentsService: CommentsService) {}
 
 	@Get(':id')
 	@ApiOperation({ summary: 'Get specified comment by id' })

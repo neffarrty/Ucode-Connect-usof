@@ -15,15 +15,22 @@ import { User } from '@prisma/client';
 import { Response } from 'express';
 import { v4 as uuid } from 'uuid';
 import * as bcrypt from 'bcrypt';
+import { RedisService } from '@liaoliaots/nestjs-redis';
+import Redis from 'ioredis';
 
 @Injectable()
 export class AuthService {
+	private readonly redis: Redis | null;
+
 	constructor(
 		private readonly prisma: PrismaService,
-		private readonly configService: ConfigService,
+		private readonly config: ConfigService,
 		private readonly jwtService: JwtService,
 		private readonly mailService: MailerService,
-	) {}
+		private readonly redisService: RedisService,
+	) {
+		this.redis = this.redisService.getOrThrow();
+	}
 
 	async register({ login, email, password }: RegisterDto): Promise<void> {
 		const candidate = await this.prisma.user.findFirst({
@@ -65,7 +72,8 @@ export class AuthService {
 		};
 	}
 
-	async logout(user: User, res: Response): Promise<void> {
+	async logout(user: User, token: string, res: Response): Promise<void> {
+		this.blacklistToken(token);
 		res.clearCookie('refresh_token');
 	}
 
@@ -158,9 +166,7 @@ export class AuthService {
 	async resetPassword(token: string, password: string) {
 		try {
 			const { userId } = this.jwtService.verify(token, {
-				secret: this.configService.get<string>(
-					'auth.jwt.access.secret',
-				),
+				secret: this.config.get<string>('auth.jwt.access.secret'),
 			});
 			const user = await this.prisma.user.findUnique({
 				where: { id: userId },
@@ -208,10 +214,8 @@ export class AuthService {
 	}
 
 	async generateAccessToken(payload: JwtPayload): Promise<string> {
-		const secret = this.configService.get<string>('auth.jwt.access.secret');
-		const exp = this.configService.get<string>(
-			'auth.jwt.access.expiration',
-		);
+		const secret = this.config.get<string>('auth.jwt.access.secret');
+		const exp = this.config.get<string>('auth.jwt.access.expiration');
 
 		return await this.jwtService.signAsync(payload, {
 			secret: secret,
@@ -220,12 +224,8 @@ export class AuthService {
 	}
 
 	async generateRefreshToken(payload: JwtPayload): Promise<string> {
-		const secret = this.configService.get<string>(
-			'auth.jwt.refresh.secret',
-		);
-		const exp = this.configService.get<string>(
-			'auth.jwt.refresh.expiration',
-		);
+		const secret = this.config.get<string>('auth.jwt.refresh.secret');
+		const exp = this.config.get<string>('auth.jwt.refresh.expiration');
 
 		return await this.jwtService.signAsync(payload, {
 			secret: secret,
@@ -240,5 +240,14 @@ export class AuthService {
 		]);
 
 		return { accessToken, refreshToken };
+	}
+
+	private blacklistToken(token: string): void {
+		const decoded: any = this.jwtService.decode(token);
+		const ttl = decoded.exp * 1000 - Date.now();
+
+		if (ttl > 0) {
+			this.redis.set(token, 'blacklisted', 'PX', ttl);
+		}
 	}
 }

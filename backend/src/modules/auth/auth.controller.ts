@@ -9,6 +9,8 @@ import {
 	Res,
 	UseGuards,
 	HttpStatus,
+	Header,
+	Headers,
 } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
@@ -104,7 +106,6 @@ export class AuthController {
 		return this.authService.login(user, res);
 	}
 
-	@Public()
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@Post('logout')
 	@ApiOperation({ summary: 'Logout the user' })
@@ -113,9 +114,12 @@ export class AuthController {
 	})
 	async logout(
 		@GetUser() user: User,
+		@Headers('Authorization') authHeader: string,
 		@Res({ passthrough: true }) res: Response,
 	): Promise<void> {
-		return this.authService.logout(user, res);
+		const token = authHeader?.split(' ')[1];
+
+		return this.authService.logout(user, token, res);
 	}
 
 	@Public()

@@ -48,7 +48,7 @@ import { User } from '@prisma/client';
 })
 @Controller('posts')
 export class PostsController {
-	constructor(readonly postService: PostsService) {}
+	constructor(private readonly postService: PostsService) {}
 
 	@Get()
 	@ApiOperation({ summary: 'Get all posts' })

@@ -12,10 +12,12 @@ import { PostsModule } from './modules/posts/posts.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { CommentsModule } from './modules/comments/comments.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { RedisModule, RedisModuleOptions } from '@liaoliaots/nestjs-redis';
 
-import config from './configs/config';
-import auth from './configs/auth.config';
-import mail from './configs/mail.config';
+import appConfig from './configs/app.config';
+import authConfig from './configs/auth.config';
+import mailConfig from './configs/mail.config';
+import redisConfig from './configs/redis.config';
 
 @Module({
 	providers: [
@@ -27,7 +29,7 @@ import mail from './configs/mail.config';
 	imports: [
 		ConfigModule.forRoot({
 			isGlobal: true,
-			load: [config, auth, mail],
+			load: [appConfig, authConfig, mailConfig, redisConfig],
 		}),
 		JwtModule.register({
 			global: true,
@@ -37,13 +39,25 @@ import mail from './configs/mail.config';
 			serveRoot: '/avatars',
 			serveStaticOptions: { index: false },
 		}),
+		RedisModule.forRootAsync({
+			inject: [ConfigService],
+			useFactory: async (
+				config: ConfigService,
+			): Promise<RedisModuleOptions> => ({
+				config: {
+					host: config.get<string>('redis.host'),
+					port: config.get<number>('redis.post'),
+					password: config.get<string>('redis.password'),
+				},
+			}),
+		}),
+		AdminModule.forRootAsync(),
 		PrismaModule,
 		AuthModule,
 		UsersModule,
 		PostsModule,
 		CommentsModule,
 		CategoriesModule,
-		AdminModule.forRootAsync(),
 	],
 })
 export class AppModule {}

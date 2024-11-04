@@ -36,7 +36,7 @@ import { Role } from '@prisma/client';
 @ApiAuth()
 @Controller('categories')
 export class CategoriesController {
-	constructor(readonly categoriesService: CategoriesService) {}
+	constructor(private readonly categoriesService: CategoriesService) {}
 
 	@Get()
 	@ApiOperation({ summary: 'Get all categories' })
