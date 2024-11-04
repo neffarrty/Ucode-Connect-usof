@@ -1,6 +1,5 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["omitApi"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -14,7 +13,7 @@ model User {
   password    String?
   fullname    String?
   email       String    @unique
-  avatar      String    @default("public/avatars/default.png")
+  avatar      String?
   rating      Int       @default(0)
   role        Role      @default(USER)
   verified    Boolean   @default(false)
@@ -35,6 +34,7 @@ model Post {
   title      String
   status     Status            @default(ACTIVE)
   content    String            @db.Text
+  rating     Int               @default(0)
   categories PostsCategories[]
   comments   Comment[]
   likes      Like[]
@@ -70,6 +70,7 @@ model Comment {
   author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  Int      @map("author_id")
   content   String
+  rating    Int      @default(0)
   post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    Int?     @map("post_id")
   likes     Like[]

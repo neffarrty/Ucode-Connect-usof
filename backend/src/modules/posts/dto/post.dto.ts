@@ -33,6 +33,12 @@ export class PostDto {
 	content: string;
 
 	@ApiProperty({
+		description: 'Rating of the post',
+		example: 45,
+	})
+	rating: number;
+
+	@ApiProperty({
 		description: 'Time when the post was created',
 		example: '2024-10-27T10:53:57.740Z',
 	})

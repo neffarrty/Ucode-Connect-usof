@@ -51,14 +51,14 @@ async function fakeUsers(): Promise<User[]> {
 				password: await bcrypt.hash('admin', 10),
 				role: 'ADMIN',
 				verified: true,
-				avatar: '/avatar/default.webp',
+				avatar: process.env.DEFAULT_AVATAR_URL,
 			},
 			{
 				email: 'neffarrty@example.com',
 				login: 'neffarrty',
 				password: await bcrypt.hash('securepass', 10),
 				verified: true,
-				avatar: '/avatar/default.webp',
+				avatar: process.env.DEFAULT_AVATAR_URL,
 			},
 		],
 	});
@@ -74,7 +74,7 @@ async function fakeUsers(): Promise<User[]> {
 				login: faker.internet.userName({ firstName, lastName }),
 				fullname: `${firstName} ${lastName}`,
 				password: await bcrypt.hash(faker.internet.password(), 10),
-				avatar: '/avatar/default.webp',
+				avatar: process.env.DEFAULT_AVATAR_URL,
 			},
 		});
 	}
@@ -99,15 +99,18 @@ async function fakePosts(
 	users: User[],
 	categories: Category[],
 ): Promise<Post[]> {
-	const statuses = [Status.ACTIVE, Status.ACTIVE, Status.INACTIVE];
+	const statuses = [
+		{ value: Status.ACTIVE, weight: 4 },
+		{ value: Status.INACTIVE, weight: 1 },
+	];
 
 	for (let i = 0; i < POSTS_NUMBER; i++) {
-		const user = users[Math.floor(Math.random() * users.length)];
+		const user = faker.helpers.arrayElement(users);
 
 		const post = await prisma.post.create({
 			data: {
 				title: faker.word.words({ count: { min: 1, max: 5 } }),
-				status: statuses[Math.floor(Math.random() * statuses.length)],
+				status: faker.helpers.weightedArrayElement(statuses),
 				content: faker.lorem.paragraphs({ min: 10, max: 25 }),
 				authorId: user.id,
 			},
@@ -136,11 +139,11 @@ async function fakePosts(
 
 async function fakeComments(users: User[], posts: Post[]): Promise<Comment[]> {
 	for (let i = 0; i < COMMENTS_NUMBER; i++) {
-		let user = users[Math.floor(Math.random() * users.length)];
-		let post = posts[Math.floor(Math.random() * posts.length)];
+		const user = faker.helpers.arrayElement(users);
+		let post = faker.helpers.arrayElement(posts);
 
 		while (user.id === post.authorId) {
-			post = posts[Math.floor(Math.random() * posts.length)];
+			post = faker.helpers.arrayElement(posts);
 		}
 
 		await prisma.comment.create({
@@ -162,37 +165,70 @@ async function fakeLikes(
 	posts: Post[],
 	comments: Comment[],
 ): Promise<Like[]> {
-	const types = [LikeType.DISLIKE, LikeType.LIKE];
+	const types = [
+		{ value: LikeType.LIKE, weight: 4 },
+		{ value: LikeType.DISLIKE, weight: 1 },
+	];
 
 	for (let i = 0; i < LIKES_NUMBER; i++) {
-		const user = users[Math.floor(Math.random() * users.length)];
+		const user = faker.helpers.arrayElement(users);
+		const type = faker.helpers.weightedArrayElement(types);
+		const increment = type === LikeType.LIKE ? 1 : -1;
 
 		if (faker.datatype.boolean()) {
-			let post = posts[Math.floor(Math.random() * posts.length)];
+			let post = faker.helpers.arrayElement(posts);
 
 			while (user.id === post.authorId) {
-				post = posts[Math.floor(Math.random() * posts.length)];
+				post = faker.helpers.arrayElement(posts);
 			}
 
-			await prisma.like.create({
+			await prisma.post.update({
+				where: { id: post.id },
 				data: {
-					postId: post.id,
-					authorId: user.id,
-					type: types[Math.floor(Math.random() * types.length)],
+					likes: {
+						create: {
+							authorId: user.id,
+							type,
+						},
+					},
+					author: {
+						update: {
+							rating: {
+								increment,
+							},
+						},
+					},
+					rating: {
+						increment,
+					},
 				},
 			});
 		} else {
-			let comment = comments[Math.floor(Math.random() * comments.length)];
+			let comment = faker.helpers.arrayElement(comments);
 
 			while (user.id === comment.authorId) {
-				comment = comments[Math.floor(Math.random() * comments.length)];
+				comment = faker.helpers.arrayElement(comments);
 			}
 
-			await prisma.like.create({
+			await prisma.comment.update({
+				where: { id: comment.id },
 				data: {
-					commentId: comment.id,
-					authorId: user.id,
-					type: types[Math.floor(Math.random() * types.length)],
+					likes: {
+						create: {
+							authorId: user.id,
+							type,
+						},
+					},
+					author: {
+						update: {
+							rating: {
+								increment,
+							},
+						},
+					},
+					rating: {
+						increment,
+					},
 				},
 			});
 		}

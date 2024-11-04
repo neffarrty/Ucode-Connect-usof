@@ -4,7 +4,7 @@ import {
 	NotFoundException,
 	ConflictException,
 } from '@nestjs/common';
-import { Category, Post, Role, Status, User } from '@prisma/client';
+import { Category, LikeType, Prisma, Role, Status, User } from '@prisma/client';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -16,6 +16,8 @@ import { PostDto } from './dto/post.dto';
 import { LikeDto } from './dto/like.dto';
 import { CommentDto } from 'src/modules/comments/dto/comment.dto';
 import { CategoryDto } from 'src/modules/categories/dto/category.dto';
+import { SortingOptionsDto, SortType } from './dto/sorting-options.dto';
+import { FilteringOptionsDto } from './dto/filtering-options.dto';
 
 @Injectable()
 export class PostsService {
@@ -23,14 +25,52 @@ export class PostsService {
 
 	async findAll(
 		{ page, limit }: PaginationOptionsDto,
+		{ sort, order }: SortingOptionsDto,
+		{ createdAt, categories, status, title }: FilteringOptionsDto,
 		user: User,
 	): Promise<Paginated<PostDto>> {
-		const where = {
-			status: user.role === Role.USER ? Status.ACTIVE : undefined,
+		const where: Prisma.PostWhereInput = {
+			AND: [
+				{
+					categories: {
+						some: {
+							category: {
+								title: {
+									in: categories,
+								},
+							},
+						},
+					},
+				},
+				{
+					title: {
+						contains: title,
+						mode: 'insensitive',
+					},
+				},
+				{ createdAt },
+				{ status: user.role === Role.ADMIN ? status : Status.ACTIVE },
+			],
 		};
+
 		const [posts, count] = await this.prisma.$transaction([
 			this.prisma.post.findMany({
 				where,
+				include: {
+					categories: {
+						select: {
+							category: {
+								select: {
+									id: true,
+									title: true,
+								},
+							},
+						},
+					},
+				},
+				orderBy: {
+					[sort]: order,
+				},
 				take: limit,
 				skip: (page - 1) * limit,
 			}),
@@ -50,7 +90,7 @@ export class PostsService {
 		};
 	}
 
-	async findById(id: number): Promise<Post> {
+	async findById(id: number): Promise<PostDto> {
 		const post = await this.prisma.post.findUnique({ where: { id } });
 
 		if (!post) {
@@ -60,7 +100,7 @@ export class PostsService {
 		return post;
 	}
 
-	async create(userId: number, dto: CreatePostDto) {
+	async create(userId: number, dto: CreatePostDto): Promise<PostDto> {
 		const categories = await this.getCategoriesByTitles(dto.categories);
 
 		return this.prisma.post.create({
@@ -80,7 +120,7 @@ export class PostsService {
 		});
 	}
 
-	async update(id: number, user: User, dto: UpdatePostDto) {
+	async update(id: number, user: User, dto: UpdatePostDto): Promise<PostDto> {
 		const post = await this.findById(id);
 
 		if (post.authorId !== user.id && user.role !== Role.ADMIN) {
@@ -109,7 +149,7 @@ export class PostsService {
 		});
 	}
 
-	async delete(id: number, user: User): Promise<Post> {
+	async delete(id: number, user: User): Promise<PostDto> {
 		const post = await this.findById(id);
 
 		if (post.authorId !== user.id && user.role !== Role.ADMIN) {
@@ -129,7 +169,7 @@ export class PostsService {
 	): Promise<Paginated<CommentDto>> {
 		await this.findById(id);
 
-		const where = {
+		const where: Prisma.CommentWhereInput = {
 			postId: id,
 		};
 		const [comments, count] = await this.prisma.$transaction([
@@ -137,6 +177,9 @@ export class PostsService {
 				where,
 				take: limit,
 				skip: (page - 1) * limit,
+				orderBy: {
+					rating: 'desc',
+				},
 			}),
 			this.prisma.comment.count({ where }),
 		]);
@@ -189,7 +232,7 @@ export class PostsService {
 		});
 	}
 
-	async findLikes(id: number) {
+	async findLikes(id: number): Promise<LikeDto[]> {
 		await this.findById(id);
 
 		return this.prisma.like.findMany({
@@ -202,7 +245,7 @@ export class PostsService {
 	async addLike(
 		id: number,
 		user: User,
-		dto: CreateLikeDto,
+		{ type }: CreateLikeDto,
 	): Promise<LikeDto> {
 		await this.findById(id);
 
@@ -217,13 +260,35 @@ export class PostsService {
 			throw new ConflictException('Like already exists');
 		}
 
-		return this.prisma.like.create({
-			data: {
-				postId: id,
-				authorId: user.id,
-				...dto,
-			},
-		});
+		const increment = type === LikeType.LIKE ? 1 : -1;
+		const [result] = await this.prisma.$transaction([
+			this.prisma.like.create({
+				data: {
+					postId: id,
+					authorId: user.id,
+					type,
+				},
+			}),
+			this.prisma.post.update({
+				where: {
+					id,
+				},
+				data: {
+					rating: {
+						increment,
+					},
+					author: {
+						update: {
+							rating: {
+								increment,
+							},
+						},
+					},
+				},
+			}),
+		]);
+
+		return result;
 	}
 
 	async deleteLike(id: number, user: User): Promise<LikeDto> {
@@ -240,15 +305,33 @@ export class PostsService {
 			throw new NotFoundException(`Like doesn't exist`);
 		}
 
-		if (like.authorId !== user.id) {
-			throw new ForbiddenException('Forbidden to delete like');
-		}
+		const increment = like.type === LikeType.LIKE ? -1 : 1;
+		const [result] = await this.prisma.$transaction([
+			this.prisma.like.delete({
+				where: {
+					id: like.id,
+				},
+			}),
+			this.prisma.post.update({
+				where: {
+					id,
+				},
+				data: {
+					rating: {
+						increment,
+					},
+					author: {
+						update: {
+							rating: {
+								increment,
+							},
+						},
+					},
+				},
+			}),
+		]);
 
-		return this.prisma.like.delete({
-			where: {
-				id: like.id,
-			},
-		});
+		return result;
 	}
 
 	private async getCategoriesByTitles(titles: string[]): Promise<Category[]> {

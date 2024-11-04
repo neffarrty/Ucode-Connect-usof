@@ -34,6 +34,8 @@ import { ApiPaginatedResponse, Paginated } from 'src/pagination/paginated';
 import { GetUser } from 'src/decorators/get-user.decorator';
 import { User } from '@prisma/client';
 import { ApiAuth } from 'src/decorators/api-auth.decorator';
+import { SortingOptionsDto } from './dto/sorting-options.dto';
+import { FilteringOptionsDto } from './dto/filtering-options.dto';
 
 @ApiTags('posts')
 @ApiAuth()
@@ -49,9 +51,16 @@ export class PostsController {
 	@ApiPaginatedResponse(PostDto)
 	async getAllPosts(
 		@Query() paginationOptions: PaginationOptionsDto,
+		@Query() sortingOptions: SortingOptionsDto,
+		@Query() filteringOptions: FilteringOptionsDto,
 		@GetUser() user: User,
 	): Promise<Paginated<PostDto>> {
-		return this.postService.findAll(paginationOptions, user);
+		return this.postService.findAll(
+			paginationOptions,
+			sortingOptions,
+			filteringOptions,
+			user,
+		);
 	}
 
 	@Get(':id')

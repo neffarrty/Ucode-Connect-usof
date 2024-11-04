@@ -10,11 +10,11 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { User } from '@prisma/client';
 import { Response } from 'express';
-import * as bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { UserDto } from 'src/modules/users/dto/user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -40,6 +40,7 @@ export class AuthService {
 			data: {
 				...dto,
 				password: await bcrypt.hash(dto.password, 10),
+				avatar: process.env.DEFAULT_AVATAR_URL,
 			},
 		});
 
@@ -77,7 +78,7 @@ export class AuthService {
 			throw new BadRequestException('Invalid confirmation token');
 		}
 
-		this.prisma.user.update({
+		await this.prisma.user.update({
 			where: {
 				id: user.id,
 			},
@@ -103,7 +104,9 @@ export class AuthService {
 
 		const token = uuid();
 
-		this.prisma.user.update({
+		console.log(token);
+
+		await this.prisma.user.update({
 			where: {
 				id: user.id,
 			},

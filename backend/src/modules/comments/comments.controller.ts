@@ -140,9 +140,6 @@ export class CommentsController {
 		description: 'id of the comment',
 	})
 	@ApiOkResponse({ type: LikeDto })
-	@ApiForbiddenResponse({
-		description: 'Forbidden to delete like',
-	})
 	@ApiNotFoundResponse({
 		description: "Comment doesn't exist",
 	})

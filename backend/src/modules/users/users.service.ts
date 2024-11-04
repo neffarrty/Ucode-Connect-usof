@@ -93,6 +93,7 @@ export class UsersService {
 			data: {
 				...dto,
 				password: await bcrypt.hash(dto.password, 10),
+				avatar: process.env.DEFAULT_AVATAR_URL,
 			},
 		});
 	}

@@ -4,7 +4,7 @@ import {
 	NotFoundException,
 	ConflictException,
 } from '@nestjs/common';
-import { Comment, Like, Role, User } from '@prisma/client';
+import { Comment, Like, LikeType, Role, User } from '@prisma/client';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { CreateLikeDto } from 'src/modules/posts/dto/create-like.dto';
@@ -73,7 +73,11 @@ export class CommentsService {
 		});
 	}
 
-	async addLike(id: number, user: User, dto: CreateLikeDto): Promise<Like> {
+	async addLike(
+		id: number,
+		user: User,
+		{ type }: CreateLikeDto,
+	): Promise<Like> {
 		await this.findById(id);
 
 		const like = await this.prisma.like.findFirst({
@@ -87,13 +91,35 @@ export class CommentsService {
 			throw new ConflictException('Like already exists');
 		}
 
-		return this.prisma.like.create({
-			data: {
-				commentId: id,
-				authorId: user.id,
-				...dto,
-			},
-		});
+		const increment = type === LikeType.LIKE ? 1 : -1;
+		const [result] = await this.prisma.$transaction([
+			this.prisma.like.create({
+				data: {
+					commentId: id,
+					authorId: user.id,
+					type,
+				},
+			}),
+			this.prisma.comment.update({
+				where: {
+					id,
+				},
+				data: {
+					rating: {
+						increment,
+					},
+					author: {
+						update: {
+							rating: {
+								increment,
+							},
+						},
+					},
+				},
+			}),
+		]);
+
+		return result;
 	}
 
 	async deleteLike(id: number, user: User): Promise<Like> {
@@ -110,14 +136,32 @@ export class CommentsService {
 			throw new NotFoundException(`Like doesn't exist`);
 		}
 
-		if (like.authorId !== user.id) {
-			throw new ForbiddenException();
-		}
+		const increment = like.type === LikeType.LIKE ? -1 : 1;
+		const [result] = await this.prisma.$transaction([
+			this.prisma.like.delete({
+				where: {
+					id: like.id,
+				},
+			}),
+			this.prisma.comment.update({
+				where: {
+					id,
+				},
+				data: {
+					rating: {
+						increment,
+					},
+					author: {
+						update: {
+							rating: {
+								increment,
+							},
+						},
+					},
+				},
+			}),
+		]);
 
-		return this.prisma.like.delete({
-			where: {
-				id: like.id,
-			},
-		});
+		return result;
 	}
 }
