@@ -9,46 +9,53 @@
 			margin: 0 auto; background-color: #ffffff; border-radius: 5px;
 			overflow: hidden; } .header { background-color: #ff4c4c; padding:
 			20px; text-align: center; color: white; } .header h1 { font-size:
-			32px; } .header img { max-width: 100px; margin-bottom: 10px; }
-			.content { padding: 20px; text-align: left; } h1 { font-size: 24px;
-			color: #333333; } p { font-size: 16px; color: #666666; margin: 10px
-			0; } .button-wrap { text-align: center; margin: 20px 0; } .button {
-			display: inline-block; padding: 12px 25px; margin: 20px 0;
+			32px; color: white; } .header img { max-width: 100px; margin-bottom:
+			10px; } .content { padding: 20px 20px 0 20px; text-align: left; } h1
+			{ font-size: 24px; color: #333333; } p { font-size: 16px; color:
+			#666666; margin: 10px 0; } .button-wrap { text-align: center; }
+			.button { display: inline-block; padding: 12px 25px; margin: 20px 0;
 			font-size: 16px; color: #ffffff; background-color: #007bff;
 			border-radius: 5px; text-decoration: none; text-align: center; }
-			.footer { padding: 20px; font-size: 14px; color: #999999;
-			text-align: center; } .footer a { color: #007bff; text-decoration:
-			none; } .greeting { font-size: 20px; font-weight: bold; }
+			.footer { background-color: #ff4c4c; padding: 0 20px 0; font-size:
+			14px; color: #999999; text-align: center; } .footer a { color:
+			#007bff; text-decoration: none; } .greeting { font-size: 20px;
+			font-weight: bold; }
 		</style>
 	</head>
 	<body>
 		<div class='container'>
 			<div class='header'>
-				<img src='logo.png' alt='Logo' />
+				<div
+					style='width: 90%; height: 1px; background-color: #fff;'
+				></div>
 				<h1>Email Verification</h1>
+				<div
+					style='width: 90%; height: 1px; background-color: #fff;'
+				></div>
 			</div>
 			<div class='content'>
-				<p class='greeting'>Hi, {{username}},</p>
+				<p class='greeting'>Hi, {{username}}!</p>
 				<p>
 					You're almost set to start enjoying BugTalk. Simply click
 					the link below to verify your email address and get started.
-					The link expires in 30 minutes.
 				</p>
-				<p class='button-wrap'>
+				<div class='button-wrap'>
 					<a
 						href='http://localhost:3000/api/auth/verify/{{token}}'
 						class='button'
 					>
 						Verify my email address
 					</a>
+				</div>
+				<p>
+					This link will only be valid for the next
+					<b>15 minutes</b>. If you did not create an account on our
+					platform, please disregard this email.
 				</p>
 			</div>
-			<div class='footer'>
-				<p>800 Broadway Suite 1500 New York, NY 000423, USA</p>
-				<p>
-					<a href='#'>Privacy Policy</a>
-					|
-					<a href='#'>Contact Details</a>
+			<div class='footer' style='margin-top: 35px'>
+				<p style='color: white; padding: 15px'>
+					Copyright © 2024 BugTalk. All Rights Reserved.
 				</p>
 			</div>
 		</div>

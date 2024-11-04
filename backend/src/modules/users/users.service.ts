@@ -6,21 +6,22 @@ import {
 	InternalServerErrorException,
 	NotFoundException,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
+import { UserDto, CreateUserDto, UpdateUserDto } from './dto';
+import { PostDto } from 'src/modules/posts/dto';
+import { Paginated, PaginationOptionsDto } from 'src/pagination';
 import { Role, User } from '@prisma/client';
-import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
-import { Paginated } from 'src/pagination/paginated';
-import { UserDto } from './dto/user.dto';
 import fs from 'fs/promises';
 import path from 'path';
 import * as bcrypt from 'bcrypt';
-import { PostDto } from '../posts/dto/post.dto';
 
 @Injectable()
 export class UsersService {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly config: ConfigService,
+	) {}
 
 	async findById(id: number): Promise<User> {
 		const user = await this.prisma.user.findUnique({
@@ -48,14 +49,6 @@ export class UsersService {
 		return this.prisma.user.findUnique({
 			where: {
 				email: email,
-			},
-		});
-	}
-
-	async findByVerifyToken(token: string): Promise<User | null> {
-		return this.prisma.user.findUnique({
-			where: {
-				verifyToken: token,
 			},
 		});
 	}
@@ -102,6 +95,9 @@ export class UsersService {
 				where,
 				take: limit,
 				skip: (page - 1) * limit,
+				orderBy: {
+					createdAt: 'desc',
+				},
 			}),
 			this.prisma.post.count({ where }),
 		]);
@@ -173,10 +169,21 @@ export class UsersService {
 			throw new BadRequestException('Invalid file');
 		}
 
-		try {
-			await fs.unlink(`uploads/avatars/${path.basename(user.avatar)}`);
-		} catch (err) {
-			throw new InternalServerErrorException('Failed to delete file');
+		const defaultUrl = this.config.get<string>('DEFAULT_AVATAR_URL');
+		const appBaseUrl = this.config.get<string>('APP_BASE_URL');
+
+		console.log(defaultUrl);
+		console.log(user.avatar);
+
+		if (user.avatar !== defaultUrl) {
+			try {
+				console.log(user.avatar);
+				await fs.unlink(
+					`uploads/avatars/${path.basename(user.avatar)}`,
+				);
+			} catch (err) {
+				throw new InternalServerErrorException('Failed to delete file');
+			}
 		}
 
 		return this.prisma.user.update({
@@ -184,7 +191,7 @@ export class UsersService {
 				id: user.id,
 			},
 			data: {
-				avatar: `http://localhost:3000/avatars/${file.filename}`,
+				avatar: `${appBaseUrl}/avatars/${file.filename}`,
 			},
 		});
 	}

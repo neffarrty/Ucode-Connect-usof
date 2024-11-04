@@ -4,12 +4,13 @@ import {
 	UnauthorizedException,
 	ConflictException,
 } from '@nestjs/common';
-import { RegisterDto, AuthResponseDto } from './dto';
-import { UserDto } from 'src/modules/users/dto/user.dto';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
+import { ConfigService } from '@nestjs/config';
 import { JwtService, TokenExpiredError } from '@nestjs/jwt';
 import { MailerService } from '@nestjs-modules/mailer';
-import { ConfigService } from '@nestjs/config';
+import { RegisterDto, AuthResponseDto } from './dto';
+import { UserDto } from 'src/modules/users/dto';
+import { JwtPayload } from './interface/jwt-payload.interface';
 import { User } from '@prisma/client';
 import { Response } from 'express';
 import { v4 as uuid } from 'uuid';
@@ -48,9 +49,10 @@ export class AuthService {
 	}
 
 	async login(user: User, res: Response): Promise<AuthResponseDto> {
-		const { accessToken, refreshToken } = await this.generateTokens(
-			user.id,
-		);
+		const { accessToken, refreshToken } = await this.generateTokens({
+			userId: user.id,
+			email: user.email,
+		});
 
 		res.cookie('refresh_token', refreshToken, {
 			httpOnly: true,
@@ -137,7 +139,10 @@ export class AuthService {
 			);
 		}
 
-		const token = await this.generateAccessToken({ sub: user.id });
+		const token = await this.generateAccessToken({
+			userId: user.id,
+			email: user.email,
+		});
 
 		await this.mailService.sendMail({
 			to: user.email,
@@ -152,13 +157,13 @@ export class AuthService {
 
 	async resetPassword(token: string, password: string) {
 		try {
-			const { sub } = this.jwtService.verify(token, {
+			const { userId } = this.jwtService.verify(token, {
 				secret: this.configService.get<string>(
 					'auth.jwt.access.secret',
 				),
 			});
 			const user = await this.prisma.user.findUnique({
-				where: { id: sub },
+				where: { id: userId },
 			});
 
 			if (user) {
@@ -202,7 +207,7 @@ export class AuthService {
 		return user;
 	}
 
-	async generateAccessToken(payload: any): Promise<string> {
+	async generateAccessToken(payload: JwtPayload): Promise<string> {
 		const secret = this.configService.get<string>('auth.jwt.access.secret');
 		const exp = this.configService.get<string>(
 			'auth.jwt.access.expiration',
@@ -214,7 +219,7 @@ export class AuthService {
 		});
 	}
 
-	async generateRefreshToken(payload: any): Promise<string> {
+	async generateRefreshToken(payload: JwtPayload): Promise<string> {
 		const secret = this.configService.get<string>(
 			'auth.jwt.refresh.secret',
 		);
@@ -228,10 +233,10 @@ export class AuthService {
 		});
 	}
 
-	async generateTokens(userId: number): Promise<any> {
+	async generateTokens(payload: JwtPayload): Promise<any> {
 		const [accessToken, refreshToken] = await Promise.all([
-			this.generateAccessToken({ sub: userId }),
-			this.generateRefreshToken({ sub: userId }),
+			this.generateAccessToken(payload),
+			this.generateRefreshToken(payload),
 		]);
 
 		return { accessToken, refreshToken };

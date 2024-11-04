@@ -28,14 +28,13 @@ import {
 	ResetPasswordDto,
 	AuthResponseDto,
 } from './dto';
-import { GetUser } from 'src/decorators/get-user.decorator';
-import { Public } from 'src/decorators/public.decorator';
+import { UserDto } from 'src/modules/users/dto/user.dto';
+import { GetUser, Public } from 'src/decorators';
 import { Response } from 'express';
 import { User } from '@prisma/client';
 import { LocalGuard } from './guards/local.guard';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 import { GoogleGuard } from './guards/google.guard';
-import { UserDto } from 'src/modules/users/dto/user.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -162,7 +161,10 @@ export class AuthController {
 		@Res({ passthrough: true }) res: Response,
 	): Promise<AuthResponseDto> {
 		const { accessToken, refreshToken } =
-			await this.authService.generateTokens(user.id);
+			await this.authService.generateTokens({
+				userId: user.id,
+				email: user.email,
+			});
 
 		res.cookie('refresh_token', refreshToken, {
 			httpOnly: true,
