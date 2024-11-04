@@ -38,6 +38,7 @@ import { Roles } from 'src/decorators/role.decorator';
 import { generateFilename, imageFileFilter } from 'src/helpers/files-helper';
 import { ApiAuth } from 'src/decorators/api-auth.decorator';
 import { ApiPaginatedResponse, Paginated } from 'src/pagination/paginated';
+import { PostDto } from '../posts/dto/post.dto';
 
 @ApiTags('users')
 @ApiAuth()
@@ -55,6 +56,16 @@ export class UsersController {
 		@Query() paginationOptions: PaginationOptionsDto,
 	): Promise<Paginated<UserDto>> {
 		return this.userService.findAll(paginationOptions);
+	}
+
+	@Get('bookmarks')
+	@ApiOperation({ summary: 'Get all bookmarked posts for the current user' })
+	@ApiPaginatedResponse(PostDto)
+	async deletePostToBookmarks(
+		@Query() paginationOptions: PaginationOptionsDto,
+		@GetUser() user: User,
+	) {
+		return this.userService.findBookmarks(paginationOptions, user);
 	}
 
 	@Get(':id')
