@@ -96,6 +96,9 @@ export class UsersService {
 				where,
 				take: limit,
 				skip: (page - 1) * limit,
+				orderBy: {
+					createdAt: 'desc',
+				},
 			}),
 			this.prisma.post.count({ where }),
 		]);
