@@ -16,7 +16,7 @@ import { PostDto } from './dto/post.dto';
 import { LikeDto } from './dto/like.dto';
 import { CommentDto } from 'src/modules/comments/dto/comment.dto';
 import { CategoryDto } from 'src/modules/categories/dto/category.dto';
-import { SortingOptionsDto, SortType } from './dto/sorting-options.dto';
+import { SortingOptionsDto } from './dto/sorting-options.dto';
 import { FilteringOptionsDto } from './dto/filtering-options.dto';
 
 @Injectable()

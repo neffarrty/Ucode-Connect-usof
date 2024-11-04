@@ -104,8 +104,6 @@ export class AuthService {
 
 		const token = uuid();
 
-		console.log(token);
-
 		await this.prisma.user.update({
 			where: {
 				id: user.id,
