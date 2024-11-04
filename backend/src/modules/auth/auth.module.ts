@@ -59,7 +59,6 @@ import * as path from 'path';
 			}),
 		}),
 		UsersModule,
-		PrismaModule,
 		PassportModule,
 	],
 })
