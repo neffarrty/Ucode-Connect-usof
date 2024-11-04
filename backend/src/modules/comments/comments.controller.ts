@@ -20,13 +20,11 @@ import {
 	ApiConflictResponse,
 } from '@nestjs/swagger';
 import { CommentsService } from './comments.service';
-import { UpdateCommentDto } from './dto/update-comment.dto';
+import { CommentDto, UpdateCommentDto } from './dto';
+import { LikeDto, CreateLikeDto } from 'src/modules/posts/dto';
 import { GetUser } from 'src/decorators/get-user.decorator';
-import { User } from '@prisma/client';
-import { CreateLikeDto } from 'src/modules/posts/dto/create-like.dto';
 import { ApiAuth } from 'src/decorators/api-auth.decorator';
-import { CommentDto } from './dto/comment.dto';
-import { LikeDto } from 'src/modules/posts/dto/like.dto';
+import { User } from '@prisma/client';
 
 @ApiTags('comments')
 @ApiAuth()

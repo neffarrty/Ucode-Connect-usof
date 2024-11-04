@@ -20,14 +20,12 @@ import {
 	ApiParam,
 	ApiTags,
 } from '@nestjs/swagger';
-import { CategoriesService } from './categories.service';
-import { Roles } from 'src/decorators/role.decorator';
-import { Role } from '@prisma/client';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
+import { CategoriesService } from 'src/modules/categories/categories.service';
+import { CategoryDto, CreateCategoryDto, UpdateCategoryDto } from './dto';
 import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
 import { ApiPaginatedResponse, Paginated } from 'src/pagination/paginated';
-import { CategoryDto } from './dto/category.dto';
+import { Roles } from 'src/decorators/role.decorator';
+import { Role } from '@prisma/client';
 import { PostDto } from 'src/modules/posts/dto/post.dto';
 import { CreateCommentDto } from 'src/modules/comments/dto/create-comment.dto';
 
