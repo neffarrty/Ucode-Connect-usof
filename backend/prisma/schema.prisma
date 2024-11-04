@@ -8,16 +8,15 @@ datasource db {
 }
 
 model User {
-  id          Int     @id @default(autoincrement())
-  login       String  @unique
-  password    String?
-  fullname    String?
-  email       String  @unique
-  avatar      String?
-  rating      Int     @default(0)
-  role        Role    @default(USER)
-  verified    Boolean @default(false)
-  verifyToken String? @unique @map("verify_token")
+  id       Int     @id @default(autoincrement())
+  login    String  @unique
+  password String?
+  fullname String?
+  email    String  @unique
+  avatar   String?
+  rating   Int     @default(0)
+  role     Role    @default(USER)
+  verified Boolean @default(false)
 
   posts     Post[]
   bookmarks Bookmark[]

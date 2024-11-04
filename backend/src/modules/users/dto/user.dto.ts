@@ -63,7 +63,7 @@ export class UserDto {
 	updatedAt: Date;
 
 	constructor(user: User) {
-		const { verifyToken, password, ...dto } = user;
+		const { password, ...dto } = user;
 		Object.assign(this, dto);
 	}
 }

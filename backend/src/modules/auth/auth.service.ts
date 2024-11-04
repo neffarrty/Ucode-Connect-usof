@@ -78,14 +78,20 @@ export class AuthService {
 	}
 
 	async verify(token: string): Promise<void> {
+		const email = await this.redis.get(token);
+
+		if (!email) {
+			throw new BadRequestException(
+				'Invalid or expired confirmation token',
+			);
+		}
+
 		const user = await this.prisma.user.findUnique({
-			where: {
-				verifyToken: token,
-			},
+			where: { email },
 		});
 
 		if (!user) {
-			throw new BadRequestException('Invalid confirmation token');
+			throw new BadRequestException('User not found');
 		}
 
 		await this.prisma.user.update({
@@ -94,9 +100,9 @@ export class AuthService {
 			},
 			data: {
 				verified: true,
-				verifyToken: null,
 			},
 		});
+		this.redis.del(token);
 	}
 
 	async sendVerificationMail(email: string): Promise<void> {
@@ -114,15 +120,7 @@ export class AuthService {
 
 		const token = uuid();
 
-		await this.prisma.user.update({
-			where: {
-				id: user.id,
-			},
-			data: {
-				verifyToken: token,
-			},
-		});
-
+		this.redis.set(token, user.email, 'EX', 15);
 		await this.mailService.sendMail({
 			to: user.email,
 			subject: 'Account verification',
@@ -147,11 +145,9 @@ export class AuthService {
 			);
 		}
 
-		const token = await this.generateAccessToken({
-			userId: user.id,
-			email: user.email,
-		});
+		const token = uuid();
 
+		this.redis.set(token, user.email, 'EX', 60 * 15);
 		await this.mailService.sendMail({
 			to: user.email,
 			subject: 'Password reset',
@@ -164,31 +160,31 @@ export class AuthService {
 	}
 
 	async resetPassword(token: string, password: string) {
-		try {
-			const { userId } = this.jwtService.verify(token, {
-				secret: this.config.get<string>('auth.jwt.access.secret'),
-			});
-			const user = await this.prisma.user.findUnique({
-				where: { id: userId },
-			});
+		const email = await this.redis.get(token);
 
-			if (user) {
-				const hash = await bcrypt.hash(password, 10);
-				this.prisma.user.update({
-					where: { id: user.id },
-					data: {
-						password: hash,
-					},
-				});
-			}
-		} catch (error) {
-			if (error instanceof TokenExpiredError) {
-				throw new BadRequestException(
-					'Time for password reset is expired',
-				);
-			}
-			throw new BadRequestException(error.message);
+		if (!email) {
+			throw new BadRequestException(
+				'Invalid or expired confirmation token',
+			);
 		}
+
+		const user = await this.prisma.user.findUnique({
+			where: { email },
+		});
+
+		if (!user) {
+			throw new BadRequestException('User not found');
+		}
+
+		const hash = await bcrypt.hash(password, 10);
+
+		await this.prisma.user.update({
+			where: { id: user.id },
+			data: {
+				password: hash,
+			},
+		});
+		this.redis.del(token);
 	}
 
 	async validateUser(email: string, password: string) {
