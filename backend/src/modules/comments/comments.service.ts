@@ -21,7 +21,7 @@ export class CommentsService {
 		});
 
 		if (!comment) {
-			throw new NotFoundException(`Comment with id ${id} doesn't exist`);
+			throw new NotFoundException(`Comment with id ${id} not found`);
 		}
 
 		return comment;
@@ -88,7 +88,7 @@ export class CommentsService {
 		});
 
 		if (like) {
-			throw new ConflictException('Like already exists');
+			throw new ConflictException('User already liked this comment');
 		}
 
 		const increment = type === LikeType.LIKE ? 1 : -1;
@@ -133,7 +133,7 @@ export class CommentsService {
 		});
 
 		if (!like) {
-			throw new NotFoundException(`Like doesn't exist`);
+			throw new NotFoundException('Like not found');
 		}
 
 		const increment = like.type === LikeType.LIKE ? -1 : 1;

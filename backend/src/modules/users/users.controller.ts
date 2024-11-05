@@ -76,7 +76,7 @@ export class UsersController {
 	})
 	@ApiOkResponse({ type: UserDto })
 	@ApiNotFoundResponse({
-		description: "User doesn't exist",
+		description: 'User not found',
 	})
 	getUserById(@Param('id', ParseIntPipe) id: number): Promise<UserDto> {
 		return this.userService.findById(id);
@@ -88,7 +88,7 @@ export class UsersController {
 	@ApiBody({ type: CreateUserDto })
 	@ApiCreatedResponse({ type: UserDto })
 	@ApiForbiddenResponse({
-		description: 'Forbiden',
+		description: 'User role must be ADMIN',
 	})
 	@ApiConflictResponse({
 		description: 'Email or username is already taken',
@@ -109,7 +109,7 @@ export class UsersController {
 		description: 'Forbiden',
 	})
 	@ApiNotFoundResponse({
-		description: "User doesn't exist",
+		description: 'User not found',
 	})
 	@ApiUnprocessableEntityResponse({
 		description: 'Invalid file type',
@@ -145,7 +145,7 @@ export class UsersController {
 		description: 'Forbiden',
 	})
 	@ApiNotFoundResponse({
-		description: "User doesn't exist",
+		description: 'User not found',
 	})
 	@ApiConflictResponse({
 		description: 'Email or username is already taken',
@@ -169,7 +169,7 @@ export class UsersController {
 		description: 'Forbiden',
 	})
 	@ApiNotFoundResponse({
-		description: "User doesn't exist",
+		description: 'User not found',
 	})
 	deleteUser(
 		@Param('id', ParseIntPipe) id: number,

@@ -46,7 +46,7 @@ export class CategoriesService {
 		});
 
 		if (!category) {
-			throw new NotFoundException(`Category with id ${id} doesn't exist`);
+			throw new NotFoundException(`Category with id ${id} not found`);
 		}
 
 		return category;
@@ -94,9 +94,9 @@ export class CategoriesService {
 	}
 
 	async update(id: number, dto: UpdateCategoryDto): Promise<CategoryDto> {
-		await this.findById(id);
+		const category = await this.findById(id);
 
-		if (dto.title) {
+		if (dto.title && dto.title !== category.title) {
 			await this.checkIfTitleExists(dto.title);
 		}
 

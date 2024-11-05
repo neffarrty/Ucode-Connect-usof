@@ -55,7 +55,7 @@ export class CategoriesController {
 	})
 	@ApiOkResponse({ type: CategoryDto })
 	@ApiNotFoundResponse({
-		description: "Category doesn't exist",
+		description: 'Category not found',
 	})
 	async getCategoryById(
 		@Param('id', ParseIntPipe) id: number,
@@ -71,7 +71,7 @@ export class CategoriesController {
 	})
 	@ApiPaginatedResponse(PostDto)
 	@ApiNotFoundResponse({
-		description: "Category doesn't exist",
+		description: 'Category not found',
 	})
 	async getPostsByCategoryId(
 		@Param('id', ParseIntPipe) id: number,
@@ -86,7 +86,7 @@ export class CategoriesController {
 	@ApiBody({ type: CreateCommentDto })
 	@ApiCreatedResponse({ type: CategoryDto })
 	@ApiForbiddenResponse({
-		description: 'Forbidden to create category',
+		description: 'User role must be ADMIN',
 	})
 	@ApiConflictResponse({
 		description: 'Title is already taken',
@@ -105,10 +105,10 @@ export class CategoriesController {
 	@ApiBody({ type: UpdateCategoryDto })
 	@ApiOkResponse({ type: CategoryDto })
 	@ApiForbiddenResponse({
-		description: 'Forbidden to update category',
+		description: 'User role must be ADMIN',
 	})
 	@ApiNotFoundResponse({
-		description: "Category doesn't exist",
+		description: 'Category not found',
 	})
 	@ApiConflictResponse({
 		description: 'Title is already taken',
@@ -129,10 +129,10 @@ export class CategoriesController {
 	})
 	@ApiOkResponse({ type: CategoryDto })
 	@ApiForbiddenResponse({
-		description: 'Forbidden to delete category',
+		description: 'User role must be ADMIN',
 	})
 	@ApiNotFoundResponse({
-		description: "Category doesn't exist",
+		description: 'Category not found',
 	})
 	async deleteCategory(
 		@Param('id', ParseIntPipe) id: number,

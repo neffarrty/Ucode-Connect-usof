@@ -75,7 +75,7 @@ export class PostsController {
 	})
 	@ApiOkResponse({ type: PostDto })
 	@ApiNotFoundResponse({
-		description: "Post doesn't exist",
+		description: 'Post not found',
 	})
 	async getPostById(
 		@Param('id', ParseIntPipe) id: number,
@@ -109,7 +109,7 @@ export class PostsController {
 		description: 'Forbidden to update post',
 	})
 	@ApiNotFoundResponse({
-		description: "Post doesn't exist",
+		description: 'Post not found',
 	})
 	async updatePost(
 		@Param('id', ParseIntPipe) id: number,
@@ -130,7 +130,7 @@ export class PostsController {
 		description: 'Forbidden to delete post',
 	})
 	@ApiNotFoundResponse({
-		description: "Post doesn't exist",
+		description: 'Post not found',
 	})
 	async deletePost(
 		@Param('id', ParseIntPipe) id: number,
@@ -147,7 +147,7 @@ export class PostsController {
 	})
 	@ApiPaginatedResponse(PostDto)
 	@ApiNotFoundResponse({
-		description: "Post doesn't exist",
+		description: 'Post not found',
 	})
 	async getPostComments(
 		@Param('id', ParseIntPipe) id: number,
@@ -164,7 +164,7 @@ export class PostsController {
 	})
 	@ApiCreatedResponse({ type: CommentDto })
 	@ApiNotFoundResponse({
-		description: "Post doesn't exist",
+		description: 'Post not found',
 	})
 	async createPostComment(
 		@Param('id', ParseIntPipe) id: number,
@@ -182,7 +182,7 @@ export class PostsController {
 	})
 	@ApiOkResponse({ type: [CategoryDto] })
 	@ApiNotFoundResponse({
-		description: "Post doesn't exist",
+		description: 'Post not found',
 	})
 	async getPostCategories(
 		@Param('id', ParseIntPipe) id: number,
@@ -198,7 +198,7 @@ export class PostsController {
 	})
 	@ApiOkResponse({ type: [LikeDto] })
 	@ApiNotFoundResponse({
-		description: "Post doesn't exist",
+		description: 'Post not found',
 	})
 	async getPostLikes(
 		@Param('id', ParseIntPipe) id: number,
@@ -215,10 +215,10 @@ export class PostsController {
 	@ApiBody({ type: CreateLikeDto })
 	@ApiCreatedResponse({ type: LikeDto })
 	@ApiNotFoundResponse({
-		description: "Post doesn't exist",
+		description: 'Post not found',
 	})
 	@ApiConflictResponse({
-		description: 'Like already exists',
+		description: 'User already liked this post',
 	})
 	async addPostLike(
 		@Param('id', ParseIntPipe) id: number,
@@ -239,7 +239,7 @@ export class PostsController {
 		description: 'Forbidden to delete like',
 	})
 	@ApiNotFoundResponse({
-		description: "Post doesn't exist",
+		description: 'Post not found',
 	})
 	async deletePostLike(
 		@Param('id', ParseIntPipe) id: number,
@@ -256,7 +256,7 @@ export class PostsController {
 	})
 	@ApiCreatedResponse({ type: PostDto })
 	@ApiNotFoundResponse({
-		description: "Post doesn't exist",
+		description: 'Post not found',
 	})
 	@ApiConflictResponse({
 		description: 'Post already in bookmarks',
@@ -279,7 +279,7 @@ export class PostsController {
 		description: 'Post is inactive',
 	})
 	@ApiNotFoundResponse({
-		description: "Post doesn't exist",
+		description: 'Post not found',
 	})
 	@ApiNotFoundResponse({
 		description: "Post doesn't in bookmarks",

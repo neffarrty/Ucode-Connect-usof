@@ -109,7 +109,7 @@ export class PostsService {
 		});
 
 		if (!post) {
-			throw new NotFoundException(`Post with id ${id} doesn't exist`);
+			throw new NotFoundException(`Post with id ${id} not found`);
 		}
 
 		const { bookmarks, ...result } = post;
@@ -144,7 +144,7 @@ export class PostsService {
 		const post = await this.findById(id);
 
 		if (post.authorId !== user.id && user.role !== Role.ADMIN) {
-			throw new ForbiddenException('Forbidden to update posts');
+			throw new ForbiddenException('Forbidden to update post');
 		}
 
 		const data: Prisma.PostUpdateInput = {
@@ -228,7 +228,11 @@ export class PostsService {
 		dto: CreateCommentDto,
 		user: User,
 	): Promise<CommentDto> {
-		await this.findById(id);
+		const post = await this.findById(id);
+
+		if (post.status === Status.INACTIVE) {
+			throw new ForbiddenException('Post is inactive');
+		}
 
 		return this.prisma.comment.create({
 			data: {
@@ -273,7 +277,11 @@ export class PostsService {
 		{ type }: CreateLikeDto,
 		user: User,
 	): Promise<LikeDto> {
-		await this.findById(id);
+		const post = await this.findById(id);
+
+		if (post.status === Status.INACTIVE) {
+			throw new ForbiddenException('Post is inactive');
+		}
 
 		const like = await this.prisma.like.findFirst({
 			where: {
@@ -283,7 +291,7 @@ export class PostsService {
 		});
 
 		if (like) {
-			throw new ConflictException('Like already exists');
+			throw new ConflictException('User already liked this post');
 		}
 
 		const increment = type === LikeType.LIKE ? 1 : -1;
@@ -328,7 +336,7 @@ export class PostsService {
 		});
 
 		if (!like) {
-			throw new NotFoundException(`Like doesn't exist`);
+			throw new NotFoundException('Like not found');
 		}
 
 		const increment = like.type === LikeType.LIKE ? -1 : 1;

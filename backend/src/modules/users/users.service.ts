@@ -31,7 +31,7 @@ export class UsersService {
 		});
 
 		if (!user) {
-			throw new NotFoundException(`User with id ${id} doesn't exist`);
+			throw new NotFoundException(`User with id ${id} not found`);
 		}
 
 		return user;
@@ -133,7 +133,7 @@ export class UsersService {
 		await this.findById(id);
 
 		if (user.id !== id && user.role !== Role.ADMIN) {
-			throw new ForbiddenException('Cannot update user');
+			throw new ForbiddenException('Forbidden to update user');
 		}
 
 		await this.checkIfNotExist(dto.login, dto.email);
@@ -154,7 +154,7 @@ export class UsersService {
 		await this.findById(id);
 
 		if (user.id !== id && user.role !== Role.ADMIN) {
-			throw new ForbiddenException('Cannot delete user');
+			throw new ForbiddenException('Forbidden to  delete user');
 		}
 
 		return this.prisma.user.delete({
@@ -171,9 +171,6 @@ export class UsersService {
 
 		const defaultUrl = this.config.get<string>('DEFAULT_AVATAR_URL');
 		const appBaseUrl = this.config.get<string>('APP_BASE_URL');
-
-		console.log(defaultUrl);
-		console.log(user.avatar);
 
 		if (user.avatar !== defaultUrl) {
 			try {

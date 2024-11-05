@@ -43,7 +43,7 @@ export class CommentsController {
 	})
 	@ApiOkResponse({ type: CommentDto })
 	@ApiNotFoundResponse({
-		description: "Comment doesn't exist",
+		description: 'Comment not found',
 	})
 	async getCommentById(
 		@Param('id', ParseIntPipe) id: number,
@@ -59,7 +59,7 @@ export class CommentsController {
 	})
 	@ApiOkResponse({ type: [LikeDto] })
 	@ApiNotFoundResponse({
-		description: "Comment doesn't exist",
+		description: 'Comment not found',
 	})
 	async getCommentLikes(@Param('id', ParseIntPipe) id: number) {
 		return this.commentsService.findLikes(id);
@@ -74,10 +74,10 @@ export class CommentsController {
 	@ApiBody({ type: CreateLikeDto })
 	@ApiCreatedResponse({ type: LikeDto })
 	@ApiNotFoundResponse({
-		description: "Comment doesn't exist",
+		description: 'Comment not found',
 	})
 	@ApiConflictResponse({
-		description: 'Like already exists',
+		description: 'User already liked this comment',
 	})
 	async addCommentLike(
 		@Param('id', ParseIntPipe) id: number,
@@ -101,7 +101,7 @@ export class CommentsController {
 		description: 'Forbidden to update comment',
 	})
 	@ApiNotFoundResponse({
-		description: "Comment doesn't exist",
+		description: 'Comment not found',
 	})
 	async updateComment(
 		@Param('id', ParseIntPipe) id: number,
@@ -122,7 +122,7 @@ export class CommentsController {
 		description: 'Forbidden to delete comment',
 	})
 	@ApiNotFoundResponse({
-		description: "Comment doesn't exist",
+		description: 'Comment not found',
 	})
 	async deleteComment(
 		@Param('id', ParseIntPipe) id: number,
@@ -139,7 +139,7 @@ export class CommentsController {
 	})
 	@ApiOkResponse({ type: LikeDto })
 	@ApiNotFoundResponse({
-		description: "Comment doesn't exist",
+		description: 'Comment not found',
 	})
 	async deleteCommentLike(
 		@Param('id', ParseIntPipe) id: number,
