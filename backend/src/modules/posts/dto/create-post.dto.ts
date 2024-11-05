@@ -47,5 +47,5 @@ export class CreatePostDto {
 	@IsString({ each: true })
 	@IsNotEmpty({ each: true })
 	@IsOptional()
-	categories?: string[];
+	categories: string[] = [];
 }

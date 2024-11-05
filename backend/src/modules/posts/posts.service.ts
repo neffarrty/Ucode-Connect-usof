@@ -147,25 +147,31 @@ export class PostsService {
 			throw new ForbiddenException('Forbidden to update posts');
 		}
 
-		const categories = await this.getCategoriesByTitles(dto.categories);
+		const data: Prisma.PostUpdateInput = {
+			...dto,
+			categories: undefined,
+		};
+
+		if (dto.categories.length > 0) {
+			const categories = await this.getCategoriesByTitles(dto.categories);
+
+			data.categories = {
+				deleteMany: {},
+				create: categories.map((category) => ({
+					category: {
+						connect: {
+							id: category.id,
+						},
+					},
+				})),
+			};
+		}
 
 		return this.prisma.post.update({
 			where: {
 				id,
 			},
-			data: {
-				...dto,
-				categories: {
-					deleteMany: {},
-					create: categories.map((category) => ({
-						category: {
-							connect: {
-								id: category.id,
-							},
-						},
-					})),
-				},
-			},
+			data,
 		});
 	}
 
@@ -429,8 +435,8 @@ export class PostsService {
 
 	private async getCategoriesByTitles(titles: string[]): Promise<Category[]> {
 		return Promise.all(
-			titles.map((title) => {
-				const category = this.prisma.category.findUnique({
+			titles.map(async (title) => {
+				const category = await this.prisma.category.findUnique({
 					where: {
 						title,
 					},
@@ -438,7 +444,7 @@ export class PostsService {
 
 				if (!category) {
 					throw new NotFoundException(
-						`Category with title '${title} doesn't exist'`,
+						`Category with title '${title}' doesn't exist'`,
 					);
 				}
 
