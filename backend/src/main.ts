@@ -22,7 +22,6 @@ async function bootstrap() {
 		)
 		.setVersion('1.0')
 		.setLicense('MIT', 'https://opensource.org/licenses/MIT')
-		.setBasePath('api')
 		.addServer(process.env.APP_BASE_URL)
 		.addBearerAuth({
 			type: 'http',
