@@ -120,7 +120,7 @@ export class AuthService {
 
 		const token = uuid();
 
-		this.redis.set(token, user.email, 'EX', 15);
+		this.redis.set(token, user.email, 'EX', 15 * 60);
 		await this.mailService.sendMail({
 			to: user.email,
 			subject: 'Account verification',
