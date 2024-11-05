@@ -2,20 +2,20 @@ import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UsersModule } from 'src/modules/users/users.module';
-import { ConfigService } from '@nestjs/config';
-import { MailerModule } from '@nestjs-modules/mailer';
-import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { PassportModule } from '@nestjs/passport';
+import { PrismaModule } from 'src/modules/prisma/prisma.module';
+import { ConfigService } from '@nestjs/config';
+import { MailerModule, MailerOptions } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { LocalGuard } from './guards/local.guard';
 import { JwtGuard } from './guards/jwt.guard';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt-access.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
-import * as path from 'path';
-import { PrismaModule } from 'src/modules/prisma/prisma.module';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { GoogleGuard } from './guards/google.guard';
+import * as path from 'path';
 
 @Module({
 	providers: [
@@ -32,7 +32,10 @@ import { GoogleGuard } from './guards/google.guard';
 	controllers: [AuthController],
 	imports: [
 		MailerModule.forRootAsync({
-			useFactory: async (config: ConfigService) => ({
+			inject: [ConfigService],
+			useFactory: async (
+				config: ConfigService,
+			): Promise<MailerOptions> => ({
 				transport: {
 					service: 'gmail',
 					host: config.get<string>('mail.host'),
@@ -54,10 +57,8 @@ import { GoogleGuard } from './guards/google.guard';
 					},
 				},
 			}),
-			inject: [ConfigService],
 		}),
 		UsersModule,
-		PrismaModule,
 		PassportModule,
 	],
 })

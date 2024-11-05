@@ -19,6 +19,7 @@ import {
 	ApiForbiddenResponse,
 	ApiNotFoundResponse,
 	ApiConflictResponse,
+	ApiCreatedResponse,
 } from '@nestjs/swagger';
 import { PostsService } from './posts.service';
 import {
@@ -47,7 +48,7 @@ import { User } from '@prisma/client';
 })
 @Controller('posts')
 export class PostsController {
-	constructor(readonly postService: PostsService) {}
+	constructor(private readonly postService: PostsService) {}
 
 	@Get()
 	@ApiOperation({ summary: 'Get all posts' })
@@ -86,7 +87,7 @@ export class PostsController {
 	@Post()
 	@ApiOperation({ summary: 'Create new post' })
 	@ApiBody({ type: CreatePostDto })
-	@ApiOkResponse({ type: PostDto })
+	@ApiCreatedResponse({ type: PostDto })
 	async createPost(
 		@Body() dto: CreatePostDto,
 		@GetUser() user: User,
@@ -161,7 +162,7 @@ export class PostsController {
 		name: 'id',
 		description: 'id of the post',
 	})
-	@ApiOkResponse({ type: CommentDto })
+	@ApiCreatedResponse({ type: CommentDto })
 	@ApiNotFoundResponse({
 		description: "Post doesn't exist",
 	})
@@ -212,7 +213,7 @@ export class PostsController {
 		description: 'id of the post',
 	})
 	@ApiBody({ type: CreateLikeDto })
-	@ApiOkResponse({ type: LikeDto })
+	@ApiCreatedResponse({ type: LikeDto })
 	@ApiNotFoundResponse({
 		description: "Post doesn't exist",
 	})
@@ -253,7 +254,7 @@ export class PostsController {
 		name: 'id',
 		description: 'id of the post',
 	})
-	@ApiOkResponse({ type: PostDto })
+	@ApiCreatedResponse({ type: PostDto })
 	@ApiNotFoundResponse({
 		description: "Post doesn't exist",
 	})

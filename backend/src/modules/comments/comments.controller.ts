@@ -18,6 +18,7 @@ import {
 	ApiForbiddenResponse,
 	ApiNotFoundResponse,
 	ApiConflictResponse,
+	ApiCreatedResponse,
 } from '@nestjs/swagger';
 import { CommentsService } from './comments.service';
 import { CommentDto, UpdateCommentDto } from './dto';
@@ -32,7 +33,7 @@ import { User } from '@prisma/client';
 })
 @Controller('comments')
 export class CommentsController {
-	constructor(readonly commentsService: CommentsService) {}
+	constructor(private readonly commentsService: CommentsService) {}
 
 	@Get(':id')
 	@ApiOperation({ summary: 'Get specified comment by id' })
@@ -71,7 +72,7 @@ export class CommentsController {
 		description: 'id of the comment',
 	})
 	@ApiBody({ type: CreateLikeDto })
-	@ApiOkResponse({ type: LikeDto })
+	@ApiCreatedResponse({ type: LikeDto })
 	@ApiNotFoundResponse({
 		description: "Comment doesn't exist",
 	})

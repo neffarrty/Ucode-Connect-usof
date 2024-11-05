@@ -7,7 +7,7 @@ import { MulterModule } from '@nestjs/platform-express';
 @Module({
 	providers: [UsersService],
 	controllers: [UsersController],
-	imports: [PrismaModule, MulterModule.register({})],
+	imports: [MulterModule.register({})],
 	exports: [UsersService],
 })
 export class UsersModule {}

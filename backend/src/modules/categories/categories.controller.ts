@@ -18,6 +18,7 @@ import {
 	ApiForbiddenResponse,
 	ApiNotFoundResponse,
 	ApiConflictResponse,
+	ApiCreatedResponse,
 } from '@nestjs/swagger';
 import { CategoriesService } from 'src/modules/categories/categories.service';
 import { CategoryDto, CreateCategoryDto, UpdateCategoryDto } from './dto';
@@ -35,7 +36,7 @@ import { Role } from '@prisma/client';
 @ApiAuth()
 @Controller('categories')
 export class CategoriesController {
-	constructor(readonly categoriesService: CategoriesService) {}
+	constructor(private readonly categoriesService: CategoriesService) {}
 
 	@Get()
 	@ApiOperation({ summary: 'Get all categories' })
@@ -83,7 +84,7 @@ export class CategoriesController {
 	@Roles(Role.ADMIN)
 	@ApiOperation({ summary: 'Create new category' })
 	@ApiBody({ type: CreateCommentDto })
-	@ApiOkResponse({ type: CategoryDto })
+	@ApiCreatedResponse({ type: CategoryDto })
 	@ApiForbiddenResponse({
 		description: 'Forbidden to create category',
 	})

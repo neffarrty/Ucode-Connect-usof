@@ -11,7 +11,7 @@ import { PostDto } from 'src/modules/posts/dto/post.dto';
 
 @Injectable()
 export class CategoriesService {
-	constructor(readonly prisma: PrismaService) {}
+	constructor(private readonly prisma: PrismaService) {}
 
 	async findAll({
 		page,
