@@ -4,7 +4,6 @@ import {
 	Length,
 	IsEmail,
 	IsString,
-	IsStrongPassword,
 	IsOptional,
 	Matches,
 } from 'class-validator';

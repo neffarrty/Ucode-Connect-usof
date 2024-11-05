@@ -42,6 +42,19 @@ The project relies on the following technologies:
  - [NPM](https://www.npmjs.com) 7.x or higher.
  - [PostgreSQL](https://www.postgresql.org) v13.x or higher.
 
+If you do not have PostgreSQL and Redis installed on your local machine, you can run the application using Docker. The [docker-compose.yaml](./backend/docker-compose.yaml) file provided in the project will set up the necessary containers for you.
+
+> [!NOTE] 
+> Make sure you have [Docker](https://www.docker.com) and [Docker Compose](https://docs.docker.com/compose/) installed on your machine.
+
+Start the containers by running the following command in your project directory:
+
+```bash
+$ docker-compose up -d
+```
+
+This command will start the PostgreSQL and Redis containers in the background.
+
 ## Project setup
 
 Clone the project to your local machine
