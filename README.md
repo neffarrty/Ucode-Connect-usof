@@ -25,16 +25,15 @@ BugTalk is a Q&A web application built using NestJS. The platform is designed to
 
 ## Table of Contents
 
-- [BugTalk](#bugtalk)
-  - [Technology Stack:](#technology-stack)
-  - [Table of Contents](#table-of-contents)
-  - [Dependencies](#dependencies)
-  - [Project setup](#project-setup)
-    - [Database setup](#database-setup)
-    - [Starting the server](#starting-the-server)
-  - [Admin panel](#admin-panel)
-  - [API Documentation](#api-documentation)
-  - [License](#license)
+- [Technology Stack:](#technology-stack)
+- [Table of Contents](#table-of-contents)
+- [Dependencies](#dependencies)
+- [Project setup](#project-setup)
+  - [Database setup](#database-setup)
+  - [Starting the server](#starting-the-server)
+- [Admin panel](#admin-panel)
+- [API Documentation](#api-documentation)
+- [License](#license)
 
 ## Dependencies
 
