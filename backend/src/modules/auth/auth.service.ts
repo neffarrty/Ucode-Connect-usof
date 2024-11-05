@@ -14,7 +14,7 @@ import { JwtPayload } from './interface/jwt-payload.interface';
 import { User } from '@prisma/client';
 import { Response } from 'express';
 import { v4 as uuid } from 'uuid';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { RedisService } from '@liaoliaots/nestjs-redis';
 import Redis from 'ioredis';
 

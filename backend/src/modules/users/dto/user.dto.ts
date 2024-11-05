@@ -28,7 +28,8 @@ export class UserDto {
 
 	@ApiProperty({
 		description: 'Avatar URL of the user',
-		example: 'https://example.com/avatar.jpg',
+		example:
+			'http://localhost:3000/avatars/550e8400-e29b-41d4-a716-446655440000.jpg',
 	})
 	avatar: string;
 
@@ -45,7 +46,7 @@ export class UserDto {
 	role: Role;
 
 	@ApiProperty({
-		description: "Indicates if the user's email is verified or not",
+		description: 'Indicates if the user verified email or not',
 		example: true,
 	})
 	verified: boolean;

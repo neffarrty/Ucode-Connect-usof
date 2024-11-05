@@ -3,7 +3,7 @@ import { Role } from '@prisma/client';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { PrismaClient } from '@prisma/client';
 import { PrismaModule } from 'src/modules/prisma/prisma.module';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 @Module({})
 export class AdminModule {
@@ -172,7 +172,6 @@ export class AdminModule {
 									'comment',
 									'type',
 									'createdAt',
-									'updatedAt',
 								],
 								editProperties: [
 									'author',

@@ -14,7 +14,7 @@ import { Paginated, PaginationOptionsDto } from 'src/pagination';
 import { Role, User } from '@prisma/client';
 import fs from 'fs/promises';
 import path from 'path';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UsersService {

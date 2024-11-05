@@ -50,7 +50,7 @@ export class AuthController {
 	@Post('register')
 	@ApiOperation({ summary: 'Register a new user' })
 	@ApiBody({
-		type: [RegisterDto],
+		type: RegisterDto,
 	})
 	@ApiCreatedResponse({
 		description: 'Registration successful',
@@ -71,7 +71,7 @@ export class AuthController {
 	@UseGuards(LocalGuard)
 	@ApiOperation({ summary: 'Authenticate with email and password' })
 	@ApiBody({
-		type: [LoginDto],
+		type: LoginDto,
 	})
 	@ApiOkResponse({
 		type: AuthResponseDto,
@@ -127,7 +127,7 @@ export class AuthController {
 	@Post('verify')
 	@ApiOperation({ summary: 'Send verification email' })
 	@ApiBody({
-		type: [ForgotPasswordDto],
+		type: ForgotPasswordDto,
 		description: 'Email to send verification',
 	})
 	@ApiNoContentResponse({
@@ -190,7 +190,7 @@ export class AuthController {
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({ summary: 'Send reset password email' })
 	@ApiBody({
-		type: [ForgotPasswordDto],
+		type: ForgotPasswordDto,
 		description: 'Email to send reset password link',
 	})
 	@ApiOkResponse({
@@ -209,7 +209,7 @@ export class AuthController {
 	@ApiOperation({ summary: 'Reset password' })
 	@ApiParam({ name: 'token', required: true, description: 'Reset token' })
 	@ApiBody({
-		type: [ResetPasswordDto],
+		type: ResetPasswordDto,
 		description: 'New password',
 	})
 	@ApiNoContentResponse({
