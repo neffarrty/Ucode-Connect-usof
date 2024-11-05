@@ -101,7 +101,9 @@ Use these credentials to log in to the admin panel.
 
 ## API Documentation
 
-For the full API reference, visit the documentation on [SwaggerHub](https://app.swaggerhub.com/apis/EGORKOVTUN8/bug-talk/1.0).
+The complete API reference can be accessed on [SwaggerHub](https://app.swaggerhub.com/apis/EGORKOVTUN8/bug-talk/1.0).
+
+If the server is running locally, you can also view the documentation at http://localhost:3000/docs. This URL provides access to the API endpoints and methods directly from your server environment, allowing you to test and interact with the API in real-time.
 
 ## License
 
