@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsStrongPassword } from 'class-validator';
+import { Matches } from 'class-validator';
 
 export class ResetPasswordDto {
 	@ApiProperty({
@@ -7,11 +7,8 @@ export class ResetPasswordDto {
 		type: String,
 		example: 'd0uawHPv',
 	})
-	@IsStrongPassword({
-		minLength: 8,
-		minLowercase: 1,
-		minUppercase: 1,
-		minNumbers: 1,
+	@Matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/, {
+		message: 'Password is not strong enough',
 	})
 	password: string;
 }

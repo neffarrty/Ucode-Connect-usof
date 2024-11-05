@@ -5,8 +5,8 @@ import {
 	IsString,
 	IsInt,
 	IsBoolean,
-	IsStrongPassword,
 	IsEnum,
+	Matches,
 } from 'class-validator';
 import { Role } from '@prisma/client';
 
@@ -25,11 +25,8 @@ export class CreateUserDto {
 		example: 'E08ev2SI',
 		type: String,
 	})
-	@IsStrongPassword({
-		minLength: 8,
-		minLowercase: 1,
-		minUppercase: 1,
-		minNumbers: 1,
+	@Matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/, {
+		message: 'Password is not strong enough',
 	})
 	password: string;
 
