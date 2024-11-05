@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int     @id @default(autoincrement())
+  login    String  @unique
+  password String?
+  fullname String?
+  email    String  @unique
+  avatar   String?
+  rating   Int     @default(0)
+  role     Role    @default(USER)
+  verified Boolean @default(false)
+
+  posts     Post[]
+  bookmarks Bookmark[]
+  comments  Comment[]
+  likes     Like[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Post {
+  id      Int    @id @default(autoincrement())
+  title   String
+  status  Status @default(ACTIVE)
+  content String @db.Text
+  rating  Int    @default(0)
+
+  authorId Int  @map("author_id")
+  author   User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  categories PostsCategories[]
+  comments   Comment[]
+  likes      Like[]
+  bookmarks  Bookmark[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("posts")
+}
+
+model Bookmark {
+  userId Int  @map("user_id")
+  postId Int  @map("post_id")
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  created_at DateTime @default(now()) @map("created_at")
+
+  @@id([userId, postId])
+  @@map("bookmarks")
+}
+
+model Category {
+  id          Int               @id @default(autoincrement())
+  title       String            @unique()
+  description String
+  posts       PostsCategories[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("categories")
+}
+
+model PostsCategories {
+  postId     Int      @map("post_id")
+  categoryId Int      @map("category_id")
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([postId, categoryId])
+  @@map("posts_categories")
+}
+
+model Comment {
+  id      Int    @id @default(autoincrement())
+  content String
+  rating  Int    @default(0)
+  likes   Like[]
+
+  authorId Int   @map("author_id")
+  postId   Int?  @map("post_id")
+  author   User  @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  post     Post? @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("comments")
+}
+
+model Like {
+  id   Int      @id @default(autoincrement())
+  type LikeType
+
+  authorId  Int      @map("author_id")
+  postId    Int?     @map("post_id")
+  commentId Int?     @map("comment_id")
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("likes")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+}
+
+enum LikeType {
+  LIKE
+  DISLIKE
+}
