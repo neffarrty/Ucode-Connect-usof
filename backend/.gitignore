@@ -59,4 +59,5 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 .adminjs
 
 # uploads directory
-uploads/
+uploads/*
+!uploads/avatars/default.png
