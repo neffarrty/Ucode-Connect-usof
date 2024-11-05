@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
@@ -16,10 +16,14 @@ async function bootstrap() {
 	app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
 	const builder = new DocumentBuilder()
-		.setTitle('BugTalk')
-		.setDescription('The Q&A app for developers')
+		.setTitle('BugTalk API')
+		.setDescription(
+			'BugTalk is a developer-focused forum that allows users to discuss software bugs, share solutions, and collaborate on debugging issues. The API provides endpoints for managing users, posts, comments, and categories, facilitating seamless interactions between community members.',
+		)
 		.setVersion('1.0')
 		.setLicense('MIT', 'https://opensource.org/licenses/MIT')
+		.setBasePath('api')
+		.addServer(process.env.APP_BASE_URL)
 		.addBearerAuth({
 			type: 'http',
 			scheme: 'bearer',
