@@ -26,6 +26,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 	): Promise<any> {
 		const { name, emails, photos } = profile;
 		const email = emails[0].value;
+		const fullname = `${name.givenName} ${name.familyName || ''}`.trim();
 		let user = await this.prisma.user.findUnique({
 			where: {
 				email,
@@ -37,7 +38,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 				data: {
 					login: email.split('@')[0],
 					email,
-					fullname: `${name.givenName} ${name.familyName}`,
+					fullname,
 					avatar: photos[0].value,
 					verified: true,
 				},

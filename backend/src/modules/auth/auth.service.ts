@@ -3,10 +3,11 @@ import {
 	BadRequestException,
 	UnauthorizedException,
 	ConflictException,
+	NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
-import { JwtService, TokenExpiredError } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
 import { MailerService } from '@nestjs-modules/mailer';
 import { RegisterDto, AuthResponseDto } from './dto';
 import { UserDto } from 'src/modules/users/dto';
@@ -32,7 +33,12 @@ export class AuthService {
 		this.redis = this.redisService.getOrThrow();
 	}
 
-	async register({ login, email, password }: RegisterDto): Promise<void> {
+	async register({
+		login,
+		email,
+		password,
+		fullname,
+	}: RegisterDto): Promise<void> {
 		const candidate = await this.prisma.user.findFirst({
 			where: {
 				OR: [{ login }, { email }],
@@ -48,6 +54,7 @@ export class AuthService {
 				login,
 				email,
 				password: await bcrypt.hash(password, 10),
+				fullname,
 				avatar: process.env.DEFAULT_AVATAR_URL,
 			},
 		});
@@ -173,7 +180,7 @@ export class AuthService {
 		});
 
 		if (!user) {
-			throw new BadRequestException('User not found');
+			throw new NotFoundException('User not found');
 		}
 
 		const hash = await bcrypt.hash(password, 10);

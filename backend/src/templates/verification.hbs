@@ -6,57 +6,64 @@
 		<style>
 			body { font-family: Arial, sans-serif; background-color: #f4f4f4;
 			margin: 0; padding: 0; } .container { width: 100%; max-width: 600px;
-			margin: 0 auto; background-color: #ffffff; border-radius: 5px;
-			overflow: hidden; } .header { background-color: #ff4c4c; padding:
-			20px; text-align: center; color: white; } .header h1 { font-size:
-			32px; color: white; } .header img { max-width: 100px; margin-bottom:
-			10px; } .content { padding: 20px 20px 0 20px; text-align: left; } h1
-			{ font-size: 24px; color: #333333; } p { font-size: 16px; color:
-			#666666; margin: 10px 0; } .button-wrap { text-align: center; }
-			.button { display: inline-block; padding: 12px 25px; margin: 20px 0;
-			font-size: 16px; color: #ffffff; background-color: #007bff;
-			border-radius: 5px; text-decoration: none; text-align: center; }
-			.footer { background-color: #ff4c4c; padding: 0 20px 0; font-size:
-			14px; color: #999999; text-align: center; } .footer a { color:
-			#007bff; text-decoration: none; } .greeting { font-size: 20px;
-			font-weight: bold; }
+			margin: 0 auto; background-color: #ffffff; border-radius: 8px;
+			overflow: hidden; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
+			.header { padding: 20px 20px 5px; text-align: center; color: white;
+			} .header img { max-width: 100px; margin-bottom: 10px; } .header h1
+			{ font-size: 32px; color: black; margin: 0; } .content { padding:
+			5px 20px 20px; text-align: left; } h1 { font-size: 24px; color:
+			#333333; } p { font-size: 16px; color: #666666; margin: 10px 0; }
+			.button-wrap { text-align: center; } .button { display:
+			inline-block; padding: 12px 25px; margin: 20px 0; font-size: 16px;
+			color: #ffffff; background-color: #FFBB94; border-radius: 5px;
+			text-decoration: none; text-align: center; } .footer {
+			background-color: #A33757; padding: 20px; font-size: 14px; color:
+			white; text-align: center; } .footer p { color: #FFF;
+			text-decoration: none; } .greeting { font-size: 20px; font-weight:
+			bold; color: #333333; }
 		</style>
 	</head>
 	<body>
 		<div class='container'>
 			<div class='header'>
-				<div
-					style='width: 90%; height: 1px; background-color: #fff;'
-				></div>
+				<a href='https://ibb.co/hfb1c2M'>
+					<img
+						src='https://i.ibb.co/q5KFCmn/logo.png'
+						alt='logo'
+						width='150'
+						border='0'
+					/>
+				</a>
 				<h1>Email Verification</h1>
 				<div
-					style='width: 90%; height: 1px; background-color: #fff;'
+					style='width: 100%; height: 1px; background-color: #000;'
 				></div>
 			</div>
 			<div class='content'>
 				<p class='greeting'>Hi, {{username}}!</p>
 				<p>
-					You're almost set to start enjoying BugTalk. Simply click
-					the link below to verify your email address and get started.
+					You're almost set to start enjoying
+					<span style='color: #852E4E; margin: 0'>Code</span>
+					<span style='color: #FFBB94; margin: 0'>Talk</span>. Simply
+					click the link below to verify your email address and get
+					started.
 				</p>
 				<div class='button-wrap'>
 					<a
-						href='http://localhost:3000/api/auth/verify/{{token}}'
+						href='http://localhost:3001/verify/{{token}}'
 						class='button'
 					>
 						Verify my email address
 					</a>
 				</div>
-				<p>
+				<p style='font-size: small'>
 					This link will only be valid for the next
 					<b>15 minutes</b>. If you did not create an account on our
 					platform, please disregard this email.
 				</p>
 			</div>
-			<div class='footer' style='margin-top: 35px'>
-				<p style='color: white; padding: 15px'>
-					Copyright © 2024 BugTalk. All Rights Reserved.
-				</p>
+			<div class='footer'>
+				<p>Copyright © 2024 CodeTalk. All Rights Reserved.</p>
 			</div>
 		</div>
 	</body>

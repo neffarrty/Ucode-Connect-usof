@@ -11,6 +11,7 @@ import {
 	HttpStatus,
 	Header,
 	Headers,
+	UnauthorizedException,
 } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
@@ -40,11 +41,23 @@ import { User } from '@prisma/client';
 import { LocalGuard } from './guards/local.guard';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 import { GoogleGuard } from './guards/google.guard';
+import { JwtGuard } from './guards/jwt.guard';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}
+
+	@Get('self')
+	@UseGuards(JwtGuard)
+	@ApiOperation({ summary: 'Get current authentificated user' })
+	@ApiUnauthorizedResponse({
+		description: 'Not authenticated',
+	})
+	async getSelf(@GetUser() user: User): Promise<{ user: UserDto }> {
+		console.log(user);
+		return { user };
+	}
 
 	@Public()
 	@Post('register')
@@ -103,7 +116,8 @@ export class AuthController {
 	@UseGuards(GoogleGuard)
 	@ApiExcludeEndpoint()
 	async googleAuthRedirect(@GetUser() user: User, @Res() res: Response) {
-		return this.authService.login(user, res);
+		const response = await this.authService.login(user, res);
+		res.redirect(`http://localhost:3001/google-success/${response.token}`);
 	}
 
 	@HttpCode(HttpStatus.NO_CONTENT)
@@ -118,7 +132,6 @@ export class AuthController {
 		@Res({ passthrough: true }) res: Response,
 	): Promise<void> {
 		const token = authHeader?.split(' ')[1];
-
 		return this.authService.logout(user, token, res);
 	}
 
@@ -142,7 +155,7 @@ export class AuthController {
 
 	@Public()
 	@HttpCode(HttpStatus.NO_CONTENT)
-	@Get('verify/:token')
+	@Post('verify/:token')
 	@ApiOperation({ summary: 'Verify email with token' })
 	@ApiNoContentResponse({
 		description: 'Email verification successful',
@@ -155,7 +168,7 @@ export class AuthController {
 	}
 
 	@Public()
-	@Post('refresh-token')
+	@Post('refresh-tokens')
 	@UseGuards(JwtRefreshGuard)
 	@ApiOperation({ summary: 'Refresh access token' })
 	@ApiCreatedResponse({
