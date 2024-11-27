@@ -6,7 +6,6 @@ import {
 	ListItemButton,
 	ListItemIcon,
 	ListItemText,
-	ListSubheader,
 	Toolbar,
 } from '@mui/material';
 import { Home, Article, Bookmarks, Style, Logout } from '@mui/icons-material';

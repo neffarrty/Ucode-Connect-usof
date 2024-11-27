@@ -11,19 +11,20 @@ import {
 	Login,
 	Register,
 	Verify,
-	Dashboard,
 	GoogleOAuthSuccess,
+	Home,
 } from './pages';
 import { theme } from './theme/theme';
 import NotFound from './components/errors/NotFound';
+import { Posts } from './pages/Posts';
 
 const App: React.FC = () => {
 	return (
 		<ThemeProvider theme={theme}>
 			<CssBaseline />
 			<Routes>
-				<Route path="/" element={<Dashboard />} />
-				<Route path="/home" element={<Dashboard />} />
+				<Route path="/" element={<Home />} />
+				<Route path="/home" element={<Home />} />
 				<Route path="/login" element={<Login />} />
 				<Route path="/register" element={<Register />} />
 				<Route path="/password-reset" element={<ForgotPassword />} />
@@ -40,6 +41,7 @@ const App: React.FC = () => {
 					path="/google-success/:token"
 					element={<GoogleOAuthSuccess />}
 				/>
+				<Route path="/posts" element={<Posts />} />
 				<Route path="*" element={<NotFound />} />
 			</Routes>
 		</ThemeProvider>

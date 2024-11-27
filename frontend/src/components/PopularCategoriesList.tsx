@@ -10,10 +10,10 @@ import {
 	Divider,
 } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-import { Paginated } from '../pages';
 import { AxiosError } from 'axios';
 import axios from '../utils/axios';
 import { Category } from '../interface/Category';
+import { Paginated } from '../interface/Paginated';
 
 interface PopularCategoriesListProps {
 	size: number;
