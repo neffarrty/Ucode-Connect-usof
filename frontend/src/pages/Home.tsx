@@ -1,6 +1,6 @@
 import { Box, Stack } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-import { PostCard } from '../components/PostCard';
+import { PostCard } from '../components/post-card/PostCard';
 import { AxiosError } from 'axios';
 import axios from '../utils/axios';
 import { PopularCategoriesList } from '../components/PopularCategoriesList';
