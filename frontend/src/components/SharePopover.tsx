@@ -46,7 +46,7 @@ export const SharePopover: React.FC<SharePopoverProps> = ({
 	};
 
 	const handlePopoverClose = () => {
-		setAnchor(null); // Сбрасываем якорь, чтобы Popover закрылся
+		setAnchor(null);
 	};
 
 	return (
@@ -149,7 +149,7 @@ export const SharePopover: React.FC<SharePopoverProps> = ({
 				open={open}
 				autoHideDuration={3000}
 				anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-				onClose={handleCloseSnackbar} // Указываем обработчик для Snackbar
+				onClose={handleCloseSnackbar}
 			>
 				<Alert onClose={handleCloseSnackbar}>
 					Link copied to your clipboard.

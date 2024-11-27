@@ -14,7 +14,7 @@ import {
 	LocationOn,
 	Email,
 } from '@mui/icons-material';
-import Logo from './Logo';
+import Logo from '../Logo';
 
 const socialLinks = {
 	facebook: '#',
