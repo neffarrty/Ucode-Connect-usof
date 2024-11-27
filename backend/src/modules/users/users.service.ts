@@ -70,6 +70,7 @@ export class UsersService {
 			data: users,
 			meta: {
 				page,
+				total: count,
 				count: limit,
 				pages,
 				next: page < pages ? page + 1 : null,
@@ -93,6 +94,14 @@ export class UsersService {
 		const [posts, count] = await this.prisma.$transaction([
 			this.prisma.post.findMany({
 				where,
+				include: {
+					author: {
+						select: {
+							login: true,
+							avatar: true,
+						},
+					},
+				},
 				take: limit,
 				skip: (page - 1) * limit,
 				orderBy: {
@@ -107,6 +116,7 @@ export class UsersService {
 			data: posts,
 			meta: {
 				page,
+				total: count,
 				count: limit,
 				pages,
 				next: page < pages ? page + 1 : null,

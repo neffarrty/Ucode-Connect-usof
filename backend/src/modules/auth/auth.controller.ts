@@ -190,6 +190,7 @@ export class AuthController {
 		res.cookie('refresh_token', refreshToken, {
 			httpOnly: true,
 			sameSite: 'strict',
+			maxAge: 7 * 24 * 60 * 60 * 1000,
 		});
 
 		return {

@@ -5,8 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { CategoryDto, CreateCategoryDto, UpdateCategoryDto } from './dto';
-import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
-import { Paginated } from 'src/pagination/paginated';
+import { PaginationOptionsDto, Paginated } from 'src/pagination';
 import { PostDto } from 'src/modules/posts/dto/post.dto';
 
 @Injectable()
@@ -21,15 +20,32 @@ export class CategoriesService {
 			this.prisma.category.findMany({
 				take: limit,
 				skip: (page - 1) * limit,
+				include: {
+					_count: {
+						select: { posts: true },
+					},
+				},
+				orderBy: {
+					posts: {
+						_count: 'desc',
+					},
+				},
 			}),
 			this.prisma.category.count(),
 		]);
 		const pages = Math.ceil(count / limit);
 
 		return {
-			data: categories,
+			data: categories.map((category) => {
+				const { _count, ...data } = category;
+				return {
+					...data,
+					posts: _count.posts,
+				};
+			}),
 			meta: {
 				page,
+				total: count,
 				count: limit,
 				pages,
 				next: page < pages ? page + 1 : null,
@@ -39,9 +55,14 @@ export class CategoriesService {
 	}
 
 	async findById(id: number): Promise<CategoryDto> {
-		const category = this.prisma.category.findUnique({
+		const category = await this.prisma.category.findUnique({
 			where: {
 				id,
+			},
+			include: {
+				_count: {
+					select: { posts: true },
+				},
 			},
 		});
 
@@ -49,7 +70,11 @@ export class CategoriesService {
 			throw new NotFoundException(`Category with id ${id} not found`);
 		}
 
-		return category;
+		const { _count, ...data } = category;
+		return {
+			...data,
+			posts: _count.posts,
+		};
 	}
 
 	async findPosts(
@@ -68,6 +93,14 @@ export class CategoriesService {
 		const [posts, count] = await this.prisma.$transaction([
 			this.prisma.post.findMany({
 				where,
+				include: {
+					author: {
+						select: {
+							login: true,
+							avatar: true,
+						},
+					},
+				},
 				take: limit,
 				skip: (page - 1) * limit,
 			}),
@@ -79,6 +112,7 @@ export class CategoriesService {
 			data: posts,
 			meta: {
 				page,
+				total: count,
 				count: limit,
 				pages,
 				prev: page > 1 ? page - 1 : null,

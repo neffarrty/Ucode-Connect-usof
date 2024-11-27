@@ -8,6 +8,12 @@ export class PaginationMetadata {
 	page: number;
 
 	@ApiProperty({
+		description: 'The total number of elements',
+		example: 60,
+	})
+	total: number;
+
+	@ApiProperty({
 		description: 'The number of items per page',
 		example: 15,
 	})

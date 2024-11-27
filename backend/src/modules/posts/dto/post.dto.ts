@@ -15,6 +15,14 @@ export class PostDto {
 	authorId: number;
 
 	@ApiProperty({
+		description: 'Author of the post',
+	})
+	author: {
+		login: string;
+		avatar: string;
+	};
+
+	@ApiProperty({
 		description: 'Title of the post',
 		example: 'Understanding Dependency Injection in TypeScript',
 	})

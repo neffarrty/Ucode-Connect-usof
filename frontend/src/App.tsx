@@ -23,6 +23,7 @@ const App: React.FC = () => {
 			<CssBaseline />
 			<Routes>
 				<Route path="/" element={<Dashboard />} />
+				<Route path="/home" element={<Dashboard />} />
 				<Route path="/login" element={<Login />} />
 				<Route path="/register" element={<Register />} />
 				<Route path="/password-reset" element={<ForgotPassword />} />

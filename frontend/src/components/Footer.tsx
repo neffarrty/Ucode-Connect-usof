@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
 	Box,
 	Link,
@@ -36,16 +35,22 @@ const Copyright: React.FC = () => {
 	);
 };
 
+interface FooterProps {
+	sidebarWidth: number;
+}
+
 export const Footer: React.FC = () => {
 	return (
 		<Box
 			sx={{
 				bgcolor: 'background.paper',
 				color: 'text.secondary',
-				py: 3,
+				py: 1,
 				borderTop: '1px solid',
 				borderColor: 'divider',
 				maxWidth: 'none',
+				mt: 'auto',
+				zIndex: (theme) => theme.zIndex.drawer + 1,
 			}}
 		>
 			<Container maxWidth={false}>

@@ -72,6 +72,12 @@ export class PostsService {
 							userId: user.id,
 						},
 					},
+					author: {
+						select: {
+							login: true,
+							avatar: true,
+						},
+					},
 				},
 				orderBy: {
 					[sort]: order,
@@ -90,6 +96,7 @@ export class PostsService {
 			})),
 			meta: {
 				page,
+				total: count,
 				count: limit,
 				pages,
 				prev: page > 1 ? page - 1 : null,
@@ -104,7 +111,15 @@ export class PostsService {
 				id,
 			},
 			include: user
-				? { bookmarks: { where: { userId: user.id } } }
+				? {
+						author: {
+							select: {
+								login: true,
+								avatar: true,
+							},
+						},
+						bookmarks: { where: { userId: user.id } },
+					}
 				: undefined,
 		});
 
@@ -135,6 +150,14 @@ export class PostsService {
 							},
 						},
 					})),
+				},
+			},
+			include: {
+				author: {
+					select: {
+						login: true,
+						avatar: true,
+					},
 				},
 			},
 		});
@@ -172,6 +195,14 @@ export class PostsService {
 				id,
 			},
 			data,
+			include: {
+				author: {
+					select: {
+						login: true,
+						avatar: true,
+					},
+				},
+			},
 		});
 	}
 
@@ -185,6 +216,14 @@ export class PostsService {
 		return this.prisma.post.delete({
 			where: {
 				id,
+			},
+			include: {
+				author: {
+					select: {
+						login: true,
+						avatar: true,
+					},
+				},
 			},
 		});
 	}
@@ -215,6 +254,7 @@ export class PostsService {
 			data: comments,
 			meta: {
 				page,
+				total: count,
 				count: limit,
 				pages,
 				prev: page > 1 ? page - 1 : null,
@@ -397,6 +437,14 @@ export class PostsService {
 					},
 				},
 			},
+			include: {
+				author: {
+					select: {
+						login: true,
+						avatar: true,
+					},
+				},
+			},
 		});
 
 		return {
@@ -430,6 +478,14 @@ export class PostsService {
 							userId: user.id,
 							postId: id,
 						},
+					},
+				},
+			},
+			include: {
+				author: {
+					select: {
+						login: true,
+						avatar: true,
 					},
 				},
 			},

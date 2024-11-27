@@ -4,6 +4,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import { UsersService } from 'src/modules/users/users.service';
+import { JwtPayload } from '../interface/jwt-payload.interface';
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(
@@ -25,8 +26,8 @@ export class JwtRefreshStrategy extends PassportStrategy(
 		});
 	}
 
-	async validate(payload: any) {
-		const user = this.usersService.findById(payload.sub);
+	async validate(payload: JwtPayload) {
+		const user = this.usersService.findById(payload.userId);
 
 		if (!user) {
 			throw new BadRequestException('Invalid token');

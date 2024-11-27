@@ -3,58 +3,89 @@ import {
 	Divider,
 	Drawer,
 	List,
-	ListItem,
 	ListItemButton,
 	ListItemIcon,
 	ListItemText,
+	ListSubheader,
+	Toolbar,
 } from '@mui/material';
-import { Inbox, Mail } from '@mui/icons-material';
+import { Home, Article, Bookmarks, Style, Logout } from '@mui/icons-material';
 
 interface SideBarProps {
-	toggle: (isOpen: boolean) => void;
-	open: boolean;
+	width: number;
 }
 
-export const SideBar: React.FC<SideBarProps> = ({ toggle, open }) => {
-	const DrawerList = (
-		<Box
-			sx={{ width: 250 }}
-			role="presentation"
-			onClick={() => toggle(false)}
-		>
-			<List>
-				{['Inbox', 'Starred', 'Send email', 'Drafts'].map(
-					(text, index) => (
-						<ListItem key={text} disablePadding>
-							<ListItemButton>
-								<ListItemIcon>
-									{index % 2 === 0 ? <Inbox /> : <Mail />}
-								</ListItemIcon>
-								<ListItemText primary={text} />
-							</ListItemButton>
-						</ListItem>
-					),
-				)}
-			</List>
-			<Divider />
-			<List>
-				{['All mail', 'Trash', 'Spam'].map((text, index) => (
-					<ListItem key={text} disablePadding>
-						<ListItemButton>
-							<ListItemIcon>
-								{index % 2 === 0 ? <Inbox /> : <Mail />}
-							</ListItemIcon>
-							<ListItemText primary={text} />
-						</ListItemButton>
-					</ListItem>
-				))}
-			</List>
-		</Box>
-	);
-
+export const SideBar: React.FC<SideBarProps> = ({ width }) => {
 	return (
-		<Drawer open={open} onClose={() => toggle(false)}>
-			{DrawerList}
+		<Drawer
+			variant="permanent"
+			sx={{
+				width: width,
+				flexShrink: 0,
+				[`& .MuiDrawer-paper`]: {
+					width: width,
+					boxSizing: 'border-box',
+				},
+			}}
+		>
+			<Toolbar />
+			<Box
+				sx={{
+					overflow: 'auto',
+					display: 'flex',
+					flexDirection: 'column',
+					height: '100%',
+				}}
+			>
+				<List
+					sx={{
+						width: '100%',
+						bgcolor: 'background.paper',
+					}}
+					component="nav"
+				>
+					<ListItemButton href="http://localhost:3001/home">
+						<ListItemIcon>
+							<Home />
+						</ListItemIcon>
+						<ListItemText primary="Home" />
+					</ListItemButton>
+					<ListItemButton href="http://localhost:3001/bookmarks">
+						<ListItemIcon>
+							<Bookmarks />
+						</ListItemIcon>
+						<ListItemText primary="Bookmarks" />
+					</ListItemButton>
+					<ListItemButton href="http://localhost:3001/posts">
+						<ListItemIcon>
+							<Article />
+						</ListItemIcon>
+						<ListItemText primary="Posts" />
+					</ListItemButton>
+					<ListItemButton href="http://localhost:3001/tags">
+						<ListItemIcon>
+							<Style />
+						</ListItemIcon>
+						<ListItemText primary="Categories" />
+					</ListItemButton>
+				</List>
+				<Divider />
+				<List
+					sx={{
+						width: '100%',
+						bgcolor: 'background.paper',
+						mt: 'auto',
+					}}
+					component="nav"
+				>
+					<ListItemButton>
+						<ListItemIcon>
+							<Logout />
+						</ListItemIcon>
+						<ListItemText primary="Log out" />
+					</ListItemButton>
+				</List>
+			</Box>
 		</Drawer>
 	);
 };

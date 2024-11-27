@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import axios from 'axios';
 import { store } from '../redux/store';
 import { updateState } from '../redux/auth/slice';
 
@@ -60,7 +60,7 @@ instance.interceptors.response.use(
 			isRefreshing = true;
 
 			try {
-				const response = await axios.post('/auth/refresh-tokens');
+				const response = await instance.post('/auth/refresh-tokens');
 
 				const { user, token } = response.data;
 				store.dispatch(updateState({ user, token }));
