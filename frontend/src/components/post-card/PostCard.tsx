@@ -18,7 +18,6 @@ import {
 	ThumbUp,
 	ThumbUpOutlined,
 } from '@mui/icons-material';
-import { formatDistanceToNow } from 'date-fns';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import axios from '../../utils/axios';
@@ -28,6 +27,7 @@ import { Comment } from '../../interface/Comment';
 import { Category } from '../../interface/Category';
 import { Paginated } from '../../interface/Paginated';
 import { PostCardActions } from './PostCardActions';
+import { formatDate } from '../../utils/format-date';
 
 interface PostCardProps {
 	post: Post;
@@ -79,12 +79,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
 					<CardHeader
 						avatar={<Avatar src={post.author.avatar} />}
 						title={post.author.login}
-						subheader={formatDistanceToNow(
-							new Date(post.createdAt),
-							{
-								addSuffix: true,
-							},
-						)}
+						subheader={formatDate(new Date(post.createdAt))}
 					/>
 					<CardContent>
 						<Box>

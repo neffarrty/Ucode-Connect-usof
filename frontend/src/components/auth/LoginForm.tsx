@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import logo from '../../assets/logo.svg';
 import * as yup from 'yup';
+import { useNavigate } from 'react-router-dom';
 
 const schema = yup.object().shape({
 	email: yup.string().required('Email is required'),
@@ -29,6 +30,7 @@ interface FormInput {
 }
 
 const LoginForm: React.FC = () => {
+	const navigate = useNavigate();
 	const dispatch = useDispatch<AppDispatch>();
 	const { loading, error } = useSelector((state: RootState) => state.auth);
 
@@ -42,6 +44,7 @@ const LoginForm: React.FC = () => {
 
 	const onSubmit = (data: FormInput) => {
 		dispatch(login(data));
+		navigate('/');
 	};
 
 	return (
@@ -69,7 +72,6 @@ const LoginForm: React.FC = () => {
 			</Typography>
 			<TextField
 				label="Email"
-				type="email"
 				placeholder="your@email.com"
 				{...register('email')}
 				error={!!errors.email}
