@@ -93,7 +93,7 @@ async function fakeCategories(): Promise<Category[]> {
 				title: faker.lorem.words({ min: 1, max: 2 }),
 				description: faker.lorem.sentence(),
 				createdAt: faker.date.between({
-					from: '2000-01-01',
+					from: '2022-01-01',
 					to: Date.now(),
 				}),
 			},
