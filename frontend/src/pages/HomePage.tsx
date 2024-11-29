@@ -8,7 +8,7 @@ import { Post } from '../interface/Post';
 import Layout from '../components/layout/Layout';
 import { Paginated } from '../interface/Paginated';
 
-export const Home: React.FC = () => {
+export const HomePage: React.FC = () => {
 	const { isLoading, error, data } = useQuery<Paginated<Post>, AxiosError>({
 		queryKey: ['posts'],
 		queryFn: async () => {

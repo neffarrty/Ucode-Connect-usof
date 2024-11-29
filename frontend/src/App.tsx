@@ -12,20 +12,21 @@ import {
 	Register,
 	Verify,
 	GoogleOAuthSuccess,
-	Home,
-	Profile,
-	Posts,
+	HomePage,
+	ProfilePage,
+	PostsPage,
 } from './pages';
 import { theme } from './theme/theme';
 import NotFound from './components/errors/NotFound';
+import { PostPage } from './pages/PostPage';
 
 const App: React.FC = () => {
 	return (
 		<ThemeProvider theme={theme}>
 			<CssBaseline />
 			<Routes>
-				<Route path="/" element={<Home />} />
-				<Route path="/home" element={<Home />} />
+				<Route path="/" element={<HomePage />} />
+				<Route path="/home" element={<HomePage />} />
 				<Route path="/login" element={<Login />} />
 				<Route path="/register" element={<Register />} />
 				<Route path="/password-reset" element={<ForgotPassword />} />
@@ -42,8 +43,9 @@ const App: React.FC = () => {
 					path="/google-success/:token"
 					element={<GoogleOAuthSuccess />}
 				/>
-				<Route path="/posts" element={<Posts />} />
-				<Route path="/profile" element={<Profile />} />
+				<Route path="/posts" element={<PostsPage />} />
+				<Route path="/posts/:id" element={<PostPage />} />
+				<Route path="/profile" element={<ProfilePage />} />
 				<Route path="*" element={<NotFound />} />
 			</Routes>
 		</ThemeProvider>

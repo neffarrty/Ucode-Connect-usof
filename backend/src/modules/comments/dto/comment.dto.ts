@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { UserDto } from 'src/modules/users/dto';
 
 export class CommentDto {
 	@ApiProperty({
@@ -12,6 +13,11 @@ export class CommentDto {
 		example: 12,
 	})
 	authorId: number;
+
+	@ApiProperty({
+		description: "Comment's author",
+	})
+	author: Partial<UserDto>;
 
 	@ApiProperty({
 		description: 'Identifier of the post under which comment is posted',

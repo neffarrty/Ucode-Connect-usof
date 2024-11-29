@@ -5,7 +5,7 @@ import { ProfileStats } from '../components/profile/ProfileStats';
 import { ProfileUserInfo } from '../components/profile/ProfileUserInfo';
 import { ProfilePostsSlider } from '../components/profile/ProfilePostsSlider';
 
-export const Profile: React.FC = () => {
+export const ProfilePage: React.FC = () => {
 	return (
 		<Layout>
 			<Box

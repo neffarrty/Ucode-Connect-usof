@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import {
 	Slide,
 	Card,
@@ -13,16 +14,14 @@ import {
 	Tooltip,
 	Chip,
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import { Post } from '../../interface/Post';
-
 import { ArrowBackIos, ArrowForwardIos, Star } from '@mui/icons-material';
-import { formatDate } from '../../utils/dates';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { Paginated } from '../../interface/Paginated';
+import { Post } from '../../interface/Post';
 import { useSelector } from 'react-redux';
 import axios from '../../utils/axios';
+import { formatDate } from '../../utils/dates';
 
 const truncateText = (text: string, limit: number) => {
 	const words = text.split(' ');
@@ -55,15 +54,12 @@ export const ProfilePostsSlider: React.FC = () => {
 				`/users/${user.id}/posts?limit=5`,
 			);
 
-			console.log(data);
-
 			return data.data;
 		},
 	});
 
 	useEffect(() => {
 		if (!isLoading) {
-			console.log(data);
 			setPosts(data || []);
 		}
 	}, [data, isLoading]);

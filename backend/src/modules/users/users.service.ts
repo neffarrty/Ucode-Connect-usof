@@ -278,7 +278,7 @@ export class UsersService {
 			throw new ForbiddenException('Forbidden to update user');
 		}
 
-		await this.checkIfNotExist(dto.login, dto.email);
+		await this.checkIfNotExist(dto.login, dto.email, user);
 
 		if (dto.password) {
 			dto.password = await bcrypt.hash(dto.password, 10);
@@ -335,8 +335,12 @@ export class UsersService {
 		});
 	}
 
-	private async checkIfNotExist(login: string, email: string): Promise<void> {
-		if (login) {
+	private async checkIfNotExist(
+		login: string,
+		email: string,
+		user?: User,
+	): Promise<void> {
+		if (login && user?.login !== login) {
 			const userByLogin = await this.findByLogin(login);
 			if (userByLogin) {
 				throw new ConflictException(
@@ -345,7 +349,7 @@ export class UsersService {
 			}
 		}
 
-		if (email) {
+		if (email && user?.email !== email) {
 			const userByEmail = await this.findByEmail(email);
 			if (userByEmail) {
 				throw new ConflictException(

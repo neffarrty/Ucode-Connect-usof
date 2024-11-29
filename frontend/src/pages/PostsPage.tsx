@@ -16,15 +16,16 @@ import { Post } from '../interface/Post';
 import Layout from '../components/layout/Layout';
 import { Paginated } from '../interface/Paginated';
 import React, { useState } from 'react';
-import { PostsHeader } from '../components/PostsHeader';
+import { PostsPageHeader } from '../components/PostsPageHeader';
 
-const limits = [15, 30, 50];
-
-export const Posts: React.FC = () => {
+export const PostsPage: React.FC = () => {
 	const [page, setPage] = useState(1);
 	const [limit, setLimit] = useState(15);
 
-	const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+	const handleChange = (
+		_event: React.ChangeEvent<unknown>,
+		value: number,
+	) => {
 		setPage(value);
 	};
 
@@ -52,7 +53,7 @@ export const Posts: React.FC = () => {
 					flex: 1,
 				}}
 			>
-				<PostsHeader count={data?.meta.total || 0} />
+				<PostsPageHeader count={data?.meta.total || 0} />
 				{isLoading && (
 					<Box
 						sx={{
@@ -121,7 +122,7 @@ export const Posts: React.FC = () => {
 									Posts per page
 								</Typography>
 								<ButtonGroup variant="outlined">
-									{limits.map((lim) => (
+									{[15, 30, 50].map((lim) => (
 										<Button
 											onClick={() =>
 												handleLimitChange(lim)

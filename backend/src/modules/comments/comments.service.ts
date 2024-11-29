@@ -18,6 +18,14 @@ export class CommentsService {
 			where: {
 				id,
 			},
+			include: {
+				author: {
+					select: {
+						login: true,
+						avatar: true,
+					},
+				},
+			},
 		});
 
 		if (!comment) {
@@ -42,6 +50,14 @@ export class CommentsService {
 			where: {
 				id,
 			},
+			include: {
+				author: {
+					select: {
+						login: true,
+						avatar: true,
+					},
+				},
+			},
 			data: dto,
 		});
 	}
@@ -56,6 +72,14 @@ export class CommentsService {
 		return this.prisma.comment.delete({
 			where: {
 				id,
+			},
+			include: {
+				author: {
+					select: {
+						login: true,
+						avatar: true,
+					},
+				},
 			},
 		});
 	}

@@ -68,10 +68,11 @@ export class PostsService {
 							},
 						},
 					},
+					likes: {
+						where: { authorId: user.id },
+					},
 					bookmarks: {
-						where: {
-							userId: user.id,
-						},
+						where: { userId: user.id },
 					},
 					author: {
 						select: {
@@ -91,9 +92,10 @@ export class PostsService {
 		const pages = Math.ceil(count / limit);
 
 		return {
-			data: posts.map(({ bookmarks, ...post }) => ({
+			data: posts.map(({ bookmarks, likes, ...post }) => ({
 				...post,
 				bookmarked: bookmarks.some((fav) => fav.userId === user.id),
+				like: likes?.shift()?.type,
 			})),
 			meta: {
 				page,
@@ -120,6 +122,9 @@ export class PostsService {
 							},
 						},
 						bookmarks: { where: { userId: user.id } },
+						likes: {
+							where: { authorId: user.id },
+						},
 					}
 				: undefined,
 		});
@@ -128,11 +133,12 @@ export class PostsService {
 			throw new NotFoundException(`Post with id ${id} not found`);
 		}
 
-		const { bookmarks, ...result } = post;
+		const { bookmarks, likes, ...result } = post;
 
 		return {
 			...result,
 			bookmarked: user ? bookmarks.length > 0 : false,
+			like: likes?.shift()?.type,
 		};
 	}
 
@@ -246,6 +252,14 @@ export class PostsService {
 				orderBy: {
 					rating: 'desc',
 				},
+				include: {
+					author: {
+						select: {
+							login: true,
+							avatar: true,
+						},
+					},
+				},
 			}),
 			this.prisma.comment.count({ where }),
 		]);
@@ -280,6 +294,14 @@ export class PostsService {
 				postId: id,
 				authorId: user.id,
 				...dto,
+			},
+			include: {
+				author: {
+					select: {
+						login: true,
+						avatar: true,
+					},
+				},
 			},
 		});
 	}
