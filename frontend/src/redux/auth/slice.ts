@@ -1,12 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { login, register, refreshTokens, fetchUser } from './actions';
-
-interface User {
-	id: string;
-	login: string;
-	email: string;
-	avatar: string;
-}
+import { User } from '../../interface/User';
 
 interface AuthState {
 	user: User | null;
@@ -42,11 +36,14 @@ const authSlice = createSlice({
 			state,
 			action: PayloadAction<{ user: User; token: string }>,
 		) {
-			console.log(action.payload.user);
 			state.token = action.payload.token;
 			state.user = action.payload.user;
 			localStorage.setItem('token', action.payload.token);
 			localStorage.setItem('user', JSON.stringify(action.payload.user));
+		},
+		updateUser: (state, action) => {
+			state.user = { ...state.user, ...action.payload };
+			localStorage.setItem('user', JSON.stringify(state.user));
 		},
 	},
 	extraReducers: (builder) => {
@@ -59,6 +56,7 @@ const authSlice = createSlice({
 			(state, action: PayloadAction<any>) => {
 				state.loading = false;
 				state.success = true;
+				state.error = null;
 				state.user = action.payload.user;
 				state.token = action.payload.token;
 				localStorage.setItem(
@@ -82,6 +80,7 @@ const authSlice = createSlice({
 			(state, action: PayloadAction<any>) => {
 				state.success = true;
 				state.loading = false;
+				state.error = null;
 			},
 		);
 		builder.addCase(register.rejected, (state, action) => {
@@ -140,6 +139,6 @@ const authSlice = createSlice({
 	},
 });
 
-export const { setToken, logout, updateState } = authSlice.actions;
+export const { setToken, logout, updateState, updateUser } = authSlice.actions;
 
 export default authSlice.reducer;

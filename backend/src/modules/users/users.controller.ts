@@ -28,7 +28,11 @@ import {
 } from '@nestjs/swagger';
 import { UsersService } from 'src/modules/users/users.service';
 import { UserDto, CreateUserDto, UpdateUserDto, FileUploadDto } from './dto';
-import { PostDto } from 'src/modules/posts/dto';
+import {
+	FilteringOptionsDto,
+	PostDto,
+	SortingOptionsDto,
+} from 'src/modules/posts/dto';
 import { diskStorage } from 'multer';
 import { GetUser, Roles, ApiAuth } from 'src/decorators';
 import { generateFilename, imageFileFilter } from 'src/helpers/files-helper';
@@ -39,6 +43,7 @@ import {
 } from 'src/pagination';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Role, User } from '@prisma/client';
+import { CommentDto } from '../comments/dto';
 
 @ApiTags('users')
 @ApiAuth()
@@ -61,11 +66,59 @@ export class UsersController {
 	@Get('bookmarks')
 	@ApiOperation({ summary: 'Get all bookmarked posts for the current user' })
 	@ApiPaginatedResponse(PostDto)
-	async deletePostToBookmarks(
+	async getUserBookmarks(
 		@Query() paginationOptions: PaginationOptionsDto,
 		@GetUser() user: User,
 	) {
 		return this.userService.findBookmarks(paginationOptions, user);
+	}
+
+	@Get(':id/posts')
+	@ApiOperation({ summary: 'Get posts of specified user' })
+	@ApiParam({
+		name: 'id',
+		description: 'id of the user',
+	})
+	@ApiPaginatedResponse(PostDto)
+	@ApiNotFoundResponse({
+		description: 'User not found',
+	})
+	async getUserPosts(
+		@Query() paginationOptions: PaginationOptionsDto,
+		@Query() sortingOptions: SortingOptionsDto,
+		@Query() filteringOptions: FilteringOptionsDto,
+		@GetUser() user: User,
+	): Promise<Paginated<PostDto>> {
+		return this.userService.findPosts(
+			paginationOptions,
+			sortingOptions,
+			filteringOptions,
+			user,
+		);
+	}
+
+	@Get(':id/comments')
+	@ApiOperation({ summary: 'Get comments of specified user' })
+	@ApiParam({
+		name: 'id',
+		description: 'id of the user',
+	})
+	@ApiPaginatedResponse(CommentDto)
+	@ApiNotFoundResponse({
+		description: 'User not found',
+	})
+	async getUserComment(
+		@Query() paginationOptions: PaginationOptionsDto,
+		@Query() sortingOptions: SortingOptionsDto,
+		@Query() filteringOptions: FilteringOptionsDto,
+		@GetUser() user: User,
+	): Promise<Paginated<CommentDto>> {
+		return this.userService.findComments(
+			paginationOptions,
+			sortingOptions,
+			filteringOptions,
+			user,
+		);
 	}
 
 	@Get(':id')
@@ -120,7 +173,7 @@ export class UsersController {
 	@UseInterceptors(
 		FileInterceptor('image', {
 			storage: diskStorage({
-				destination: './uploads/avatars',
+				destination: './public/avatars',
 				filename: generateFilename,
 			}),
 			fileFilter: imageFileFilter,

@@ -18,6 +18,7 @@ import {
 import logo from '../../assets/logo.svg';
 import * as yup from 'yup';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const schema = yup.object().shape({
 	email: yup.string().required('Email is required'),
@@ -32,7 +33,9 @@ interface FormInput {
 const LoginForm: React.FC = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch<AppDispatch>();
-	const { loading, error } = useSelector((state: RootState) => state.auth);
+	const { user, loading, error } = useSelector(
+		(state: RootState) => state.auth,
+	);
 
 	const {
 		register,
@@ -44,8 +47,13 @@ const LoginForm: React.FC = () => {
 
 	const onSubmit = (data: FormInput) => {
 		dispatch(login(data));
-		navigate('/');
 	};
+
+	useEffect(() => {
+		if (user) {
+			navigate('/');
+		}
+	}, [user, navigate]);
 
 	return (
 		<Box

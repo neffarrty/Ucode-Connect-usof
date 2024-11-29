@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { AppDispatch } from '../redux/store';
-import { setToken, updateState } from '../redux/auth/slice';
-import { fetchUser } from '../redux/auth/actions';
+import { AppDispatch } from '../../redux/store';
+import { setToken, updateState } from '../../redux/auth/slice';
+import { fetchUser } from '../../redux/auth/actions';
 import { CircularProgress } from '@mui/material';
-import { RootState } from '../redux/store';
+import { RootState } from '../../redux/store';
 
 export const GoogleOAuthSuccess: React.FC = () => {
 	const { token } = useParams();

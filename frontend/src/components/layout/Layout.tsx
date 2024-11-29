@@ -19,9 +19,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 		>
 			<CssBaseline />
 			<Header />
-			<Box sx={{ display: 'flex', flex: 1, pt: 8 }}>
+			<Box sx={{ display: 'flex', flex: 1, pt: 8, height: '100%' }}>
 				<SideBar width={200} />
-				<Box sx={{ flexGrow: 1, p: 3 }}>{children}</Box>
+				<Box
+					sx={{
+						flexGrow: 1,
+						p: 3,
+					}}
+				>
+					{children}
+				</Box>
 			</Box>
 			<Footer />
 		</Box>

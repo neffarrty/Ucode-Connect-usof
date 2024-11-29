@@ -10,14 +10,7 @@ import {
 	Tooltip,
 	Skeleton,
 } from '@mui/material';
-import {
-	Star,
-	Forum,
-	ThumbDown,
-	ThumbDownOutlined,
-	ThumbUp,
-	ThumbUpOutlined,
-} from '@mui/icons-material';
+import { Star, Forum } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import axios from '../../utils/axios';
@@ -27,7 +20,7 @@ import { Comment } from '../../interface/Comment';
 import { Category } from '../../interface/Category';
 import { Paginated } from '../../interface/Paginated';
 import { PostCardActions } from './PostCardActions';
-import { formatDate } from '../../utils/format-date';
+import { formatDate } from '../../utils/dates';
 
 interface PostCardProps {
 	post: Post;
@@ -67,105 +60,103 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
 	}
 
 	return (
-		<>
-			<Card
+		<Card
+			sx={{
+				display: 'flex',
+				flexDirection: 'row',
+				position: 'relative',
+			}}
+		>
+			<Box sx={{ flex: 1 }}>
+				<CardHeader
+					avatar={<Avatar src={post.author.avatar} />}
+					title={post.author.login}
+					subheader={formatDate(new Date(post.createdAt))}
+				/>
+				<CardContent>
+					<Box>
+						<Box
+							sx={{
+								display: 'flex',
+								gap: 1,
+								color: 'text.secondary',
+							}}
+						>
+							{data?.categories.map((category) => (
+								<Tooltip
+									key={category.id}
+									title={category.description}
+								>
+									<Chip
+										component="a"
+										href={`http://localhost:3001/category/${category.id}`}
+										label={category.title}
+										variant="outlined"
+										size="small"
+										color="primary"
+										clickable
+									/>
+								</Tooltip>
+							))}
+						</Box>
+						<Typography
+							variant="h6"
+							sx={{ color: 'text.primary', mt: 1 }}
+						>
+							{post.title}
+						</Typography>
+						<Typography
+							variant="body2"
+							sx={{
+								color: 'text.secondary',
+								textAlign: 'justify',
+							}}
+						>
+							{truncateText(post.content, 50)}
+						</Typography>
+					</Box>
+				</CardContent>
+				<CardActions disableSpacing>
+					<PostCardActions post={post} />
+				</CardActions>
+			</Box>
+			<Box
 				sx={{
+					width: 80,
 					display: 'flex',
-					flexDirection: 'row',
-					position: 'relative',
+					flexDirection: 'column',
+					alignItems: 'center',
+					p: 2,
 				}}
 			>
-				<Box sx={{ flex: 1 }}>
-					<CardHeader
-						avatar={<Avatar src={post.author.avatar} />}
-						title={post.author.login}
-						subheader={formatDate(new Date(post.createdAt))}
-					/>
-					<CardContent>
-						<Box>
-							<Box
-								sx={{
-									display: 'flex',
-									gap: 1,
-									color: 'text.secondary',
-								}}
-							>
-								{data?.categories.map((category) => (
-									<Tooltip
-										key={category.id}
-										title={category.description}
-									>
-										<Chip
-											component="a"
-											href={`http://localhost:3001/category/${category.id}`}
-											label={category.title}
-											variant="outlined"
-											size="small"
-											color="primary"
-											clickable
-										/>
-									</Tooltip>
-								))}
-							</Box>
-							<Typography
-								variant="h6"
-								sx={{ color: 'text.primary', mt: 1 }}
-							>
-								{post.title}
-							</Typography>
-							<Typography
-								variant="body2"
-								sx={{
-									color: 'text.secondary',
-									textAlign: 'justify',
-								}}
-							>
-								{truncateText(post.content, 50)}
-							</Typography>
-						</Box>
-					</CardContent>
-					<CardActions disableSpacing>
-						<PostCardActions post={post} />
-					</CardActions>
-				</Box>
 				<Box
 					sx={{
-						width: 80,
 						display: 'flex',
 						flexDirection: 'column',
 						alignItems: 'center',
-						p: 2,
+						gap: 0.5,
+						mb: 2,
+						color: 'text.primary',
 					}}
 				>
-					<Box
-						sx={{
-							display: 'flex',
-							flexDirection: 'column',
-							alignItems: 'center',
-							gap: 0.5,
-							mb: 2,
-							color: 'text.primary',
-						}}
-					>
-						<Star color="primary" />
-						<Typography variant="body1">{post.rating}</Typography>
-					</Box>
-					<Box
-						sx={{
-							display: 'flex',
-							flexDirection: 'column',
-							alignItems: 'center',
-							gap: 0.5,
-							color: 'text.primary',
-						}}
-					>
-						<Forum color="action" />
-						<Typography variant="body1">
-							{data?.comments.meta.total}
-						</Typography>
-					</Box>
+					<Star color="primary" />
+					<Typography variant="body1">{post.rating}</Typography>
 				</Box>
-			</Card>
-		</>
+				<Box
+					sx={{
+						display: 'flex',
+						flexDirection: 'column',
+						alignItems: 'center',
+						gap: 0.5,
+						color: 'text.primary',
+					}}
+				>
+					<Forum color="action" />
+					<Typography variant="body1">
+						{data?.comments.meta.total}
+					</Typography>
+				</Box>
+			</Box>
+		</Card>
 	);
 };

@@ -13,10 +13,11 @@ import {
 	Verify,
 	GoogleOAuthSuccess,
 	Home,
+	Profile,
+	Posts,
 } from './pages';
 import { theme } from './theme/theme';
 import NotFound from './components/errors/NotFound';
-import { Posts } from './pages/Posts';
 
 const App: React.FC = () => {
 	return (
@@ -42,6 +43,7 @@ const App: React.FC = () => {
 					element={<GoogleOAuthSuccess />}
 				/>
 				<Route path="/posts" element={<Posts />} />
+				<Route path="/profile" element={<Profile />} />
 				<Route path="*" element={<NotFound />} />
 			</Routes>
 		</ThemeProvider>

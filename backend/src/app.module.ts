@@ -39,11 +39,6 @@ import redisConfig from './configs/redis.config';
 			serveRoot: '/avatars',
 			serveStaticOptions: { index: false },
 		}),
-		ServeStaticModule.forRoot({
-			rootPath: join(process.cwd(), 'public', 'images'),
-			serveRoot: '/images',
-			serveStaticOptions: { index: false },
-		}),
 		RedisModule.forRootAsync({
 			inject: [ConfigService],
 			useFactory: async (

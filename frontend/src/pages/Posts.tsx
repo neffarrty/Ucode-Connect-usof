@@ -16,7 +16,7 @@ import { Post } from '../interface/Post';
 import Layout from '../components/layout/Layout';
 import { Paginated } from '../interface/Paginated';
 import React, { useState } from 'react';
-import { PostsHeader } from './PostsHeader';
+import { PostsHeader } from '../components/PostsHeader';
 
 const limits = [15, 30, 50];
 

@@ -14,9 +14,9 @@ import * as bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 const USERS_NUMBER = 50;
-const POSTS_NUMBER = 150;
-const COMMENTS_NUMBER = 200;
-const LIKES_NUMBER = 1000;
+const POSTS_NUMBER = 1000;
+const COMMENTS_NUMBER = 2000;
+const LIKES_NUMBER = 150000;
 const CATEGORIES_NUMBER = 25;
 
 function getRandomCategories(
@@ -52,6 +52,10 @@ async function fakeUsers(): Promise<User[]> {
 				role: 'ADMIN',
 				verified: true,
 				avatar: process.env.DEFAULT_AVATAR_URL,
+				createdAt: faker.date.between({
+					from: '2000-01-01',
+					to: Date.now(),
+				}),
 			},
 			{
 				email: 'neffarrty@example.com',
@@ -59,6 +63,10 @@ async function fakeUsers(): Promise<User[]> {
 				password: await bcrypt.hash('securepass', 10),
 				verified: true,
 				avatar: process.env.DEFAULT_AVATAR_URL,
+				createdAt: faker.date.between({
+					from: '2000-01-01',
+					to: Date.now(),
+				}),
 			},
 		],
 	});
@@ -108,7 +116,7 @@ async function fakePosts(
 	categories: Category[],
 ): Promise<Post[]> {
 	const statuses = [
-		{ value: Status.ACTIVE, weight: 4 },
+		{ value: Status.ACTIVE, weight: 19 },
 		{ value: Status.INACTIVE, weight: 1 },
 	];
 
@@ -182,7 +190,7 @@ async function fakeLikes(
 	comments: Comment[],
 ): Promise<Like[]> {
 	const types = [
-		{ value: LikeType.LIKE, weight: 4 },
+		{ value: LikeType.LIKE, weight: 19 },
 		{ value: LikeType.DISLIKE, weight: 1 },
 	];
 

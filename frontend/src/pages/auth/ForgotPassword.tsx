@@ -13,10 +13,10 @@ import { AlternateEmail } from '@mui/icons-material';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from '@tanstack/react-query';
-import { AxiosError, AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
 import { useState } from 'react';
 import * as yup from 'yup';
-import axios from '../utils/axios';
+import axios from '../../utils/axios';
 
 const schema = yup.object().shape({
 	email: yup.string().required('Email is required'),
@@ -38,7 +38,7 @@ export const ForgotPassword: React.FC = () => {
 
 	const { mutate, isPending, error } = useMutation<
 		AxiosResponse,
-		AxiosError,
+		any,
 		FormInput
 	>({
 		mutationFn: (data) => axios.post('/auth/forgot-password', data),

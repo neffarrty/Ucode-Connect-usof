@@ -8,7 +8,7 @@ export const Header: React.FC = () => {
 	const { user } = useSelector((state: RootState) => state.auth);
 
 	return (
-		<Box sx={{ flexGrow: 1 }}>
+		<Box>
 			<AppBar
 				position="fixed"
 				sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}

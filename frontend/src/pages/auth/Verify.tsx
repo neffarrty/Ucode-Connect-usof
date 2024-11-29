@@ -7,22 +7,18 @@ import {
 	Typography,
 } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
-import { AxiosError, AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from '../utils/axios';
-import logo from '../assets/logo.svg';
+import axios from '../../utils/axios';
+import logo from '../../assets/logo.svg';
 import React from 'react';
 
 export const Verify: React.FC = () => {
 	const { token } = useParams();
 	const [success, setSuccess] = useState(false);
 
-	const { mutate, isPending, error } = useMutation<
-		AxiosResponse,
-		AxiosError,
-		void
-	>({
+	const { mutate, isPending, error } = useMutation<AxiosResponse, any, void>({
 		mutationFn: () => axios.post(`/auth/verify/${token}`),
 		onSuccess: () => {
 			setSuccess(true);

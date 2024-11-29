@@ -1,7 +1,7 @@
 import { Container } from '@mui/material';
-import LoginForm from '../components/auth/LoginForm';
+import RegisterForm from '../../components/auth/RegisterForm';
 
-export const Login: React.FC = () => {
+export const Register: React.FC = () => {
 	return (
 		<Container
 			component="main"
@@ -12,7 +12,7 @@ export const Login: React.FC = () => {
 				height: '100vh',
 			}}
 		>
-			<LoginForm />
+			<RegisterForm />
 		</Container>
 	);
 };

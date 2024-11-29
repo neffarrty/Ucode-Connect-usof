@@ -9,12 +9,17 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { UserDto, CreateUserDto, UpdateUserDto } from './dto';
-import { PostDto } from 'src/modules/posts/dto';
+import {
+	FilteringOptionsDto,
+	PostDto,
+	SortingOptionsDto,
+} from 'src/modules/posts/dto';
 import { Paginated, PaginationOptionsDto } from 'src/pagination';
-import { Role, User } from '@prisma/client';
+import { Prisma, Role, Status, User } from '@prisma/client';
 import fs from 'fs/promises';
 import path from 'path';
 import * as bcrypt from 'bcryptjs';
+import { CommentDto } from '../comments/dto';
 
 @Injectable()
 export class UsersService {
@@ -125,6 +130,133 @@ export class UsersService {
 		};
 	}
 
+	async findPosts(
+		{ page, limit }: PaginationOptionsDto,
+		{ sort, order }: SortingOptionsDto,
+		{ createdAt, categories, status, title }: FilteringOptionsDto,
+		user: User,
+	): Promise<Paginated<PostDto>> {
+		const where: Prisma.PostWhereInput = {
+			AND: [
+				{
+					categories: {
+						some: {
+							category: {
+								title: {
+									in: categories,
+								},
+							},
+						},
+					},
+				},
+				{
+					title: {
+						contains: title,
+						mode: 'insensitive',
+					},
+				},
+				{ createdAt },
+				{ status: user.role === Role.ADMIN ? status : Status.ACTIVE },
+				{ authorId: user.id },
+			],
+		};
+
+		const [posts, count] = await this.prisma.$transaction([
+			this.prisma.post.findMany({
+				where,
+				include: {
+					categories: {
+						select: {
+							category: {
+								select: {
+									id: true,
+									title: true,
+								},
+							},
+						},
+					},
+					bookmarks: {
+						where: {
+							userId: user.id,
+						},
+					},
+					author: {
+						select: {
+							login: true,
+							avatar: true,
+						},
+					},
+				},
+				orderBy: {
+					[sort]: order,
+				},
+				take: limit,
+				skip: (page - 1) * limit,
+			}),
+			this.prisma.post.count({ where }),
+		]);
+		const pages = Math.ceil(count / limit);
+
+		return {
+			data: posts.map(({ bookmarks, ...post }) => ({
+				...post,
+				bookmarked: bookmarks.some((fav) => fav.userId === user.id),
+			})),
+			meta: {
+				page,
+				total: count,
+				count: limit,
+				pages,
+				prev: page > 1 ? page - 1 : null,
+				next: page < pages ? page + 1 : null,
+			},
+		};
+	}
+
+	async findComments(
+		{ page, limit }: PaginationOptionsDto,
+		{ sort, order }: SortingOptionsDto,
+		{ createdAt }: FilteringOptionsDto,
+		user: User,
+	): Promise<Paginated<CommentDto>> {
+		const where: Prisma.CommentWhereInput = {
+			AND: [{ createdAt }, { authorId: user.id }],
+		};
+
+		const [comments, count] = await this.prisma.$transaction([
+			this.prisma.comment.findMany({
+				where,
+				include: {
+					author: {
+						select: {
+							login: true,
+							avatar: true,
+						},
+					},
+				},
+				orderBy: {
+					[sort]: order,
+				},
+				take: limit,
+				skip: (page - 1) * limit,
+			}),
+			this.prisma.comment.count({ where }),
+		]);
+		const pages = Math.ceil(count / limit);
+
+		return {
+			data: comments,
+			meta: {
+				page,
+				total: count,
+				count: limit,
+				pages,
+				prev: page > 1 ? page - 1 : null,
+				next: page < pages ? page + 1 : null,
+			},
+		};
+	}
+
 	async create(dto: CreateUserDto): Promise<UserDto> {
 		const { login, email } = dto;
 
@@ -182,12 +314,12 @@ export class UsersService {
 		const defaultUrl = this.config.get<string>('DEFAULT_AVATAR_URL');
 		const appBaseUrl = this.config.get<string>('APP_BASE_URL');
 
-		if (user.avatar !== defaultUrl) {
+		if (
+			user.avatar !== defaultUrl &&
+			this.isInternalUrl(user.avatar, appBaseUrl)
+		) {
 			try {
-				console.log(user.avatar);
-				await fs.unlink(
-					`uploads/avatars/${path.basename(user.avatar)}`,
-				);
+				await fs.unlink(`public/avatars/${path.basename(user.avatar)}`);
 			} catch (err) {
 				throw new InternalServerErrorException('Failed to delete file');
 			}
@@ -220,6 +352,14 @@ export class UsersService {
 					`User with email ${email} already exists`,
 				);
 			}
+		}
+	}
+
+	private isInternalUrl(url: string, baseUrl: string): boolean {
+		try {
+			return new URL(url).origin === new URL(baseUrl).origin;
+		} catch {
+			return false;
 		}
 	}
 }

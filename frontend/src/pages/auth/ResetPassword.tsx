@@ -12,10 +12,10 @@ import { useForm } from 'react-hook-form';
 import { AlternateEmail } from '@mui/icons-material';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from '@tanstack/react-query';
-import { AxiosError, AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from '../utils/axios';
+import axios from '../../utils/axios';
 import * as yup from 'yup';
 
 const schema = yup.object().shape({
@@ -50,7 +50,7 @@ export const ResetPassword: React.FC = () => {
 
 	const { mutate, isPending, error } = useMutation<
 		AxiosResponse,
-		AxiosError,
+		any,
 		{ password: string }
 	>({
 		mutationFn: (data) => axios.post(`/auth/password-reset/${token}`, data),

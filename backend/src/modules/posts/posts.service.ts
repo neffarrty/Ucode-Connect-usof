@@ -63,6 +63,7 @@ export class PostsService {
 								select: {
 									id: true,
 									title: true,
+									description: true,
 								},
 							},
 						},
