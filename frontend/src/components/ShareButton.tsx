@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { SharePopover } from './SharePopover';
 import { IconButton, Tooltip } from '@mui/material';
 import { Share } from '@mui/icons-material';
+import { SharePopover } from './SharePopover';
 
 interface ShareButtonProps {
 	url: string;

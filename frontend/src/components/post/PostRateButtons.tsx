@@ -1,3 +1,4 @@
+import React from 'react';
 import { Box, IconButton, Stack, Tooltip, Typography } from '@mui/material';
 import { ThumbUp, ThumbDown } from '@mui/icons-material';
 import { useMutation } from '@tanstack/react-query';

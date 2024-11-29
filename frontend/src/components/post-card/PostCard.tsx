@@ -1,3 +1,4 @@
+import React from 'react';
 import {
 	Card,
 	CardHeader,
@@ -15,10 +16,7 @@ import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import axios from '../../utils/axios';
 
-import { Post } from '../../interface/Post';
-import { Comment } from '../../interface/Comment';
-import { Category } from '../../interface/Category';
-import { Paginated } from '../../interface/Paginated';
+import { Post, Comment, Category, Paginated } from '../../interface';
 import { PostCardActions } from './PostCardActions';
 import { formatDate } from '../../utils/dates';
 

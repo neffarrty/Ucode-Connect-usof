@@ -1,3 +1,4 @@
+import React from 'react';
 import {
 	Avatar,
 	Box,
@@ -10,12 +11,11 @@ import {
 	TextField,
 	Typography,
 } from '@mui/material';
-import { Paginated } from '../../interface/Paginated';
-import axios from '../../utils/axios';
-import { AxiosError } from 'axios';
 import { useQuery } from '@tanstack/react-query';
-import { Comment } from '../../interface/Comment';
+import { Paginated, Comment } from '../../interface';
 import { formatDate } from '../../utils/dates';
+import { AxiosError } from 'axios';
+import axios from '../../utils/axios';
 
 interface PostCommentsProps {
 	postId: number;

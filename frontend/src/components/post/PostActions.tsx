@@ -1,3 +1,4 @@
+import React from 'react';
 import { Stack } from '@mui/material';
 import { Post } from '../../interface/Post';
 import { ShareButton } from '../ShareButton';

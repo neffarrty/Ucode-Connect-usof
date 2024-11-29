@@ -1,9 +1,7 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { LineChart } from '@mui/x-charts';
-import { Paginated } from '../../interface/Paginated';
-import { Post } from '../../interface/Post';
-import { User } from '../../interface/User';
+import { useQuery } from '@tanstack/react-query';
+import { Paginated, Post, User } from '../../interface';
 import { AxiosError } from 'axios';
 import axios from '../../utils/axios';
 

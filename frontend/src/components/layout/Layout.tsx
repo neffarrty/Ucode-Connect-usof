@@ -8,7 +8,7 @@ interface LayoutProps {
 	children: React.ReactNode;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+export const Layout: React.FC<LayoutProps> = ({ children }) => {
 	return (
 		<Box
 			sx={{
@@ -34,5 +34,3 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 		</Box>
 	);
 };
-
-export default Layout;

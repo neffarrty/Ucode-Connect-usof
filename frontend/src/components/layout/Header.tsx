@@ -1,3 +1,4 @@
+import React from 'react';
 import { Box, AppBar, Toolbar, Typography, Avatar, Badge } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
@@ -38,16 +39,11 @@ export const Header: React.FC = () => {
 						>
 							{user?.login}
 						</Typography>
-						<Badge
-							overlap="circular"
-							anchorOrigin={{
-								vertical: 'bottom',
-								horizontal: 'right',
-							}}
-							badgeContent={<AdminPanelSettingsIcon />}
-						>
-							<Avatar alt={user?.login} src={user?.avatar} />
-						</Badge>
+						<Avatar
+							alt={user?.login}
+							src={user?.avatar}
+							sx={{ border: '2px solid #fff' }}
+						/>
 					</Box>
 				</Toolbar>
 			</AppBar>

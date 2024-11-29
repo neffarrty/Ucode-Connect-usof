@@ -16,10 +16,9 @@ import {
 } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos, Star } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
-import { Paginated } from '../../interface/Paginated';
-import { Post } from '../../interface/Post';
+import { Paginated, Post } from '../../interface/';
 import { useSelector } from 'react-redux';
+import { AxiosError } from 'axios';
 import axios from '../../utils/axios';
 import { formatDate } from '../../utils/dates';
 

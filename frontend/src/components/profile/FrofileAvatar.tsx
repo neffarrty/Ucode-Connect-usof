@@ -1,4 +1,4 @@
-import { AddAPhoto } from '@mui/icons-material';
+import React, { useState } from 'react';
 import {
 	Alert,
 	Avatar,
@@ -8,12 +8,12 @@ import {
 	Snackbar,
 	SnackbarCloseReason,
 } from '@mui/material';
+import { AddAPhoto } from '@mui/icons-material';
 import { useMutation } from '@tanstack/react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { User } from '../../interface/User';
 import axios from '../../utils/axios';
 import { updateUser } from '../../redux/auth/slice';
-import { useState } from 'react';
 
 export const ProfileAvatar: React.FC = () => {
 	const [openSnackBar, setOpenSnackBar] = useState(false);

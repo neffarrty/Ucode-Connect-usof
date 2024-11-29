@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
 	Alert,
 	Box,
@@ -9,14 +10,12 @@ import {
 	Typography,
 } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-import { PostCard } from '../components/post-card/PostCard';
+import { Post, Paginated } from '../interface';
 import { AxiosError } from 'axios';
 import axios from '../utils/axios';
-import { Post } from '../interface/Post';
-import Layout from '../components/layout/Layout';
-import { Paginated } from '../interface/Paginated';
-import React, { useState } from 'react';
+import { Layout } from '../components/layout/Layout';
 import { PostsPageHeader } from '../components/PostsPageHeader';
+import { PostCard } from '../components/post-card/PostCard';
 
 export const PostsPage: React.FC = () => {
 	const [page, setPage] = useState(1);

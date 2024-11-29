@@ -1,14 +1,14 @@
 import React from 'react';
 import { Alert, Box, Divider, Paper, Stack, Typography } from '@mui/material';
-import Layout from '../components/layout/Layout';
-import axios from '../utils/axios';
 import { useQuery } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
 import { useParams } from 'react-router-dom';
 import { Post } from '../interface/Post';
+import { AxiosError } from 'axios';
+import axios from '../utils/axios';
 import { PostComments } from '../components/post/PostComments';
 import { PostActions } from '../components/post/PostActions';
 import { PostHeader } from '../components/post/PostHeader';
+import { Layout } from '../components/layout/Layout';
 
 export const PostPage: React.FC = () => {
 	const { id } = useParams<{ id: string }>();
@@ -44,7 +44,7 @@ export const PostPage: React.FC = () => {
 						<PostHeader post={post} />
 					</Paper>
 					<Paper sx={{ p: 2 }}>
-						<Stack direction="column">
+						<Stack direction="column" sx={{ mb: 2 }}>
 							<Typography
 								variant="h3"
 								sx={{ color: 'primary.dark' }}

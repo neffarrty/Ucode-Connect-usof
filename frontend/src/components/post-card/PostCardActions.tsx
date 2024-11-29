@@ -1,18 +1,6 @@
-import { Bookmark, BookmarkBorder } from '@mui/icons-material';
-import {
-	Alert,
-	Box,
-	Button,
-	IconButton,
-	Snackbar,
-	SnackbarCloseReason,
-	Tooltip,
-} from '@mui/material';
-import { useState } from 'react';
+import React from 'react';
+import { Box, Button } from '@mui/material';
 import { Post } from '../../interface/Post';
-import { useMutation } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
-import axios from '../../utils/axios';
 import { ShareButton } from '../ShareButton';
 import { BookmarkButton } from '../post/BookmarkButton';
 

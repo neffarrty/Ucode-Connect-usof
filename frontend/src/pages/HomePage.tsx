@@ -1,12 +1,12 @@
+import React from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-import { PostCard } from '../components/post-card/PostCard';
+import { Post, Paginated } from '../interface';
 import { AxiosError } from 'axios';
 import axios from '../utils/axios';
+import { Layout } from '../components/layout/Layout';
+import { PostCard } from '../components/post-card/PostCard';
 import { PopularCategoriesList } from '../components/PopularCategoriesList';
-import { Post } from '../interface/Post';
-import Layout from '../components/layout/Layout';
-import { Paginated } from '../interface/Paginated';
 
 export const HomePage: React.FC = () => {
 	const { isLoading, error, data } = useQuery<Paginated<Post>, AxiosError>({

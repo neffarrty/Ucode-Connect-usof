@@ -1,11 +1,11 @@
+import React from 'react';
 import { Avatar, Stack, Typography } from '@mui/material';
-import { formatDate } from '../../utils/dates';
 import { AccessTime } from '@mui/icons-material';
-import { Post } from '../../interface/Post';
-import { Category } from '../../interface/Category';
-import axios from '../../utils/axios';
+import { Post, Category } from '../../interface';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
+import axios from '../../utils/axios';
+import { formatDate } from '../../utils/dates';
 
 interface PostPageHeaderProps {
 	post: Post;

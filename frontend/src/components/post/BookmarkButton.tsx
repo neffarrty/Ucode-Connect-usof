@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
 	Alert,
 	Box,
@@ -11,7 +12,6 @@ import { Bookmark, BookmarkBorder } from '@mui/icons-material';
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import axios from '../../utils/axios';
-import { useState } from 'react';
 
 interface BookmarkButtonProps {
 	post: Post;
