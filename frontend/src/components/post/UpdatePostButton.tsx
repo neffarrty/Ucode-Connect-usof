@@ -1,34 +1,50 @@
 import React, { useState } from 'react';
 import {
-	Stack,
-	Paper,
-	Typography,
-	Divider,
+	Alert,
+	Box,
 	Button,
+	Chip,
+	CircularProgress,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogTitle,
+	Divider,
+	IconButton,
+	MenuItem,
+	OutlinedInput,
+	Select,
+	SelectChangeEvent,
+	Slide,
+	Stack,
 	Switch,
 	TextField,
-	Box,
-	Select,
-	OutlinedInput,
-	SelectChangeEvent,
-	Chip,
-	MenuItem,
-	CircularProgress,
-	Alert,
+	Typography,
 } from '@mui/material';
-import { Layout } from '../components/layout/Layout';
-import { Category } from '../interface/Category';
-import { Cancel } from '@mui/icons-material';
+import { Cancel, Edit } from '@mui/icons-material';
+import { TransitionProps } from '@mui/material/transitions';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { Category, Post } from '../../interface';
+import axios from '../../utils/axios';
+import { AxiosError } from 'axios';
 import MarkdownIt from 'markdown-it';
 import MdEditor from 'react-markdown-editor-lite';
 import 'react-markdown-editor-lite/lib/index.css';
-import axios from '../utils/axios';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
-import { Post } from '../interface';
-import { useNavigate } from 'react-router-dom';
+
+const Transition = React.forwardRef(function Transition(
+	props: TransitionProps & {
+		children: React.ReactElement<any, any>;
+	},
+	ref: React.Ref<unknown>,
+) {
+	return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const parser = new MarkdownIt();
+
+interface UpdatePostButtonProps {
+	post: Post;
+}
 
 interface PostInput {
 	title: string;
@@ -37,14 +53,16 @@ interface PostInput {
 	categories: string[];
 }
 
-export const CreatePostPage: React.FC = () => {
-	const client = useQueryClient();
-	const navigate = useNavigate();
-	const [content, setContent] = useState<string>('');
-	const [title, setTitle] = useState<string>('');
-	const [status, setStatus] = useState<'ACTIVE' | 'INACTIVE'>('ACTIVE');
-	const [postCategories, setPostCategories] = useState<string[]>([]);
+export const UpdatePostButton: React.FC<UpdatePostButtonProps> = ({ post }) => {
+	const [content, setContent] = useState<string>(post.content);
+	const [title, setTitle] = useState<string>(post.title);
+	const [status, setStatus] = useState<'ACTIVE' | 'INACTIVE'>(post.status);
+	const [postCategories, setPostCategories] = useState<string[]>(
+		post.categories.map(({ category }) => category.title),
+	);
 	const [error, setError] = useState<string | null>(null);
+
+	const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
 
 	const { isLoading, data: categories } = useQuery<Category[], AxiosError>({
 		queryKey: ['categories'],
@@ -54,26 +72,19 @@ export const CreatePostPage: React.FC = () => {
 		},
 	});
 
-	const { mutate, isPending } = useMutation<Post, any, PostInput>({
-		mutationKey: ['create_post'],
-		mutationFn: async (post: PostInput) => {
-			const { data } = await axios.post('/posts', post);
-			return data;
+	const { mutate, isPending } = useMutation<void, any, PostInput>({
+		mutationKey: ['update_post', post.id],
+		mutationFn: async (data: PostInput) => {
+			await axios.patch<Post>(`/posts/${post.id}`, data);
 		},
-		onSuccess: (post: Post) => {
-			client.invalidateQueries({ queryKey: ['create_post'] });
-			navigate(`/posts/${post.id}`);
-		},
-		onError: (err) => {
-			if (err instanceof AxiosError) {
-				setError(
-					err.response?.data?.message || 'Failed to create post.',
-				);
-			} else {
-				setError('An unexpected error occurred.');
-			}
+		onSuccess: () => {
+			setOpenUpdateDialog(false);
 		},
 	});
+
+	const handleUpdateClose = () => {
+		setOpenUpdateDialog(false);
+	};
 
 	const handleSubmit = () => {
 		if (!title.trim() || !content.trim()) {
@@ -109,12 +120,22 @@ export const CreatePostPage: React.FC = () => {
 	};
 
 	return (
-		<Layout>
-			<Stack gap={2} sx={{ maxWidth: 900, margin: '0 auto', padding: 2 }}>
-				<Typography variant="h4" sx={{ color: 'primary.main' }}>
-					Create Post
-				</Typography>
-				<Paper sx={{ p: 2 }}>
+		<Box>
+			<IconButton onClick={() => setOpenUpdateDialog(true)}>
+				<Edit sx={{ color: 'primary.dark' }} />
+			</IconButton>
+			<Dialog
+				open={openUpdateDialog}
+				onClose={() => setOpenUpdateDialog(false)}
+				component="form"
+				TransitionComponent={Transition}
+				fullWidth
+				maxWidth="md"
+			>
+				<DialogTitle sx={{ color: 'white', bgcolor: 'primary.main' }}>
+					Edit post
+				</DialogTitle>
+				<DialogContent>
 					<Stack>
 						{isLoading ? (
 							<CircularProgress
@@ -233,32 +254,26 @@ export const CreatePostPage: React.FC = () => {
 									direction="row"
 									justifyContent="end"
 									gap={1}
-								>
-									<Button
-										variant="outlined"
-										color="secondary"
-										onClick={() => navigate('/posts')}
-									>
-										Cancel
-									</Button>
-									<Button
-										variant="contained"
-										color="primary"
-										onClick={handleSubmit}
-										disabled={isPending}
-									>
-										{isPending ? (
-											<CircularProgress />
-										) : (
-											'Submit'
-										)}
-									</Button>
-								</Stack>
+								></Stack>
 							</Stack>
 						)}
 					</Stack>
-				</Paper>
-			</Stack>
-		</Layout>
+				</DialogContent>
+				<DialogActions sx={{ px: 3, mb: 1 }}>
+					<Button onClick={handleUpdateClose} color="primary">
+						{'Cancel'}
+					</Button>
+					<Button
+						type="submit"
+						variant="contained"
+						color="primary"
+						disabled={isPending}
+						onClick={handleSubmit}
+					>
+						{isPending ? <CircularProgress /> : 'Submit'}
+					</Button>
+				</DialogActions>
+			</Dialog>
+		</Box>
 	);
 };

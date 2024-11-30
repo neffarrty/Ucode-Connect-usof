@@ -36,7 +36,6 @@ export const UpdateCommentButton: React.FC<UpdateCommentButtonProps> = ({
 	comment,
 }) => {
 	const client = useQueryClient();
-	const [content, setContent] = useState<string>(comment.content);
 	const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
 
 	const {
@@ -50,11 +49,8 @@ export const UpdateCommentButton: React.FC<UpdateCommentButtonProps> = ({
 		},
 	});
 
-	const { mutate: updateComment, isPending } = useMutation<
-		void,
-		any,
-		Partial<Comment>
-	>({
+	const { mutate, isPending } = useMutation<void, any, Partial<Comment>>({
+		mutationKey: ['update_comment', comment.id],
 		mutationFn: async (data: Partial<Comment>) => {
 			await axios.patch<Comment>(`/comments/${comment.id}`, data);
 		},
@@ -70,8 +66,7 @@ export const UpdateCommentButton: React.FC<UpdateCommentButtonProps> = ({
 	};
 
 	const handleUpdateSubmit = (data: { content: string }) => {
-		console.log(data.content);
-		updateComment(data);
+		mutate(data);
 	};
 
 	return (

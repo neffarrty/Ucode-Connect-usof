@@ -11,13 +11,17 @@ import {
 } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
+import MarkdownIt from 'markdown-it';
+import DOMPurify from 'dompurify';
 import { Post } from '../interface/Post';
 import { AxiosError } from 'axios';
 import axios from '../utils/axios';
-import { PostComments } from '../components/post/PostComments';
+import { CommentsList } from '../components/comment/CommentsList';
 import { PostActions } from '../components/post/PostActions';
 import { PostHeader } from '../components/post/PostHeader';
 import { Layout } from '../components/layout/Layout';
+
+const parser = new MarkdownIt();
 
 export const PostPage: React.FC = () => {
 	const { id } = useParams<{ id: string }>();
@@ -79,18 +83,20 @@ export const PostPage: React.FC = () => {
 								))}
 							</Stack>
 							<Divider sx={{ mt: 1 }} />
-							<Typography
-								variant="body1"
-								sx={{ marginTop: 2, textAlign: 'justify' }}
-							>
-								{post.content}
-							</Typography>
+							<Box
+								dangerouslySetInnerHTML={{
+									__html: DOMPurify.sanitize(
+										parser.render(post.content),
+									),
+								}}
+								style={{ marginTop: 16, textAlign: 'justify' }}
+							/>
 						</Stack>
 						<PostActions post={post} />
 					</Paper>
 					<Divider sx={{ my: 1 }} />
 					<Box>
-						<PostComments postId={post.id} />
+						<CommentsList postId={post.id} />
 					</Box>
 				</Stack>
 			)}

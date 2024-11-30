@@ -74,10 +74,12 @@ export const PostsPage: React.FC = () => {
 		queryFn: async () => {
 			const params = cleanFilters(filters);
 
-			console.log(params);
-
 			const response = await axios.get<Paginated<Post>>('/posts', {
-				params,
+				params: {
+					...params,
+					page,
+					limit,
+				},
 			});
 			return response.data;
 		},

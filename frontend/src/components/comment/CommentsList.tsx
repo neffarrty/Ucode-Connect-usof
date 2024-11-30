@@ -4,14 +4,14 @@ import { useQuery } from '@tanstack/react-query';
 import { Paginated, Comment } from '../../interface';
 import { AxiosError } from 'axios';
 import axios from '../../utils/axios';
-import { PostCommentCard } from './PostCommentCard';
+import { CommentCard } from './CommentCard';
 import { CreateCommentForm } from './AddCommentForm';
 
 interface PostCommentsProps {
 	postId: number;
 }
 
-export const PostComments: React.FC<PostCommentsProps> = ({ postId }) => {
+export const CommentsList: React.FC<PostCommentsProps> = ({ postId }) => {
 	const { data: comments, isLoading } = useQuery<
 		Paginated<Comment>,
 		AxiosError
@@ -35,7 +35,7 @@ export const PostComments: React.FC<PostCommentsProps> = ({ postId }) => {
 			) : (
 				<Box>
 					{comments?.data.map((comment) => (
-						<PostCommentCard
+						<CommentCard
 							key={comment.id}
 							comment={comment}
 							postId={postId}

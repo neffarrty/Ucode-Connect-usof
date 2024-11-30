@@ -130,7 +130,6 @@ const authSlice = createSlice({
 			state.error = action.payload as string;
 		});
 		builder.addCase(logout.pending, (state) => {
-			console.log('pending');
 			state.loading = true;
 		});
 		builder.addCase(logout.fulfilled, (state) => {
@@ -142,7 +141,6 @@ const authSlice = createSlice({
 			localStorage.removeItem('token');
 		});
 		builder.addCase(logout.rejected, (state, action) => {
-			console.log('rejected');
 			state.loading = false;
 			state.error = action.payload || 'Failed to logout';
 		});

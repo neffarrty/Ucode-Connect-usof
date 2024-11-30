@@ -69,22 +69,6 @@ export const SideBar: React.FC<SideBarProps> = ({ width }) => {
 						<ListItemText primary="Categories" />
 					</ListItemButton>
 				</List>
-				<Divider />
-				<List
-					sx={{
-						width: '100%',
-						bgcolor: 'background.paper',
-						mt: 'auto',
-					}}
-					component="nav"
-				>
-					<ListItemButton>
-						<ListItemIcon>
-							<Logout />
-						</ListItemIcon>
-						<ListItemText primary="Log out" />
-					</ListItemButton>
-				</List>
 			</Box>
 		</Drawer>
 	);

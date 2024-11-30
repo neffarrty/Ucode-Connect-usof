@@ -21,7 +21,7 @@ export const CreateCommentForm: React.FC<CreateCommentFormProps> = ({
 	const [content, setContent] = useState<string>('');
 	const client = useQueryClient();
 
-	const { mutate: createComment, isPending } = useMutation<
+	const { mutate, isPending } = useMutation<
 		Comment,
 		AxiosError,
 		{ content: string },
@@ -49,7 +49,7 @@ export const CreateCommentForm: React.FC<CreateCommentFormProps> = ({
 
 	const handleSubmit = () => {
 		if (content.trim()) {
-			createComment({ content });
+			mutate({ content });
 			setContent('');
 		}
 	};

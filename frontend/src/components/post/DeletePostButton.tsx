@@ -12,9 +12,10 @@ import {
 } from '@mui/material';
 import { Delete } from '@mui/icons-material';
 import { TransitionProps } from '@mui/material/transitions';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Comment, Paginated } from '../../interface';
+import { useMutation } from '@tanstack/react-query';
+import { Comment, Paginated, Post } from '../../interface';
 import axios from '../../utils/axios';
+import { useNavigate } from 'react-router-dom';
 
 const Transition = React.forwardRef(function Transition(
 	props: TransitionProps & {
@@ -25,46 +26,32 @@ const Transition = React.forwardRef(function Transition(
 	return <Slide direction="up" ref={ref} {...props} />;
 });
 
-interface DeleteCommentButtonProps {
-	postId: number;
-	comment: Comment;
+interface DeletePostButtonProps {
+	post: Post;
 }
 
-export const DeleteCommentButton: React.FC<DeleteCommentButtonProps> = ({
-	postId,
-	comment,
-}) => {
-	const client = useQueryClient();
+export const DeletePostButton: React.FC<DeletePostButtonProps> = ({ post }) => {
+	const navigate = useNavigate();
 	const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
-	const { mutate: deleteComment, isPending } = useMutation<
-		Comment,
+	const { mutate, isPending } = useMutation<
+		void,
 		any,
 		void,
 		{ previousComments: Paginated<Comment> | undefined }
 	>({
+		mutationKey: ['delete_post', post.id],
 		mutationFn: async () => {
-			const { data } = await axios.delete<Comment>(
-				`/comments/${comment.id}`,
-			);
-			return data;
+			await axios.delete<void>(`/posts/${post.id}`);
 		},
 		onSuccess: () => {
-			client.invalidateQueries({ queryKey: ['comments', postId] });
 			setOpenDeleteDialog(false);
-		},
-		onError: (_error, _comment, context) => {
-			if (context?.previousComments) {
-				client.setQueryData(
-					['comments', postId],
-					context.previousComments,
-				);
-			}
+			navigate('/posts');
 		},
 	});
 
 	const handleSubmit = () => {
-		deleteComment();
+		mutate();
 	};
 
 	return (
@@ -83,12 +70,12 @@ export const DeleteCommentButton: React.FC<DeleteCommentButtonProps> = ({
 				TransitionComponent={Transition}
 			>
 				<DialogTitle sx={{ color: 'white', bgcolor: 'primary.main' }}>
-					Delete comment
+					Delete post
 				</DialogTitle>
 				<DialogContent>
 					<DialogContentText sx={{ textAlign: 'justify', pt: 2 }}>
-						Are you sure you want to delete this comment? This
-						action cannot be undone.
+						Are you sure you want to delete this post? This action
+						cannot be undone.
 					</DialogContentText>
 				</DialogContent>
 				<DialogActions>

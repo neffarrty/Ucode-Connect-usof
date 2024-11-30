@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { Create, Search, FilterAlt } from '@mui/icons-material';
 import { PostFilters } from '../pages';
+import { useNavigate } from 'react-router-dom';
 
 interface PostsPageHeaderProps {
 	count: number;
@@ -25,6 +26,7 @@ export const PostsPageHeader: React.FC<PostsPageHeaderProps> = ({
 	setFilters,
 	setPage,
 }) => {
+	const navigate = useNavigate();
 	// const { isLoading, error, data } = useQuery<Paginated<Post>, AxiosError>({
 	// 	queryKey: ['posts', page, limit, filters],
 	// 	queryFn: async () => {
@@ -87,7 +89,11 @@ export const PostsPageHeader: React.FC<PostsPageHeaderProps> = ({
 				<Typography variant="h4" color="primary.dark">
 					All posts
 				</Typography>
-				<Button variant="outlined" startIcon={<Create />}>
+				<Button
+					variant="outlined"
+					startIcon={<Create />}
+					onClick={() => navigate('/posts/new')}
+				>
 					Create post
 				</Button>
 			</Box>

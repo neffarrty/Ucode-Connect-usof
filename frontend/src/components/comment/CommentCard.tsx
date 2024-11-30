@@ -1,27 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
 	Avatar,
 	Box,
-	Button,
 	Card,
 	CardContent,
 	CardHeader,
-	Dialog,
-	DialogActions,
-	DialogContent,
-	DialogContentText,
-	DialogTitle,
-	IconButton,
-	Slide,
 	Stack,
 	Typography,
 } from '@mui/material';
-import { Delete, Edit } from '@mui/icons-material';
-import { TransitionProps } from '@mui/material/transitions';
-import { Comment, Paginated } from '../../interface';
+import { Comment } from '../../interface';
 import { formatDate } from '../../utils/dates';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from '../../utils/axios';
 import { useSelector } from 'react-redux';
 import { DeleteCommentButton } from './DeleteCommentButton';
 import { UpdateCommentButton } from './UpdateCommentButton';
@@ -31,7 +19,7 @@ interface PostCommentCardProps {
 	comment: Comment;
 }
 
-export const PostCommentCard: React.FC<PostCommentCardProps> = ({
+export const CommentCard: React.FC<PostCommentCardProps> = ({
 	postId,
 	comment,
 }) => {

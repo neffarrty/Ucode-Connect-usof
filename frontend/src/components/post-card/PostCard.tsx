@@ -77,6 +77,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
 								display: 'flex',
 								gap: 1,
 								color: 'text.secondary',
+								mb: 2,
 							}}
 						>
 							{data?.categories.map((category) => (
