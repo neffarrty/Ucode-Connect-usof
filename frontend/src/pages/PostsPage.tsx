@@ -17,11 +17,33 @@ import { Layout } from '../components/layout/Layout';
 import { PostsPageHeader } from '../components/PostsPageHeader';
 import { PostCard } from '../components/post-card/PostCard';
 
+export interface PostFilters {
+	sort: string;
+	order: string;
+	title: string;
+	categories: string[];
+	createdAt: {
+		gte: Date | null;
+		lte: Date | null;
+	};
+}
+
 export const PostsPage: React.FC = () => {
 	const [page, setPage] = useState(1);
 	const [limit, setLimit] = useState(15);
 
-	const handleChange = (
+	const [filters, setFilters] = useState<PostFilters>({
+		sort: 'createdAt',
+		order: 'desc',
+		title: '',
+		categories: [],
+		createdAt: {
+			gte: null,
+			lte: null,
+		},
+	});
+
+	const handlePageChange = (
 		_event: React.ChangeEvent<unknown>,
 		value: number,
 	) => {
@@ -29,16 +51,34 @@ export const PostsPage: React.FC = () => {
 	};
 
 	const handleLimitChange = (value: number) => {
-		setPage(1);
 		setLimit(value);
+		setPage(1);
+	};
+
+	const cleanFilters = (filters: PostFilters) => {
+		const cleaned: Partial<PostFilters> = {};
+
+		if (filters.sort) cleaned.sort = filters.sort;
+		if (filters.order) cleaned.order = filters.order;
+		if (filters.title.trim()) cleaned.title = filters.title;
+		if (filters.categories.length > 0)
+			cleaned.categories = filters.categories;
+		if (filters.createdAt.gte || filters.createdAt.lte)
+			cleaned.createdAt = { ...filters.createdAt };
+
+		return cleaned;
 	};
 
 	const { isLoading, error, data } = useQuery<Paginated<Post>, AxiosError>({
-		queryKey: ['posts', page, limit],
+		queryKey: ['posts', page, limit, filters],
 		queryFn: async () => {
-			const response = await axios.get<Paginated<Post>>(
-				`/posts?page=${page}&limit=${limit}&sort=createdAt`,
-			);
+			const params = cleanFilters(filters);
+
+			console.log(params);
+
+			const response = await axios.get<Paginated<Post>>('/posts', {
+				params,
+			});
 			return response.data;
 		},
 	});
@@ -52,7 +92,12 @@ export const PostsPage: React.FC = () => {
 					flex: 1,
 				}}
 			>
-				<PostsPageHeader count={data?.meta.total || 0} />
+				<PostsPageHeader
+					count={data?.meta.total || 0}
+					filters={filters}
+					setFilters={setFilters}
+					setPage={setPage}
+				/>
 				{isLoading && (
 					<Box
 						sx={{
@@ -113,7 +158,7 @@ export const PostsPage: React.FC = () => {
 								color="primary"
 								showFirstButton
 								showLastButton
-								onChange={handleChange}
+								onChange={handlePageChange}
 								sx={{ color: 'primary.main', alignSelf: 'end' }}
 							/>
 							<Box>

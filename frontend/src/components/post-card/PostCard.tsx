@@ -15,7 +15,6 @@ import { Star, Forum } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import axios from '../../utils/axios';
-
 import { Post, Comment, Category, Paginated } from '../../interface';
 import { PostCardActions } from './PostCardActions';
 import { formatDate } from '../../utils/dates';
@@ -98,8 +97,14 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
 							))}
 						</Box>
 						<Typography
+							component="a"
 							variant="h6"
-							sx={{ color: 'text.primary', mt: 1 }}
+							href={`http://localhost:3001/posts/${post.id}`}
+							sx={{
+								color: 'text.primary',
+								mt: 1,
+								textDecoration: 'none',
+							}}
 						>
 							{post.title}
 						</Typography>

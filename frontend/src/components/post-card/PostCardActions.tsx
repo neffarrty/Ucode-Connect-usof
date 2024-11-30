@@ -3,6 +3,7 @@ import { Box, Button } from '@mui/material';
 import { Post } from '../../interface/Post';
 import { ShareButton } from '../ShareButton';
 import { BookmarkButton } from '../post/BookmarkButton';
+import { ArrowRightAlt } from '@mui/icons-material';
 
 interface PostCardActionsProps {
 	post: Post;
@@ -23,6 +24,8 @@ export const PostCardActions: React.FC<PostCardActionsProps> = ({ post }) => {
 			<Button
 				href={`http://localhost:3001/posts/${post.id}`}
 				size="small"
+				variant="outlined"
+				endIcon={<ArrowRightAlt />}
 			>
 				Learn More
 			</Button>

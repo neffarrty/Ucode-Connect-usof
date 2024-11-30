@@ -12,6 +12,7 @@ export interface Post extends Entity {
 	author: {
 		login: string;
 		avatar: string;
+		fullname: string;
 	};
 	title: string;
 	content: string;

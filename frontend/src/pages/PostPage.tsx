@@ -1,5 +1,14 @@
 import React from 'react';
-import { Alert, Box, Divider, Paper, Stack, Typography } from '@mui/material';
+import {
+	Alert,
+	Box,
+	Chip,
+	Divider,
+	Paper,
+	Stack,
+	Tooltip,
+	Typography,
+} from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { Post } from '../interface/Post';
@@ -51,7 +60,25 @@ export const PostPage: React.FC = () => {
 							>
 								{post.title}
 							</Typography>
-							<Divider sx={{ my: 1 }} />
+							<Stack direction="row" sx={{ gap: 1, my: 1 }}>
+								{post.categories.map(({ category }) => (
+									<Tooltip
+										key={category.id}
+										title={category.description}
+									>
+										<Chip
+											component="a"
+											href={`http://localhost:3001/category/${category.id}`}
+											label={category.title}
+											variant="outlined"
+											size="small"
+											color="primary"
+											clickable
+										/>
+									</Tooltip>
+								))}
+							</Stack>
+							<Divider sx={{ mt: 1 }} />
 							<Typography
 								variant="body1"
 								sx={{ marginTop: 2, textAlign: 'justify' }}

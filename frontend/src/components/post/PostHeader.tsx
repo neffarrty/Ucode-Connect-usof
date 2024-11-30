@@ -1,10 +1,7 @@
 import React from 'react';
 import { Avatar, Stack, Typography } from '@mui/material';
 import { AccessTime } from '@mui/icons-material';
-import { Post, Category } from '../../interface';
-import { useQuery } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
-import axios from '../../utils/axios';
+import { Post } from '../../interface';
 import { formatDate } from '../../utils/dates';
 
 interface PostPageHeaderProps {
@@ -12,17 +9,6 @@ interface PostPageHeaderProps {
 }
 
 export const PostHeader: React.FC<PostPageHeaderProps> = ({ post }) => {
-	const { data: categories } = useQuery<Category[], AxiosError>({
-		queryKey: ['post_categories', post.id],
-		queryFn: async () => {
-			const { data } = await axios.get<Category[]>(
-				`/posts/${post.id}/categories`,
-			);
-
-			return data;
-		},
-	});
-
 	return (
 		<Stack direction="row" gap={1} sx={{ width: '100%', p: 2 }}>
 			<Avatar src={post.author.avatar} alt={post.author.login} />

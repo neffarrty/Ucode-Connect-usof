@@ -6,6 +6,7 @@ export interface Comment extends Entity {
 	author: {
 		login: string;
 		avatar: string;
+		fullname: string;
 	};
 	postId: number;
 	content: string;

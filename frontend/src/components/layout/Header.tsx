@@ -8,15 +8,15 @@ import {
 	Menu,
 	MenuItem,
 	IconButton,
+	Stack,
 } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../redux/store';
 import logo from '../../assets/header-logo.svg';
 import { AccountCircle, ExitToApp } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
 export const Header: React.FC = () => {
-	const { user } = useSelector((state: RootState) => state.auth);
+	const { user } = useSelector((state: any) => state.auth);
 	const navigate = useNavigate();
 	const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
 		null,
@@ -46,19 +46,35 @@ export const Header: React.FC = () => {
 							/>
 						</Box>
 					</Box>
-					<Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-						<Typography
-							variant="subtitle1"
-							component="span"
-							sx={{ flexGrow: 1 }}
-						>
-							{user?.login}
-						</Typography>
+					<Stack
+						direction="row"
+						sx={{ alignItems: 'center', gap: 1 }}
+					>
+						<Stack direction="column" sx={{ alignItems: 'end' }}>
+							<Typography
+								variant="subtitle1"
+								component="span"
+								sx={{ flexGrow: 1 }}
+							>
+								{user.login}
+							</Typography>{' '}
+							<Typography
+								variant="caption"
+								component="span"
+								sx={{ flexGrow: 1 }}
+							>
+								{user.role}
+							</Typography>
+						</Stack>
 						<IconButton onClick={handleOpenUserMenu}>
 							<Avatar
-								alt={user?.login}
-								src={user?.avatar}
-								sx={{ border: '2px solid #fff' }}
+								alt={user.login}
+								src={user.avatar}
+								sx={{
+									border: '2px solid #fff',
+									width: 50,
+									height: 50,
+								}}
 							/>
 						</IconButton>
 						<Menu
@@ -90,7 +106,7 @@ export const Header: React.FC = () => {
 								</Typography>
 							</MenuItem>
 						</Menu>
-					</Box>
+					</Stack>
 				</Toolbar>
 			</AppBar>
 		</Box>

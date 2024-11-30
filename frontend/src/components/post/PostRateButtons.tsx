@@ -31,7 +31,7 @@ export const PostRateButton: React.FC<PostRateButtonProps> = ({
 			await axios.post(`/posts/${post.id}/like`, { type });
 		},
 		onSuccess: () => {
-			setLike(type); // Обновляем локальное состояние после успешного выполнения
+			setLike(type);
 		},
 	});
 
