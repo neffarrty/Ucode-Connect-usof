@@ -19,14 +19,30 @@ import {
 import { theme } from './theme/theme';
 import NotFound from './components/errors/NotFound';
 import { PostPage } from './pages/PostPage';
+import { CreatePostPage } from './pages/CreatePostPage';
+import PrivateRoute from './components/PrivateRoute';
 
 const App: React.FC = () => {
 	return (
 		<ThemeProvider theme={theme}>
 			<CssBaseline />
 			<Routes>
-				<Route path="/" element={<HomePage />} />
-				<Route path="/home" element={<HomePage />} />
+				<Route
+					path="/"
+					element={
+						<PrivateRoute>
+							<HomePage />
+						</PrivateRoute>
+					}
+				/>
+				<Route
+					path="/home"
+					element={
+						<PrivateRoute>
+							<HomePage />
+						</PrivateRoute>
+					}
+				/>
 				<Route path="/login" element={<Login />} />
 				<Route path="/register" element={<Register />} />
 				<Route path="/password-reset" element={<ForgotPassword />} />
@@ -43,9 +59,38 @@ const App: React.FC = () => {
 					path="/google-success/:token"
 					element={<GoogleOAuthSuccess />}
 				/>
-				<Route path="/posts" element={<PostsPage />} />
-				<Route path="/posts/:id" element={<PostPage />} />
-				<Route path="/profile" element={<ProfilePage />} />
+				<Route
+					path="/posts"
+					element={
+						<PrivateRoute>
+							<PostsPage />
+						</PrivateRoute>
+					}
+				/>
+				<Route
+					path="/posts/new"
+					element={
+						<PrivateRoute>
+							<CreatePostPage />
+						</PrivateRoute>
+					}
+				/>
+				<Route
+					path="/posts/:id"
+					element={
+						<PrivateRoute>
+							<PostPage />
+						</PrivateRoute>
+					}
+				/>
+				<Route
+					path="/profile"
+					element={
+						<PrivateRoute>
+							<ProfilePage />
+						</PrivateRoute>
+					}
+				/>
 				<Route path="*" element={<NotFound />} />
 			</Routes>
 		</ThemeProvider>

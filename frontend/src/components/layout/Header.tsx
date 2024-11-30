@@ -10,14 +10,18 @@ import {
 	IconButton,
 	Stack,
 } from '@mui/material';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import logo from '../../assets/header-logo.svg';
 import { AccountCircle, ExitToApp } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { logout } from '../../redux/auth/actions';
+import { AppDispatch } from '../../redux/store';
 
 export const Header: React.FC = () => {
 	const { user } = useSelector((state: any) => state.auth);
+	const dispatch = useDispatch<AppDispatch>();
 	const navigate = useNavigate();
+
 	const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
 		null,
 	);
@@ -28,6 +32,16 @@ export const Header: React.FC = () => {
 
 	const handleCloseUserMenu = () => {
 		setAnchorElUser(null);
+	};
+
+	const handleLogout = async () => {
+		try {
+			dispatch(logout()).then(() => {
+				navigate('/login');
+			});
+		} catch (error) {
+			console.error('Logout failed:', error);
+		}
 	};
 
 	return (
@@ -97,7 +111,7 @@ export const Header: React.FC = () => {
 									Profile
 								</Typography>
 							</MenuItem>
-							<MenuItem href="/profile">
+							<MenuItem onClick={handleLogout}>
 								<ExitToApp
 									sx={{ mr: 1, color: 'primary.dark' }}
 								/>

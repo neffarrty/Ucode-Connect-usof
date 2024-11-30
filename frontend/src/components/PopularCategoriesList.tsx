@@ -21,14 +21,14 @@ interface PopularCategoriesListProps {
 export const PopularCategoriesList: React.FC<PopularCategoriesListProps> = ({
 	size,
 }) => {
-	const { data } = useQuery<Paginated<Category>, AxiosError>({
+	const { data } = useQuery<Category[], AxiosError>({
 		queryKey: ['top_categories'],
 		queryFn: async () => {
-			const response = await axios.get<Paginated<Category>>(
+			const { data } = await axios.get<Category[]>(
 				`/categories?limit=${size}`,
 			);
 
-			return response.data;
+			return data;
 		},
 	});
 
@@ -62,7 +62,7 @@ export const PopularCategoriesList: React.FC<PopularCategoriesListProps> = ({
 				}
 			>
 				{data &&
-					data.data.map((categorie) => (
+					data.slice(0, 15).map((categorie) => (
 						<ListItemButton key={categorie.id}>
 							<ListItem sx={{ p: 0 }}>
 								<ListItemText

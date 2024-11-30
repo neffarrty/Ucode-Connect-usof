@@ -13,7 +13,7 @@ export class CategoriesService {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async findAll(): Promise<CategoryDto[]> {
-		return this.prisma.category.findMany({
+		const categories = await this.prisma.category.findMany({
 			include: {
 				_count: {
 					select: { posts: true },
@@ -25,6 +25,11 @@ export class CategoriesService {
 				},
 			},
 		});
+
+		return categories.map(({ _count, ...categorie }) => ({
+			...categorie,
+			posts: _count.posts,
+		}));
 	}
 
 	// async findAll({

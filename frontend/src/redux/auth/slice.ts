@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { login, register, refreshTokens, fetchUser } from './actions';
+import { login, register, refreshTokens, fetchUser, logout } from './actions';
 import { User } from '../../interface/User';
 
 interface AuthState {
@@ -25,12 +25,6 @@ const authSlice = createSlice({
 		setToken(state, action: PayloadAction<{ token: string }>) {
 			state.token = action.payload.token;
 			localStorage.setItem('token', action.payload.token);
-		},
-		logout(state) {
-			state.user = null;
-			state.token = null;
-			localStorage.removeItem('user');
-			localStorage.removeItem('token');
 		},
 		updateState(
 			state,
@@ -77,7 +71,7 @@ const authSlice = createSlice({
 		});
 		builder.addCase(
 			register.fulfilled,
-			(state, action: PayloadAction<any>) => {
+			(state, _action: PayloadAction<any>) => {
 				state.success = true;
 				state.loading = false;
 				state.error = null;
@@ -115,7 +109,6 @@ const authSlice = createSlice({
 			localStorage.removeItem('user');
 			localStorage.removeItem('token');
 		});
-
 		builder.addCase(fetchUser.pending, (state) => {
 			state.loading = true;
 		});
@@ -136,9 +129,26 @@ const authSlice = createSlice({
 			state.success = false;
 			state.error = action.payload as string;
 		});
+		builder.addCase(logout.pending, (state) => {
+			console.log('pending');
+			state.loading = true;
+		});
+		builder.addCase(logout.fulfilled, (state) => {
+			state.user = null;
+			state.token = null;
+			state.loading = false;
+			state.error = null;
+			localStorage.removeItem('user');
+			localStorage.removeItem('token');
+		});
+		builder.addCase(logout.rejected, (state, action) => {
+			console.log('rejected');
+			state.loading = false;
+			state.error = action.payload || 'Failed to logout';
+		});
 	},
 });
 
-export const { setToken, logout, updateState, updateUser } = authSlice.actions;
+export const { setToken, updateState, updateUser } = authSlice.actions;
 
 export default authSlice.reducer;

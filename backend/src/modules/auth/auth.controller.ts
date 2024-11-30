@@ -46,7 +46,7 @@ import { JwtGuard } from './guards/jwt.guard';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-	constructor(private readonly authService: AuthService) {}
+	constructor(private readonly service: AuthService) {}
 
 	@Get('self')
 	@UseGuards(JwtGuard)
@@ -74,7 +74,7 @@ export class AuthController {
 		description: 'User already exists',
 	})
 	async register(@Body() dto: RegisterDto): Promise<void> {
-		return this.authService.register(dto);
+		return this.service.register(dto);
 	}
 
 	@Public()
@@ -98,7 +98,7 @@ export class AuthController {
 		@GetUser() user: User,
 		@Res({ passthrough: true }) res: Response,
 	): Promise<AuthResponseDto> {
-		return this.authService.login(user, res);
+		return this.service.login(user, res);
 	}
 
 	@Public()
@@ -115,8 +115,8 @@ export class AuthController {
 	@UseGuards(GoogleGuard)
 	@ApiExcludeEndpoint()
 	async googleAuthRedirect(@GetUser() user: User, @Res() res: Response) {
-		const response = await this.authService.login(user, res);
-		res.redirect(`http://localhost:3001/google-success/${response.token}`);
+		const { token } = await this.service.login(user, res);
+		res.redirect(`http://localhost:3001/google-success/${token}`);
 	}
 
 	@HttpCode(HttpStatus.NO_CONTENT)
@@ -126,12 +126,11 @@ export class AuthController {
 		description: 'Logout successful',
 	})
 	async logout(
-		@GetUser() user: User,
 		@Headers('Authorization') authHeader: string,
 		@Res({ passthrough: true }) res: Response,
 	): Promise<void> {
 		const token = authHeader?.split(' ')[1];
-		return this.authService.logout(user, token, res);
+		return this.service.logout(token, res);
 	}
 
 	@Public()
@@ -149,7 +148,7 @@ export class AuthController {
 		description: "User with provided email doen't exists",
 	})
 	async sendVerificationMail(@Body() dto: ForgotPasswordDto): Promise<void> {
-		return this.authService.sendVerificationMail(dto.email);
+		return this.service.sendVerificationMail(dto.email);
 	}
 
 	@Public()
@@ -163,7 +162,7 @@ export class AuthController {
 		description: 'Invalid or expired token',
 	})
 	async verify(@Param('token') token: string): Promise<void> {
-		return this.authService.verify(token);
+		return this.service.verify(token);
 	}
 
 	@Public()
@@ -180,11 +179,12 @@ export class AuthController {
 		@GetUser() user: User,
 		@Res({ passthrough: true }) res: Response,
 	): Promise<AuthResponseDto> {
-		const { accessToken, refreshToken } =
-			await this.authService.generateTokens({
+		const { accessToken, refreshToken } = await this.service.generateTokens(
+			{
 				userId: user.id,
 				email: user.email,
-			});
+			},
+		);
 
 		res.cookie('refresh_token', refreshToken, {
 			httpOnly: true,
@@ -213,7 +213,7 @@ export class AuthController {
 		description: "User with provided email doen't exists",
 	})
 	async sendResetMail(@Body() { email }: ForgotPasswordDto): Promise<void> {
-		return this.authService.sendResetMail(email);
+		return this.service.sendResetMail(email);
 	}
 
 	@Public()
@@ -235,6 +235,6 @@ export class AuthController {
 		@Param('token') token: string,
 		@Body() { password }: ResetPasswordDto,
 	): Promise<void> {
-		return this.authService.resetPassword(token, password);
+		return this.service.resetPassword(token, password);
 	}
 }
