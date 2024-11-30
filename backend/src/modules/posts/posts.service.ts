@@ -78,6 +78,7 @@ export class PostsService {
 						select: {
 							login: true,
 							avatar: true,
+							fullname: true,
 						},
 					},
 				},
@@ -119,6 +120,18 @@ export class PostsService {
 							select: {
 								login: true,
 								avatar: true,
+								fullname: true,
+							},
+						},
+						categories: {
+							select: {
+								category: {
+									select: {
+										id: true,
+										title: true,
+										description: true,
+									},
+								},
 							},
 						},
 						bookmarks: { where: { userId: user.id } },
@@ -164,6 +177,7 @@ export class PostsService {
 					select: {
 						login: true,
 						avatar: true,
+						fullname: true,
 					},
 				},
 			},
@@ -207,6 +221,7 @@ export class PostsService {
 					select: {
 						login: true,
 						avatar: true,
+						fullname: true,
 					},
 				},
 			},
@@ -229,6 +244,7 @@ export class PostsService {
 					select: {
 						login: true,
 						avatar: true,
+						fullname: true,
 					},
 				},
 			},
@@ -250,13 +266,14 @@ export class PostsService {
 				take: limit,
 				skip: (page - 1) * limit,
 				orderBy: {
-					rating: 'desc',
+					createdAt: 'desc',
 				},
 				include: {
 					author: {
 						select: {
 							login: true,
 							avatar: true,
+							fullname: true,
 						},
 					},
 				},
@@ -300,6 +317,7 @@ export class PostsService {
 					select: {
 						login: true,
 						avatar: true,
+						fullname: true,
 					},
 				},
 			},
@@ -465,6 +483,7 @@ export class PostsService {
 					select: {
 						login: true,
 						avatar: true,
+						fullname: true,
 					},
 				},
 			},
@@ -509,6 +528,7 @@ export class PostsService {
 					select: {
 						login: true,
 						avatar: true,
+						fullname: true,
 					},
 				},
 			},

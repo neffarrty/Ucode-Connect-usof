@@ -23,6 +23,7 @@ export class CommentsService {
 					select: {
 						login: true,
 						avatar: true,
+						fullname: true,
 					},
 				},
 			},
@@ -42,7 +43,7 @@ export class CommentsService {
 	): Promise<CommentDto> {
 		const comment = await this.findById(id);
 
-		if (comment.authorId !== user.id) {
+		if (comment.authorId !== user.id && user.role !== Role.ADMIN) {
 			throw new ForbiddenException('Forbidden to update comment');
 		}
 
@@ -55,6 +56,7 @@ export class CommentsService {
 					select: {
 						login: true,
 						avatar: true,
+						fullname: true,
 					},
 				},
 			},
@@ -78,6 +80,7 @@ export class CommentsService {
 					select: {
 						login: true,
 						avatar: true,
+						fullname: true,
 					},
 				},
 			},

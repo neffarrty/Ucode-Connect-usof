@@ -55,7 +55,6 @@ export class AuthController {
 		description: 'Not authenticated',
 	})
 	async getSelf(@GetUser() user: User): Promise<{ user: UserDto }> {
-		console.log(user);
 		return { user };
 	}
 
