@@ -22,6 +22,8 @@ import { PostPage } from './pages/PostPage';
 import { CreatePostPage } from './pages/CreatePostPage';
 import PrivateRoute from './components/PrivateRoute';
 import { BookmarksPage } from './pages/BookmarksPage';
+import { CategoriesPage } from './pages/CategoriesPage';
+import { PostsByCategoryPage } from './pages/PostsByCategoryPage';
 
 const App: React.FC = () => {
 	return (
@@ -97,6 +99,22 @@ const App: React.FC = () => {
 					element={
 						<PrivateRoute>
 							<BookmarksPage />
+						</PrivateRoute>
+					}
+				/>
+				<Route
+					path="/categories"
+					element={
+						<PrivateRoute>
+							<CategoriesPage />
+						</PrivateRoute>
+					}
+				/>
+				<Route
+					path="/categories/:id/posts"
+					element={
+						<PrivateRoute>
+							<PostsByCategoryPage />
 						</PrivateRoute>
 					}
 				/>

@@ -10,7 +10,7 @@ import {
 	Divider,
 } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-import { Category, Paginated } from '../interface';
+import { Category } from '../interface';
 import { AxiosError } from 'axios';
 import axios from '../utils/axios';
 
@@ -62,8 +62,11 @@ export const PopularCategoriesList: React.FC<PopularCategoriesListProps> = ({
 				}
 			>
 				{data &&
-					data.slice(0, 15).map((categorie) => (
-						<ListItemButton key={categorie.id}>
+					data.slice(0, 15).map((category) => (
+						<ListItemButton
+							key={category.id}
+							href={`/categories/${category.id}/posts`}
+						>
 							<ListItem sx={{ p: 0 }}>
 								<ListItemText
 									primary={
@@ -76,7 +79,7 @@ export const PopularCategoriesList: React.FC<PopularCategoriesListProps> = ({
 												fontWeight: 'bold',
 											}}
 										>
-											{categorie.title}
+											{category.title}
 										</Typography>
 									}
 									secondary={
@@ -90,7 +93,7 @@ export const PopularCategoriesList: React.FC<PopularCategoriesListProps> = ({
 													textAlign: 'justify',
 												}}
 											>
-												{categorie.description}
+												{category.description}
 											</Typography>
 											<Typography
 												component="div"
@@ -100,7 +103,7 @@ export const PopularCategoriesList: React.FC<PopularCategoriesListProps> = ({
 													display: 'block',
 												}}
 											>
-												{`${categorie.posts} posts`}
+												{`${category.posts} posts`}
 											</Typography>
 										</React.Fragment>
 									}

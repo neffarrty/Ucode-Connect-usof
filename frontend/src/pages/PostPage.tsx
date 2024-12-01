@@ -3,6 +3,7 @@ import {
 	Alert,
 	Box,
 	Chip,
+	CircularProgress,
 	Divider,
 	Paper,
 	Stack,
@@ -21,12 +22,19 @@ import { PostActions } from '../components/post/PostActions';
 import { PostHeader } from '../components/post/PostHeader';
 import { Layout } from '../components/layout/Layout';
 
+import remarkGfm from 'remark-gfm';
+import Markdown from 'react-markdown';
+
 const parser = new MarkdownIt();
 
 export const PostPage: React.FC = () => {
 	const { id } = useParams<{ id: string }>();
 
-	const { data: post, error } = useQuery<Post, AxiosError>({
+	const {
+		data: post,
+		error,
+		isLoading,
+	} = useQuery<Post, AxiosError>({
 		queryKey: ['post', id],
 		queryFn: async () => {
 			const { data } = await axios.get<Post>(`/posts/${id}`);
@@ -37,6 +45,23 @@ export const PostPage: React.FC = () => {
 	if (error) {
 		return (
 			<Alert severity="error">Error loading post: {error.message}</Alert>
+		);
+	}
+
+	if (isLoading) {
+		return (
+			<Layout>
+				<Box
+					sx={{
+						display: 'flex',
+						flexGrow: 1,
+						alignItems: 'center',
+						justifyContent: 'center',
+					}}
+				>
+					<CircularProgress size={24} />
+				</Box>
+			</Layout>
 		);
 	}
 
@@ -83,14 +108,19 @@ export const PostPage: React.FC = () => {
 								))}
 							</Stack>
 							<Divider sx={{ mt: 1 }} />
-							<Box
+							{/* <Box
 								dangerouslySetInnerHTML={{
 									__html: DOMPurify.sanitize(
 										parser.render(post.content),
 									),
 								}}
 								style={{ marginTop: 16, textAlign: 'justify' }}
-							/>
+							/> */}
+							<Box>
+								<Markdown remarkPlugins={[remarkGfm]}>
+									{post.content}
+								</Markdown>
+							</Box>
 						</Stack>
 						<PostActions post={post} />
 					</Paper>

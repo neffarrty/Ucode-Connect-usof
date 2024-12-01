@@ -88,6 +88,23 @@ export const PostsPage: React.FC = () => {
 		},
 	});
 
+	if (isLoading) {
+		return (
+			<Layout>
+				<Box
+					sx={{
+						display: 'flex',
+						flexGrow: 1,
+						alignItems: 'center',
+						justifyContent: 'center',
+					}}
+				>
+					<CircularProgress size={24} />
+				</Box>
+			</Layout>
+		);
+	}
+
 	return (
 		<Layout>
 			<Box
@@ -124,18 +141,6 @@ export const PostsPage: React.FC = () => {
 						</Box>
 					}
 				/>
-				{isLoading && (
-					<Box
-						sx={{
-							flexGrow: 1,
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'center',
-						}}
-					>
-						<CircularProgress size={24} />
-					</Box>
-				)}
 				{error && (
 					<Box
 						sx={{
@@ -194,6 +199,7 @@ export const PostsPage: React.FC = () => {
 								<ButtonGroup variant="outlined">
 									{[15, 30, 50].map((lim) => (
 										<Button
+											key={lim}
 											onClick={() =>
 												handleLimitChange(lim)
 											}

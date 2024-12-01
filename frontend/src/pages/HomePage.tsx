@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, CircularProgress, Stack, Typography } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { Post, Paginated } from '../interface';
 import { AxiosError } from 'axios';
@@ -20,6 +20,23 @@ export const HomePage: React.FC = () => {
 			return response.data;
 		},
 	});
+
+	if (isLoading) {
+		return (
+			<Layout>
+				<Box
+					sx={{
+						display: 'flex',
+						flexGrow: 1,
+						alignItems: 'center',
+						justifyContent: 'center',
+					}}
+				>
+					<CircularProgress size={24} />
+				</Box>
+			</Layout>
+		);
+	}
 
 	return (
 		<Layout>
@@ -54,7 +71,6 @@ export const HomePage: React.FC = () => {
 							p: 3,
 						}}
 					>
-						{isLoading && <div>Loading posts...</div>}
 						{error && (
 							<div>Error loading posts: {error.message}</div>
 						)}

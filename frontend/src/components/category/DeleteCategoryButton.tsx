@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { Delete, Edit } from '@mui/icons-material';
 import {
+	Alert,
 	Box,
 	Button,
 	Dialog,
@@ -9,12 +11,12 @@ import {
 	DialogTitle,
 	IconButton,
 	Slide,
+	TextField,
 } from '@mui/material';
-import { Delete } from '@mui/icons-material';
 import { TransitionProps } from '@mui/material/transitions';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Comment, Paginated } from '../../interface';
 import axios from '../../utils/axios';
+import { Category } from '../../interface';
 
 const Transition = React.forwardRef(function Transition(
 	props: TransitionProps & {
@@ -25,43 +27,28 @@ const Transition = React.forwardRef(function Transition(
 	return <Slide direction="up" ref={ref} {...props} />;
 });
 
-interface DeleteCommentButtonProps {
-	postId: number;
-	comment: Comment;
+interface DeleteCategoryButtonProps {
+	category: Category;
 }
 
-export const DeleteCommentButton: React.FC<DeleteCommentButtonProps> = ({
-	postId,
-	comment,
+export const DeleteCategoryButton: React.FC<DeleteCategoryButtonProps> = ({
+	category,
 }) => {
-	const client = useQueryClient();
 	const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+	const client = useQueryClient();
 
-	const { mutate, isPending } = useMutation<
-		void,
-		any,
-		void,
-		{ previousComments: Paginated<Comment> | undefined }
-	>({
-		mutationKey: ['delete_comment', comment.id],
+	const { mutate, isPending } = useMutation<void, any, void>({
+		mutationKey: ['delete_category', category.id],
 		mutationFn: async () => {
-			await axios.delete<Comment>(`/comments/${comment.id}`);
+			await axios.delete(`/categories/${category.id}`);
 		},
 		onSuccess: () => {
-			client.invalidateQueries({ queryKey: ['comments', postId] });
+			client.invalidateQueries({ queryKey: ['categories'] });
 			setOpenDeleteDialog(false);
-		},
-		onError: (_error, _comment, context) => {
-			if (context?.previousComments) {
-				client.setQueryData(
-					['comments', postId],
-					context.previousComments,
-				);
-			}
 		},
 	});
 
-	const handleSubmit = () => {
+	const handleDeleteSubmit = () => {
 		mutate();
 	};
 
@@ -76,16 +63,16 @@ export const DeleteCommentButton: React.FC<DeleteCommentButtonProps> = ({
 				component="form"
 				onSubmit={(e) => {
 					e.preventDefault();
-					handleSubmit();
+					handleDeleteSubmit();
 				}}
 				TransitionComponent={Transition}
 			>
 				<DialogTitle sx={{ color: 'white', bgcolor: 'primary.main' }}>
-					Delete comment
+					Delete category '{category.title}'
 				</DialogTitle>
 				<DialogContent>
 					<DialogContentText sx={{ textAlign: 'justify', pt: 2 }}>
-						Are you sure you want to delete this comment? This
+						Are you sure you want to delete this category? This
 						action cannot be undone.
 					</DialogContentText>
 				</DialogContent>

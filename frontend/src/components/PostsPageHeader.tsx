@@ -1,17 +1,17 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useCallback } from 'react';
 import {
 	Box,
 	Button,
 	ButtonGroup,
+	debounce,
 	MenuItem,
 	Select,
 	Stack,
 	TextField,
 	Typography,
 } from '@mui/material';
-import { Create, Search, FilterAlt } from '@mui/icons-material';
+import { Search, FilterAlt } from '@mui/icons-material';
 import { PostFilters } from '../pages';
-import { useNavigate } from 'react-router-dom';
 
 interface PostsPageHeaderProps {
 	count: number;
@@ -41,13 +41,15 @@ export const PostsPageHeader: React.FC<PostsPageHeaderProps> = ({
 	// 		return response.data;
 	// 	},
 	// });
-	const handleTitleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setFilters((prev) => ({
-			...prev,
-			title: event.target.value,
-		}));
-		setPage(1);
-	};
+	const handleTitleChange = useCallback(
+		debounce((event: React.ChangeEvent<HTMLInputElement>) => {
+			setFilters((prev) => ({
+				...prev,
+				title: event.target.value,
+			}));
+		}, 500),
+		[],
+	);
 
 	const handleCategoryChange = (categories: string[]) => {
 		setFilters((prev) => ({
@@ -74,7 +76,6 @@ export const PostsPageHeader: React.FC<PostsPageHeaderProps> = ({
 			sort,
 			order,
 		}));
-		setPage(1);
 	};
 
 	return (
@@ -102,7 +103,7 @@ export const PostsPageHeader: React.FC<PostsPageHeaderProps> = ({
 						placeholder="Search by title"
 						variant="standard"
 						value={filters.title}
-						onChange={handleTitleSearch}
+						onChange={handleTitleChange}
 					/>
 				</Box>
 				<Stack direction="row" gap={0.5}>

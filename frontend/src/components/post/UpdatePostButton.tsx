@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
 	Alert,
+	Autocomplete,
 	Box,
 	Button,
 	Chip,
@@ -112,11 +113,8 @@ export const UpdatePostButton: React.FC<UpdatePostButtonProps> = ({ post }) => {
 		setStatus((prev) => (prev === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE'));
 	};
 
-	const handleChange = (event: SelectChangeEvent<typeof postCategories>) => {
-		const {
-			target: { value },
-		} = event;
-		setPostCategories(typeof value === 'string' ? value.split(',') : value);
+	const handleChange = (_event: React.ChangeEvent<{}>, value: string[]) => {
+		setPostCategories(value);
 	};
 
 	return (
@@ -184,12 +182,21 @@ export const UpdatePostButton: React.FC<UpdatePostButtonProps> = ({ post }) => {
 										<Typography variant="h6">
 											Categories
 										</Typography>
-										<Select
+										<Autocomplete
 											multiple
+											options={categories.map(
+												(category) => category.title,
+											)}
 											value={postCategories}
 											onChange={handleChange}
-											input={<OutlinedInput />}
-											renderValue={(selected) => (
+											renderInput={(params) => (
+												<TextField
+													{...params}
+													placeholder="Select categories"
+													variant="outlined"
+												/>
+											)}
+											renderTags={(selected) => (
 												<Box
 													sx={{
 														display: 'flex',
@@ -220,19 +227,7 @@ export const UpdatePostButton: React.FC<UpdatePostButtonProps> = ({ post }) => {
 													))}
 												</Box>
 											)}
-											MenuProps={{
-												disablePortal: true,
-											}}
-										>
-											{categories.map((category) => (
-												<MenuItem
-													key={category.id}
-													value={category.title}
-												>
-													{category.title}
-												</MenuItem>
-											))}
-										</Select>
+										/>
 									</Stack>
 								)}
 								<Stack

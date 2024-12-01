@@ -8,13 +8,10 @@ import {
 	Switch,
 	TextField,
 	Box,
-	Select,
-	OutlinedInput,
-	SelectChangeEvent,
 	Chip,
-	MenuItem,
 	CircularProgress,
 	Alert,
+	Autocomplete,
 } from '@mui/material';
 import { Layout } from '../components/layout/Layout';
 import { Category } from '../interface/Category';
@@ -101,11 +98,8 @@ export const CreatePostPage: React.FC = () => {
 		setStatus((prev) => (prev === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE'));
 	};
 
-	const handleChange = (event: SelectChangeEvent<typeof postCategories>) => {
-		const {
-			target: { value },
-		} = event;
-		setPostCategories(typeof value === 'string' ? value.split(',') : value);
+	const handleChange = (_event: React.ChangeEvent<{}>, value: string[]) => {
+		setPostCategories(value);
 	};
 
 	return (
@@ -163,12 +157,21 @@ export const CreatePostPage: React.FC = () => {
 										<Typography variant="h6">
 											Categories
 										</Typography>
-										<Select
+										<Autocomplete
 											multiple
+											options={categories.map(
+												(category) => category.title,
+											)}
 											value={postCategories}
 											onChange={handleChange}
-											input={<OutlinedInput />}
-											renderValue={(selected) => (
+											renderInput={(params) => (
+												<TextField
+													{...params}
+													placeholder="Select categories"
+													variant="outlined"
+												/>
+											)}
+											renderTags={(selected) => (
 												<Box
 													sx={{
 														display: 'flex',
@@ -199,19 +202,7 @@ export const CreatePostPage: React.FC = () => {
 													))}
 												</Box>
 											)}
-											MenuProps={{
-												disablePortal: true,
-											}}
-										>
-											{categories.map((category) => (
-												<MenuItem
-													key={category.id}
-													value={category.title}
-												>
-													{category.title}
-												</MenuItem>
-											))}
-										</Select>
+										/>
 									</Stack>
 								)}
 								<Stack

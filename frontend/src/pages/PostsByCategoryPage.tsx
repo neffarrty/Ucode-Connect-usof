@@ -10,38 +10,23 @@ import {
 	Typography,
 } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-import { Post, Paginated } from '../interface';
+import { Post, Paginated, Category } from '../interface';
 import { AxiosError } from 'axios';
 import axios from '../utils/axios';
 import { Layout } from '../components/layout/Layout';
-import { PostsPageHeader } from '../components/PostsPageHeader';
 import { PostCard } from '../components/post-card/PostCard';
+import { useParams } from 'react-router-dom';
 
-export interface PostFilters {
-	sort: string;
-	order: string;
-	title: string;
-	categories: string[];
-	createdAt: {
-		gte: Date | null;
-		lte: Date | null;
-	};
+interface QueryResponse {
+	posts: Paginated<Post>;
+	category: Category;
 }
 
-export const BookmarksPage: React.FC = () => {
+export const PostsByCategoryPage: React.FC = () => {
+	const { id } = useParams<{ id: string }>();
+
 	const [page, setPage] = useState(1);
 	const [limit, setLimit] = useState(15);
-
-	const [filters, setFilters] = useState<PostFilters>({
-		sort: 'createdAt',
-		order: 'desc',
-		title: '',
-		categories: [],
-		createdAt: {
-			gte: null,
-			lte: null,
-		},
-	});
 
 	const handlePageChange = (
 		_event: React.ChangeEvent<unknown>,
@@ -55,36 +40,21 @@ export const BookmarksPage: React.FC = () => {
 		setPage(1);
 	};
 
-	const cleanFilters = (filters: PostFilters) => {
-		const cleaned: Partial<PostFilters> = {};
-
-		if (filters.sort) cleaned.sort = filters.sort;
-		if (filters.order) cleaned.order = filters.order;
-		if (filters.title.trim()) cleaned.title = filters.title;
-		if (filters.categories.length > 0)
-			cleaned.categories = filters.categories;
-		if (filters.createdAt.gte || filters.createdAt.lte)
-			cleaned.createdAt = { ...filters.createdAt };
-
-		return cleaned;
-	};
-
-	const { isLoading, error, data } = useQuery<Paginated<Post>, AxiosError>({
-		queryKey: ['bookmarks', page, limit, filters],
+	const { isLoading, error, data } = useQuery<QueryResponse, AxiosError>({
+		queryKey: ['posts_by_category', page, limit, id],
 		queryFn: async () => {
-			const params = cleanFilters(filters);
-
-			const { data } = await axios.get<Paginated<Post>>(
-				'/users/bookmarks',
+			const posts = await axios.get<Paginated<Post>>(
+				`/categories/${id}/posts`,
 				{
-					params: {
-						...params,
-						page,
-						limit,
-					},
+					params: { page, limit },
 				},
 			);
-			return data;
+			const category = await axios.get<Category>(`/categories/${id}`);
+
+			return {
+				posts: posts.data,
+				category: category.data,
+			};
 		},
 	});
 
@@ -105,6 +75,26 @@ export const BookmarksPage: React.FC = () => {
 		);
 	}
 
+	if (error) {
+		return (
+			<Layout>
+				<Box
+					sx={{
+						flexGrow: 1,
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'center',
+						color: 'error.main',
+					}}
+				>
+					<Alert severity="error">
+						Error loading bookmarks: {error.message}
+					</Alert>
+				</Box>
+			</Layout>
+		);
+	}
+
 	return (
 		<Layout>
 			<Box
@@ -114,42 +104,19 @@ export const BookmarksPage: React.FC = () => {
 					flex: 1,
 				}}
 			>
-				<PostsPageHeader
-					count={data?.meta.total || 0}
-					filters={filters}
-					setFilters={setFilters}
-					setPage={setPage}
-					title={
-						<Box
-							sx={{
-								width: '100%',
-								display: 'flex',
-								alignItems: 'center',
-								justifyContent: 'space-between',
-							}}
-						>
-							<Typography variant="h4" color="primary.dark">
-								Bookmarks
-							</Typography>
-						</Box>
-					}
-				/>
-				{error && (
-					<Box
-						sx={{
-							flexGrow: 1,
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'center',
-							color: 'error.main',
-						}}
-					>
-						<Alert severity="error">
-							Error loading bookmarks: {error.message}
-						</Alert>
-					</Box>
-				)}
-				{data && (
+				<Box
+					sx={{
+						width: '100%',
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'space-between',
+					}}
+				>
+					<Typography variant="h4" color="primary.dark">
+						Posts tagged with "{data?.category.title}"
+					</Typography>
+				</Box>
+				{data?.posts && (
 					<React.Fragment>
 						<Stack
 							component="main"
@@ -160,7 +127,7 @@ export const BookmarksPage: React.FC = () => {
 								p: 3,
 							}}
 						>
-							{data.data.map((post) => (
+							{data.posts.data.map((post) => (
 								<Box key={post.id} sx={{ flexGrow: 1 }}>
 									<PostCard post={post} />
 								</Box>
@@ -175,7 +142,7 @@ export const BookmarksPage: React.FC = () => {
 							}}
 						>
 							<Pagination
-								count={data.meta.pages}
+								count={data.posts.meta.pages}
 								page={page}
 								variant="outlined"
 								shape="rounded"

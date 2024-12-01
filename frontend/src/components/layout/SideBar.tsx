@@ -1,7 +1,6 @@
 import React from 'react';
 import {
 	Box,
-	Divider,
 	Drawer,
 	List,
 	ListItemButton,
@@ -9,7 +8,7 @@ import {
 	ListItemText,
 	Toolbar,
 } from '@mui/material';
-import { Home, Article, Bookmarks, Style, Logout } from '@mui/icons-material';
+import { Home, Article, Bookmarks, Style } from '@mui/icons-material';
 
 interface SideBarProps {
 	width: number;

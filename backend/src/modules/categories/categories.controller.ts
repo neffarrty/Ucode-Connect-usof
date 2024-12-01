@@ -31,6 +31,8 @@ import {
 } from 'src/pagination';
 import { ApiAuth, Roles } from 'src/decorators';
 import { Role } from '@prisma/client';
+import { CategorySortingOptionsDto } from './dto/sorting-options.dto';
+import { CategoryFilteringOptionsDto } from './dto/filtering-options.dto';
 
 @ApiTags('categories')
 @ApiAuth()
@@ -41,8 +43,11 @@ export class CategoriesController {
 	@Get()
 	@ApiOperation({ summary: 'Get all categories' })
 	@ApiOkResponse({ type: [CategoryDto] })
-	async getAllCategories(): Promise<CategoryDto[]> {
-		return this.categoriesService.findAll();
+	async getAllCategories(
+		@Query() sortingOptions: CategorySortingOptionsDto,
+		@Query() filteringOptions: CategoryFilteringOptionsDto,
+	): Promise<CategoryDto[]> {
+		return this.categoriesService.findAll(sortingOptions, filteringOptions);
 	}
 
 	@Get(':id')

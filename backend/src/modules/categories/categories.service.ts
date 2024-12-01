@@ -7,27 +7,42 @@ import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { CategoryDto, CreateCategoryDto, UpdateCategoryDto } from './dto';
 import { PaginationOptionsDto, Paginated } from 'src/pagination';
 import { PostDto } from 'src/modules/posts/dto/post.dto';
+import { CategorySortingOptionsDto, SortType } from './dto/sorting-options.dto';
+import { CategoryFilteringOptionsDto } from './dto/filtering-options.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class CategoriesService {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async findAll(): Promise<CategoryDto[]> {
+	async findAll(
+		{ sort, order }: CategorySortingOptionsDto,
+		{ title }: CategoryFilteringOptionsDto,
+	): Promise<CategoryDto[]> {
+		const where: Prisma.CategoryWhereInput = {
+			title: {
+				contains: title,
+				mode: 'insensitive',
+			},
+		};
+
+		const orderBy =
+			sort === SortType.POSTS
+				? { posts: { _count: order } }
+				: { [sort]: order };
+
 		const categories = await this.prisma.category.findMany({
+			where,
 			include: {
 				_count: {
 					select: { posts: true },
 				},
 			},
-			orderBy: {
-				posts: {
-					_count: 'desc',
-				},
-			},
+			orderBy,
 		});
 
-		return categories.map(({ _count, ...categorie }) => ({
-			...categorie,
+		return categories.map(({ _count, ...category }) => ({
+			...category,
 			posts: _count.posts,
 		}));
 	}
@@ -173,7 +188,7 @@ export class CategoriesService {
 	}
 
 	private async checkIfTitleExists(title: string) {
-		const category = this.prisma.category.findFirst({
+		const category = await this.prisma.category.findFirst({
 			where: {
 				title: {
 					equals: title,
