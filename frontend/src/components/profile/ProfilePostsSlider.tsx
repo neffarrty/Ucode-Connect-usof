@@ -77,7 +77,7 @@ export const ProfilePostsSlider: React.FC = () => {
 						timeout={500}
 						mountOnEnter
 						unmountOnExit
-						key={posts[currentSlide]?.id}
+						key={posts[currentSlide].id}
 					>
 						<Card
 							sx={{
@@ -90,7 +90,7 @@ export const ProfilePostsSlider: React.FC = () => {
 								<CardHeader
 									subheader={formatDate(
 										new Date(
-											posts[currentSlide]?.createdAt ||
+											posts[currentSlide].createdAt ||
 												Date.now(),
 										),
 									)}
@@ -104,11 +104,11 @@ export const ProfilePostsSlider: React.FC = () => {
 												color: 'text.primary',
 											}}
 										>
-											{posts[currentSlide]?.title ||
-												'No title'}
+											{posts[currentSlide].title}
 										</Typography>
 										<Box
 											sx={{
+												my: 1,
 												display: 'flex',
 												gap: 1,
 												color: 'text.secondary',

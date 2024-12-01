@@ -1,4 +1,5 @@
 import { Entity } from './Entity';
+import { LikeType } from './Like';
 
 export interface Comment extends Entity {
 	id: number;

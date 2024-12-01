@@ -106,6 +106,11 @@ export class UsersService {
 							avatar: true,
 						},
 					},
+					bookmarks: {
+						where: {
+							userId: user.id,
+						},
+					},
 				},
 				take: limit,
 				skip: (page - 1) * limit,
@@ -118,7 +123,10 @@ export class UsersService {
 		const pages = Math.ceil(count / limit);
 
 		return {
-			data: posts,
+			data: posts.map(({ bookmarks, ...post }) => ({
+				...post,
+				bookmarked: bookmarks.some((fav) => fav.userId === user.id),
+			})),
 			meta: {
 				page,
 				total: count,

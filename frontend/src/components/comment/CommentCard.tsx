@@ -30,7 +30,7 @@ export const CommentCard: React.FC<PostCommentCardProps> = ({
 		<Box>
 			<Card key={comment.id} sx={{ my: 2, display: 'flex' }}>
 				<CommentRateButtons comment={comment} />
-				<Stack direction="column">
+				<Stack direction="column" sx={{ width: '100%' }}>
 					<CardHeader
 						title={
 							<Stack
@@ -59,7 +59,9 @@ export const CommentCard: React.FC<PostCommentCardProps> = ({
 											)}
 										</Typography>
 									</Stack>
-									<Typography variant="subtitle2">{`@${comment.author.login}`}</Typography>
+									<Typography variant="subtitle2">
+										{comment.author.login}
+									</Typography>
 								</Stack>
 								{(user.role === 'ADMIN' ||
 									user.id === comment.authorId) && (

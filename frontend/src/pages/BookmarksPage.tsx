@@ -16,8 +16,6 @@ import axios from '../utils/axios';
 import { Layout } from '../components/layout/Layout';
 import { PostsPageHeader } from '../components/PostsPageHeader';
 import { PostCard } from '../components/post-card/PostCard';
-import { Create } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
 
 export interface PostFilters {
 	sort: string;
@@ -30,8 +28,7 @@ export interface PostFilters {
 	};
 }
 
-export const PostsPage: React.FC = () => {
-	const navigate = useNavigate();
+export const BookmarksPage: React.FC = () => {
 	const [page, setPage] = useState(1);
 	const [limit, setLimit] = useState(15);
 
@@ -73,17 +70,20 @@ export const PostsPage: React.FC = () => {
 	};
 
 	const { isLoading, error, data } = useQuery<Paginated<Post>, AxiosError>({
-		queryKey: ['posts', page, limit, filters],
+		queryKey: ['bookmarks', page, limit, filters],
 		queryFn: async () => {
 			const params = cleanFilters(filters);
-			const { data } = await axios.get<Paginated<Post>>('/posts', {
-				params: {
-					...params,
-					page,
-					limit,
-				},
-			});
 
+			const { data } = await axios.get<Paginated<Post>>(
+				'/users/bookmarks',
+				{
+					params: {
+						...params,
+						page,
+						limit,
+					},
+				},
+			);
 			return data;
 		},
 	});
@@ -112,15 +112,8 @@ export const PostsPage: React.FC = () => {
 							}}
 						>
 							<Typography variant="h4" color="primary.dark">
-								All posts
+								Bookmarks
 							</Typography>
-							<Button
-								variant="outlined"
-								startIcon={<Create />}
-								onClick={() => navigate('/posts/new')}
-							>
-								Create post
-							</Button>
 						</Box>
 					}
 				/>
@@ -147,7 +140,7 @@ export const PostsPage: React.FC = () => {
 						}}
 					>
 						<Alert severity="error">
-							Error loading posts: {error.message}
+							Error loading bookmarks: {error.message}
 						</Alert>
 					</Box>
 				)}

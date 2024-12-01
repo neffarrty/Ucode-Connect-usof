@@ -50,7 +50,6 @@ export const ProfileStats: React.FC = () => {
 								your activity, right?
 							</Typography>
 						</Box>
-
 						<UserPostsChart user={user} />
 					</>
 				)}

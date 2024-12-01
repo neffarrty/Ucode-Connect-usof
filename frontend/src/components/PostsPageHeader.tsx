@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import {
 	Box,
 	Button,
@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 interface PostsPageHeaderProps {
 	count: number;
 	filters: PostFilters;
+	title: ReactNode;
 	setFilters: React.Dispatch<React.SetStateAction<PostFilters>>;
 	setPage: React.Dispatch<React.SetStateAction<number>>;
 }
@@ -23,10 +24,10 @@ interface PostsPageHeaderProps {
 export const PostsPageHeader: React.FC<PostsPageHeaderProps> = ({
 	count,
 	filters,
+	title,
 	setFilters,
 	setPage,
 }) => {
-	const navigate = useNavigate();
 	// const { isLoading, error, data } = useQuery<Paginated<Post>, AxiosError>({
 	// 	queryKey: ['posts', page, limit, filters],
 	// 	queryFn: async () => {
@@ -78,25 +79,7 @@ export const PostsPageHeader: React.FC<PostsPageHeaderProps> = ({
 
 	return (
 		<Stack direction="column" gap={0.5} sx={{ px: 3 }}>
-			<Box
-				sx={{
-					width: '100%',
-					display: 'flex',
-					alignItems: 'center',
-					justifyContent: 'space-between',
-				}}
-			>
-				<Typography variant="h4" color="primary.dark">
-					All posts
-				</Typography>
-				<Button
-					variant="outlined"
-					startIcon={<Create />}
-					onClick={() => navigate('/posts/new')}
-				>
-					Create post
-				</Button>
-			</Box>
+			{title}
 			<Box
 				sx={{
 					width: '100%',
@@ -116,7 +99,7 @@ export const PostsPageHeader: React.FC<PostsPageHeaderProps> = ({
 				<Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
 					<Search sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
 					<TextField
-						label="Search by title"
+						placeholder="Search by title"
 						variant="standard"
 						value={filters.title}
 						onChange={handleTitleSearch}

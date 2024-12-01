@@ -21,6 +21,7 @@ import NotFound from './components/errors/NotFound';
 import { PostPage } from './pages/PostPage';
 import { CreatePostPage } from './pages/CreatePostPage';
 import PrivateRoute from './components/PrivateRoute';
+import { BookmarksPage } from './pages/BookmarksPage';
 
 const App: React.FC = () => {
 	return (
@@ -88,6 +89,14 @@ const App: React.FC = () => {
 					element={
 						<PrivateRoute>
 							<ProfilePage />
+						</PrivateRoute>
+					}
+				/>
+				<Route
+					path="/bookmarks"
+					element={
+						<PrivateRoute>
+							<BookmarksPage />
 						</PrivateRoute>
 					}
 				/>

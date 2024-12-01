@@ -4,7 +4,6 @@ import { useQuery } from '@tanstack/react-query';
 import { Paginated, Post, User } from '../../interface';
 import { AxiosError } from 'axios';
 import axios from '../../utils/axios';
-
 import { format, isWithinInterval, startOfMonth, subMonths } from 'date-fns';
 import { Entity } from '../../interface/Entity';
 
