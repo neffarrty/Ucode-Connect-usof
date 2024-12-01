@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import {
-	Avatar,
-	Badge,
 	IconButton,
 	Paper,
 	Stack,
@@ -9,21 +7,82 @@ import {
 	Chip,
 	Snackbar,
 	Alert,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogTitle,
+	TextField,
 	SnackbarCloseReason,
+	Slide,
 } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
 import { useSelector, useDispatch } from 'react-redux';
 import { User } from '../../interface/User';
-import { Grade, AddAPhoto } from '@mui/icons-material';
+import { Close, Edit, Grade, Save } from '@mui/icons-material';
 import { getMembershipDuration } from '../../utils/dates';
 import { updateUser } from '../../redux/auth/slice';
 import axios from '../../utils/axios';
+import { useForm } from 'react-hook-form';
+import { ProfileAvatar } from './FrofileAvatar';
+import { TransitionProps } from '@mui/material/transitions';
+
+const Transition = React.forwardRef(function Transition(
+	props: TransitionProps & {
+		children: React.ReactElement<any, any>;
+	},
+	ref: React.Ref<unknown>,
+) {
+	return <Slide direction="up" ref={ref} {...props} />;
+});
 
 export const ProfileUserInfo: React.FC = () => {
 	const { user } = useSelector((state: any) => state.auth);
 	const dispatch = useDispatch();
 
 	const [openSnackBar, setOpenSnackBar] = useState(false);
+	const [openEditDialog, setOpenEditDialog] = useState(false);
+
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+		reset,
+	} = useForm({
+		defaultValues: {
+			login: user?.login,
+			fullname: user?.fullname,
+		},
+	});
+
+	const { mutate, isPending, isError, error } = useMutation<
+		User,
+		any,
+		Partial<User>
+	>({
+		mutationKey: ['update_profile'],
+		mutationFn: async (data) => {
+			const response = await axios.patch<User>(`/users/${user.id}`, data);
+			return response.data;
+		},
+		onSuccess: (user) => {
+			dispatch(updateUser(user));
+			setOpenSnackBar(true);
+			setOpenEditDialog(false);
+		},
+		onError: (_error) => {
+			setOpenSnackBar(true);
+		},
+	});
+
+	const handleEditClose = () => {
+		setOpenEditDialog(false);
+		reset();
+	};
+
+	const handleEditSubmit = (data: { login: string; fullname: string }) => {
+		mutate(data);
+	};
+
 	const handleCloseSnackbar = (
 		_event: React.SyntheticEvent | Event,
 		reason?: SnackbarCloseReason,
@@ -32,38 +91,6 @@ export const ProfileUserInfo: React.FC = () => {
 			return;
 		}
 		setOpenSnackBar(false);
-	};
-
-	const { mutate, isPending, isError, error } = useMutation<
-		User,
-		any,
-		FormData
-	>({
-		mutationKey: ['set_avatar'],
-		mutationFn: async (data: FormData) => {
-			const response = await axios.patch<User>('/users/avatar', data, {
-				headers: {
-					'Content-Type': 'multipart/form-data',
-				},
-			});
-			return response.data;
-		},
-		onSuccess: (user: User) => {
-			dispatch(updateUser(user));
-			setOpenSnackBar(true);
-		},
-		onError: (_error) => {
-			setOpenSnackBar(true);
-		},
-	});
-
-	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		const file = event.target.files?.[0];
-		if (file) {
-			const formData = new FormData();
-			formData.append('image', file);
-			mutate(formData);
-		}
 	};
 
 	return (
@@ -76,49 +103,10 @@ export const ProfileUserInfo: React.FC = () => {
 				alignItems: 'center',
 				border: '1px solid',
 				borderColor: 'divider',
+				position: 'relative',
 			}}
 		>
-			<Badge
-				overlap="circular"
-				anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-				badgeContent={
-					<IconButton
-						component="label"
-						disabled={isPending}
-						sx={{
-							border: 2,
-							bgcolor: 'background.paper',
-							borderColor: 'primary.main',
-							'&:hover': {
-								bgcolor: 'background.paper',
-							},
-						}}
-					>
-						<input
-							type="file"
-							hidden
-							accept="image/*"
-							onChange={handleFileChange}
-						/>
-						<AddAPhoto
-							sx={{
-								color: 'primary.dark',
-							}}
-						/>
-					</IconButton>
-				}
-			>
-				<Avatar
-					alt={user?.login}
-					src={user?.avatar}
-					sx={{
-						height: 150,
-						width: 150,
-						border: 2,
-						borderColor: 'primary.main',
-					}}
-				/>
-			</Badge>
+			<ProfileAvatar />
 			<Stack direction="column" gap={0.5}>
 				<Stack direction="row" gap={1} alignItems="center">
 					<Typography
@@ -143,6 +131,64 @@ export const ProfileUserInfo: React.FC = () => {
 					{getMembershipDuration(new Date(user?.createdAt))}
 				</Typography>
 			</Stack>
+			<IconButton
+				sx={{
+					position: 'absolute',
+					bottom: 16,
+					right: 16,
+					backgroundColor: 'primary.main',
+					color: 'white',
+					borderRadius: '50%',
+					'&:hover': {
+						backgroundColor: 'primary.dark',
+					},
+					size: 'small',
+				}}
+				onClick={() => setOpenEditDialog(true)}
+			>
+				<Edit />
+			</IconButton>
+			<Dialog
+				open={openEditDialog}
+				onClose={() => setOpenEditDialog(false)}
+				component="form"
+				onSubmit={handleSubmit(handleEditSubmit)}
+				TransitionComponent={Transition}
+			>
+				<DialogTitle sx={{ color: 'white', bgcolor: 'primary.main' }}>
+					Edit Profile
+				</DialogTitle>
+				<DialogContent dividers>
+					<TextField
+						label="Login"
+						fullWidth
+						margin="normal"
+						{...register('login', {
+							required: 'Login is required',
+						})}
+						error={!!errors.login}
+						helperText={errors.login?.message}
+					/>
+					<TextField
+						label="Full Name"
+						fullWidth
+						margin="normal"
+						{...register('fullname')}
+					/>
+				</DialogContent>
+				<DialogActions>
+					<IconButton onClick={handleEditClose} color="primary">
+						<Close />
+					</IconButton>
+					<IconButton
+						type="submit"
+						color="primary"
+						disabled={isPending}
+					>
+						<Save />
+					</IconButton>
+				</DialogActions>
+			</Dialog>
 			<Snackbar
 				open={openSnackBar}
 				autoHideDuration={3000}
@@ -153,7 +199,7 @@ export const ProfileUserInfo: React.FC = () => {
 				<Alert severity={isError ? 'error' : 'success'} sx={{ mt: 1 }}>
 					{isError
 						? error.response?.data?.message || error.message
-						: 'Successfully changed profile image'}
+						: 'Successfully changed user info'}
 				</Alert>
 			</Snackbar>
 		</Paper>

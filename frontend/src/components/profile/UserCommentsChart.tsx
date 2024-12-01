@@ -1,10 +1,8 @@
+import React from 'react';
 import { LineChart } from '@mui/x-charts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
-import { Paginated } from '../../interface/Paginated';
 import { AxiosError } from 'axios';
-import { User } from '../../interface/User';
-import { Comment } from '../../interface/Comment';
+import { User, Paginated, Comment } from '../../interface';
 import axios from '../../utils/axios';
 import { getDataByMonth } from './UserPostsChart';
 

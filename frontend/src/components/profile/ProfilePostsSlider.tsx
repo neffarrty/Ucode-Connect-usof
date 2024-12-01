@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import {
 	Slide,
 	Card,
@@ -13,16 +14,13 @@ import {
 	Tooltip,
 	Chip,
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import { Post } from '../../interface/Post';
-
 import { ArrowBackIos, ArrowForwardIos, Star } from '@mui/icons-material';
-import { formatDate } from '../../utils/dates';
 import { useQuery } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
-import { Paginated } from '../../interface/Paginated';
+import { Paginated, Post } from '../../interface/';
 import { useSelector } from 'react-redux';
+import { AxiosError } from 'axios';
 import axios from '../../utils/axios';
+import { formatDate } from '../../utils/dates';
 
 const truncateText = (text: string, limit: number) => {
 	const words = text.split(' ');
@@ -55,15 +53,12 @@ export const ProfilePostsSlider: React.FC = () => {
 				`/users/${user.id}/posts?limit=5`,
 			);
 
-			console.log(data);
-
 			return data.data;
 		},
 	});
 
 	useEffect(() => {
 		if (!isLoading) {
-			console.log(data);
 			setPosts(data || []);
 		}
 	}, [data, isLoading]);
@@ -82,7 +77,7 @@ export const ProfilePostsSlider: React.FC = () => {
 						timeout={500}
 						mountOnEnter
 						unmountOnExit
-						key={posts[currentSlide]?.id}
+						key={posts[currentSlide].id}
 					>
 						<Card
 							sx={{
@@ -95,7 +90,7 @@ export const ProfilePostsSlider: React.FC = () => {
 								<CardHeader
 									subheader={formatDate(
 										new Date(
-											posts[currentSlide]?.createdAt ||
+											posts[currentSlide].createdAt ||
 												Date.now(),
 										),
 									)}
@@ -109,11 +104,11 @@ export const ProfilePostsSlider: React.FC = () => {
 												color: 'text.primary',
 											}}
 										>
-											{posts[currentSlide]?.title ||
-												'No title'}
+											{posts[currentSlide].title}
 										</Typography>
 										<Box
 											sx={{
+												my: 1,
 												display: 'flex',
 												gap: 1,
 												color: 'text.secondary',

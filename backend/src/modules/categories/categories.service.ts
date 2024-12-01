@@ -12,47 +12,67 @@ import { PostDto } from 'src/modules/posts/dto/post.dto';
 export class CategoriesService {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async findAll({
-		page,
-		limit,
-	}: PaginationOptionsDto): Promise<Paginated<CategoryDto>> {
-		const [categories, count] = await this.prisma.$transaction([
-			this.prisma.category.findMany({
-				take: limit,
-				skip: (page - 1) * limit,
-				include: {
-					_count: {
-						select: { posts: true },
-					},
+	async findAll(): Promise<CategoryDto[]> {
+		const categories = await this.prisma.category.findMany({
+			include: {
+				_count: {
+					select: { posts: true },
 				},
-				orderBy: {
-					posts: {
-						_count: 'desc',
-					},
-				},
-			}),
-			this.prisma.category.count(),
-		]);
-		const pages = Math.ceil(count / limit);
-
-		return {
-			data: categories.map((category) => {
-				const { _count, ...data } = category;
-				return {
-					...data,
-					posts: _count.posts,
-				};
-			}),
-			meta: {
-				page,
-				total: count,
-				count: limit,
-				pages,
-				next: page < pages ? page + 1 : null,
-				prev: page > 1 ? page - 1 : null,
 			},
-		};
+			orderBy: {
+				posts: {
+					_count: 'desc',
+				},
+			},
+		});
+
+		return categories.map(({ _count, ...categorie }) => ({
+			...categorie,
+			posts: _count.posts,
+		}));
 	}
+
+	// async findAll({
+	// 	page,
+	// 	limit,
+	// }: PaginationOptionsDto): Promise<Paginated<CategoryDto>> {
+	// 	const [categories, count] = await this.prisma.$transaction([
+	// 		this.prisma.category.findMany({
+	// 			take: limit,
+	// 			skip: (page - 1) * limit,
+	// 			include: {
+	// 				_count: {
+	// 					select: { posts: true },
+	// 				},
+	// 			},
+	// 			orderBy: {
+	// 				posts: {
+	// 					_count: 'desc',
+	// 				},
+	// 			},
+	// 		}),
+	// 		this.prisma.category.count(),
+	// 	]);
+	// 	const pages = Math.ceil(count / limit);
+
+	// 	return {
+	// 		data: categories.map((category) => {
+	// 			const { _count, ...data } = category;
+	// 			return {
+	// 				...data,
+	// 				posts: _count.posts,
+	// 			};
+	// 		}),
+	// 		meta: {
+	// 			page,
+	// 			total: count,
+	// 			count: limit,
+	// 			pages,
+	// 			next: page < pages ? page + 1 : null,
+	// 			prev: page > 1 ? page - 1 : null,
+	// 		},
+	// 	};
+	// }
 
 	async findById(id: number): Promise<CategoryDto> {
 		const category = await this.prisma.category.findUnique({

@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
 	Alert,
 	Box,
@@ -9,37 +10,81 @@ import {
 	Typography,
 } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-import { PostCard } from '../components/post-card/PostCard';
+import { Post, Paginated } from '../interface';
 import { AxiosError } from 'axios';
 import axios from '../utils/axios';
-import { Post } from '../interface/Post';
-import Layout from '../components/layout/Layout';
-import { Paginated } from '../interface/Paginated';
-import React, { useState } from 'react';
-import { PostsHeader } from '../components/PostsHeader';
+import { Layout } from '../components/layout/Layout';
+import { PostsPageHeader } from '../components/PostsPageHeader';
+import { PostCard } from '../components/post-card/PostCard';
 
-const limits = [15, 30, 50];
+export interface PostFilters {
+	sort: string;
+	order: string;
+	title: string;
+	categories: string[];
+	createdAt: {
+		gte: Date | null;
+		lte: Date | null;
+	};
+}
 
-export const Posts: React.FC = () => {
+export const BookmarksPage: React.FC = () => {
 	const [page, setPage] = useState(1);
 	const [limit, setLimit] = useState(15);
 
-	const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+	const [filters, setFilters] = useState<PostFilters>({
+		sort: 'createdAt',
+		order: 'desc',
+		title: '',
+		categories: [],
+		createdAt: {
+			gte: null,
+			lte: null,
+		},
+	});
+
+	const handlePageChange = (
+		_event: React.ChangeEvent<unknown>,
+		value: number,
+	) => {
 		setPage(value);
 	};
 
 	const handleLimitChange = (value: number) => {
-		setPage(1);
 		setLimit(value);
+		setPage(1);
+	};
+
+	const cleanFilters = (filters: PostFilters) => {
+		const cleaned: Partial<PostFilters> = {};
+
+		if (filters.sort) cleaned.sort = filters.sort;
+		if (filters.order) cleaned.order = filters.order;
+		if (filters.title.trim()) cleaned.title = filters.title;
+		if (filters.categories.length > 0)
+			cleaned.categories = filters.categories;
+		if (filters.createdAt.gte || filters.createdAt.lte)
+			cleaned.createdAt = { ...filters.createdAt };
+
+		return cleaned;
 	};
 
 	const { isLoading, error, data } = useQuery<Paginated<Post>, AxiosError>({
-		queryKey: ['posts', page, limit],
+		queryKey: ['bookmarks', page, limit, filters],
 		queryFn: async () => {
-			const response = await axios.get<Paginated<Post>>(
-				`/posts?page=${page}&limit=${limit}&sort=createdAt`,
+			const params = cleanFilters(filters);
+
+			const { data } = await axios.get<Paginated<Post>>(
+				'/users/bookmarks',
+				{
+					params: {
+						...params,
+						page,
+						limit,
+					},
+				},
 			);
-			return response.data;
+			return data;
 		},
 	});
 
@@ -52,7 +97,26 @@ export const Posts: React.FC = () => {
 					flex: 1,
 				}}
 			>
-				<PostsHeader count={data?.meta.total || 0} />
+				<PostsPageHeader
+					count={data?.meta.total || 0}
+					filters={filters}
+					setFilters={setFilters}
+					setPage={setPage}
+					title={
+						<Box
+							sx={{
+								width: '100%',
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'space-between',
+							}}
+						>
+							<Typography variant="h4" color="primary.dark">
+								Bookmarks
+							</Typography>
+						</Box>
+					}
+				/>
 				{isLoading && (
 					<Box
 						sx={{
@@ -76,7 +140,7 @@ export const Posts: React.FC = () => {
 						}}
 					>
 						<Alert severity="error">
-							Error loading posts: {error.message}
+							Error loading bookmarks: {error.message}
 						</Alert>
 					</Box>
 				)}
@@ -113,7 +177,7 @@ export const Posts: React.FC = () => {
 								color="primary"
 								showFirstButton
 								showLastButton
-								onChange={handleChange}
+								onChange={handlePageChange}
 								sx={{ color: 'primary.main', alignSelf: 'end' }}
 							/>
 							<Box>
@@ -121,7 +185,7 @@ export const Posts: React.FC = () => {
 									Posts per page
 								</Typography>
 								<ButtonGroup variant="outlined">
-									{limits.map((lim) => (
+									{[15, 30, 50].map((lim) => (
 										<Button
 											onClick={() =>
 												handleLimitChange(lim)

@@ -1,6 +1,6 @@
+import React, { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { ReactNode } from 'react';
 import { RootState } from '../redux/store';
 
 interface PrivateRouteProps {
@@ -8,9 +8,9 @@ interface PrivateRouteProps {
 }
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
-	const { user: authUser } = useSelector((state: RootState) => state.auth);
+	const { user } = useSelector((state: RootState) => state.auth);
 
-	if (!authUser) {
+	if (!user) {
 		return <Navigate to="/login" />;
 	}
 

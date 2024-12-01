@@ -6,14 +6,7 @@ import {
 	IconButton,
 	Divider,
 } from '@mui/material';
-import {
-	Facebook,
-	Instagram,
-	GitHub,
-	X,
-	LocationOn,
-	Email,
-} from '@mui/icons-material';
+import { Facebook, Instagram, GitHub, X } from '@mui/icons-material';
 import Logo from '../Logo';
 
 const socialLinks = {

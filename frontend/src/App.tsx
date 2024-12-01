@@ -12,20 +12,38 @@ import {
 	Register,
 	Verify,
 	GoogleOAuthSuccess,
-	Home,
-	Profile,
-	Posts,
+	HomePage,
+	ProfilePage,
+	PostsPage,
 } from './pages';
 import { theme } from './theme/theme';
 import NotFound from './components/errors/NotFound';
+import { PostPage } from './pages/PostPage';
+import { CreatePostPage } from './pages/CreatePostPage';
+import PrivateRoute from './components/PrivateRoute';
+import { BookmarksPage } from './pages/BookmarksPage';
 
 const App: React.FC = () => {
 	return (
 		<ThemeProvider theme={theme}>
 			<CssBaseline />
 			<Routes>
-				<Route path="/" element={<Home />} />
-				<Route path="/home" element={<Home />} />
+				<Route
+					path="/"
+					element={
+						<PrivateRoute>
+							<HomePage />
+						</PrivateRoute>
+					}
+				/>
+				<Route
+					path="/home"
+					element={
+						<PrivateRoute>
+							<HomePage />
+						</PrivateRoute>
+					}
+				/>
 				<Route path="/login" element={<Login />} />
 				<Route path="/register" element={<Register />} />
 				<Route path="/password-reset" element={<ForgotPassword />} />
@@ -42,8 +60,46 @@ const App: React.FC = () => {
 					path="/google-success/:token"
 					element={<GoogleOAuthSuccess />}
 				/>
-				<Route path="/posts" element={<Posts />} />
-				<Route path="/profile" element={<Profile />} />
+				<Route
+					path="/posts"
+					element={
+						<PrivateRoute>
+							<PostsPage />
+						</PrivateRoute>
+					}
+				/>
+				<Route
+					path="/posts/new"
+					element={
+						<PrivateRoute>
+							<CreatePostPage />
+						</PrivateRoute>
+					}
+				/>
+				<Route
+					path="/posts/:id"
+					element={
+						<PrivateRoute>
+							<PostPage />
+						</PrivateRoute>
+					}
+				/>
+				<Route
+					path="/profile"
+					element={
+						<PrivateRoute>
+							<ProfilePage />
+						</PrivateRoute>
+					}
+				/>
+				<Route
+					path="/bookmarks"
+					element={
+						<PrivateRoute>
+							<BookmarksPage />
+						</PrivateRoute>
+					}
+				/>
 				<Route path="*" element={<NotFound />} />
 			</Routes>
 		</ThemeProvider>

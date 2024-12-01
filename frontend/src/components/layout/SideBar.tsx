@@ -1,3 +1,4 @@
+import React from 'react';
 import {
 	Box,
 	Divider,
@@ -43,45 +44,29 @@ export const SideBar: React.FC<SideBarProps> = ({ width }) => {
 					}}
 					component="nav"
 				>
-					<ListItemButton href="http://localhost:3001/home">
+					<ListItemButton href="/home">
 						<ListItemIcon>
 							<Home />
 						</ListItemIcon>
 						<ListItemText primary="Home" />
 					</ListItemButton>
-					<ListItemButton href="http://localhost:3001/bookmarks">
-						<ListItemIcon>
-							<Bookmarks />
-						</ListItemIcon>
-						<ListItemText primary="Bookmarks" />
-					</ListItemButton>
-					<ListItemButton href="http://localhost:3001/posts">
+					<ListItemButton href="/posts">
 						<ListItemIcon>
 							<Article />
 						</ListItemIcon>
 						<ListItemText primary="Posts" />
 					</ListItemButton>
-					<ListItemButton href="http://localhost:3001/tags">
+					<ListItemButton href="/bookmarks">
+						<ListItemIcon>
+							<Bookmarks />
+						</ListItemIcon>
+						<ListItemText primary="Bookmarks" />
+					</ListItemButton>
+					<ListItemButton href="/categories">
 						<ListItemIcon>
 							<Style />
 						</ListItemIcon>
 						<ListItemText primary="Categories" />
-					</ListItemButton>
-				</List>
-				<Divider />
-				<List
-					sx={{
-						width: '100%',
-						bgcolor: 'background.paper',
-						mt: 'auto',
-					}}
-					component="nav"
-				>
-					<ListItemButton>
-						<ListItemIcon>
-							<Logout />
-						</ListItemIcon>
-						<ListItemText primary="Log out" />
 					</ListItemButton>
 				</List>
 			</Box>

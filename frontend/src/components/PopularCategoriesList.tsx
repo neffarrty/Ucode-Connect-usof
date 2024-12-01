@@ -10,10 +10,9 @@ import {
 	Divider,
 } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
+import { Category, Paginated } from '../interface';
 import { AxiosError } from 'axios';
 import axios from '../utils/axios';
-import { Category } from '../interface/Category';
-import { Paginated } from '../interface/Paginated';
 
 interface PopularCategoriesListProps {
 	size: number;
@@ -22,14 +21,14 @@ interface PopularCategoriesListProps {
 export const PopularCategoriesList: React.FC<PopularCategoriesListProps> = ({
 	size,
 }) => {
-	const { isLoading, data } = useQuery<Paginated<Category>, AxiosError>({
+	const { data } = useQuery<Category[], AxiosError>({
 		queryKey: ['top_categories'],
 		queryFn: async () => {
-			const response = await axios.get<Paginated<Category>>(
+			const { data } = await axios.get<Category[]>(
 				`/categories?limit=${size}`,
 			);
 
-			return response.data;
+			return data;
 		},
 	});
 
@@ -63,7 +62,7 @@ export const PopularCategoriesList: React.FC<PopularCategoriesListProps> = ({
 				}
 			>
 				{data &&
-					data.data.map((categorie) => (
+					data.slice(0, 15).map((categorie) => (
 						<ListItemButton key={categorie.id}>
 							<ListItem sx={{ p: 0 }}>
 								<ListItemText

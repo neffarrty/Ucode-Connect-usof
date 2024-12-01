@@ -1,5 +1,11 @@
 import { Category } from './Category';
 import { Entity } from './Entity';
+import { LikeType } from './Like';
+
+export enum Status {
+	ACTIVE = 'ACTIVE',
+	INACTIVE = 'INACTIVE',
+}
 
 export interface Post extends Entity {
 	id: number;
@@ -7,11 +13,13 @@ export interface Post extends Entity {
 	author: {
 		login: string;
 		avatar: string;
+		fullname: string;
 	};
-	categories: { category: Category }[];
 	title: string;
-	status: 'ACTIVE' | 'INACTIVE';
 	content: string;
+	categories: { category: Category }[];
+	like?: LikeType;
+	status: Status;
 	rating: number;
 	bookmarked: boolean;
 }

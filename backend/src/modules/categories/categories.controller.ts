@@ -40,11 +40,9 @@ export class CategoriesController {
 
 	@Get()
 	@ApiOperation({ summary: 'Get all categories' })
-	@ApiPaginatedResponse(CategoryDto)
-	async getAllCategories(
-		@Query() paginationOptions: PaginationOptionsDto,
-	): Promise<Paginated<CategoryDto>> {
-		return this.categoriesService.findAll(paginationOptions);
+	@ApiOkResponse({ type: [CategoryDto] })
+	async getAllCategories(): Promise<CategoryDto[]> {
+		return this.categoriesService.findAll();
 	}
 
 	@Get(':id')

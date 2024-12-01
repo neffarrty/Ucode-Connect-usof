@@ -114,8 +114,6 @@ export const fetchUser = createAsyncThunk<
 	void,
 	{ rejectValue: string }
 >('auth/fetch-user', async (_, { rejectWithValue, getState }) => {
-	console.log(import.meta.env.VITE_API_URL);
-
 	const token = (getState() as RootState).auth.token;
 
 	if (!token) {
@@ -123,13 +121,12 @@ export const fetchUser = createAsyncThunk<
 	}
 
 	try {
-		const response = await api.get<UserResponse>('/auth/self', {
+		const { data } = await api.get<UserResponse>('/auth/self', {
 			headers: {
 				Authorization: `Bearer ${token}`,
 			},
 		});
-		console.log(response.data);
-		return response.data;
+		return data;
 	} catch (error) {
 		if (error instanceof AxiosError) {
 			return rejectWithValue(
@@ -139,3 +136,33 @@ export const fetchUser = createAsyncThunk<
 		return rejectWithValue('An unknown error occurred.');
 	}
 });
+
+export const logout = createAsyncThunk<void, void, { rejectValue: string }>(
+	'auth/logout',
+	async (_, { rejectWithValue, getState }) => {
+		const token = (getState() as RootState).auth.token;
+
+		if (!token) {
+			return rejectWithValue('No token provided');
+		}
+
+		try {
+			await api.post(
+				'/auth/logout',
+				{},
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				},
+			);
+		} catch (error) {
+			if (error instanceof AxiosError) {
+				return rejectWithValue(
+					error.response?.data?.message || error.message,
+				);
+			}
+			return rejectWithValue('An unknown error occurred.');
+		}
+	},
+);

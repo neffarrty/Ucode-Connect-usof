@@ -1,3 +1,4 @@
+import React from 'react';
 import {
 	Card,
 	CardHeader,
@@ -14,11 +15,7 @@ import { Star, Forum } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import axios from '../../utils/axios';
-
-import { Post } from '../../interface/Post';
-import { Comment } from '../../interface/Comment';
-import { Category } from '../../interface/Category';
-import { Paginated } from '../../interface/Paginated';
+import { Post, Comment, Category, Paginated } from '../../interface';
 import { PostCardActions } from './PostCardActions';
 import { formatDate } from '../../utils/dates';
 
@@ -80,6 +77,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
 								display: 'flex',
 								gap: 1,
 								color: 'text.secondary',
+								mb: 2,
 							}}
 						>
 							{data?.categories.map((category) => (
@@ -100,8 +98,14 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
 							))}
 						</Box>
 						<Typography
+							component="a"
 							variant="h6"
-							sx={{ color: 'text.primary', mt: 1 }}
+							href={`http://localhost:3001/posts/${post.id}`}
+							sx={{
+								color: 'text.primary',
+								mt: 1,
+								textDecoration: 'none',
+							}}
 						>
 							{post.title}
 						</Typography>

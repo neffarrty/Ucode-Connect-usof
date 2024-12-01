@@ -80,7 +80,7 @@ export class AuthService {
 		};
 	}
 
-	async logout(user: User, token: string, res: Response): Promise<void> {
+	async logout(token: string, res: Response): Promise<void> {
 		this.blacklistToken(token);
 		res.clearCookie('refresh_token');
 	}
