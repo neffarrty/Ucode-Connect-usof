@@ -8,6 +8,7 @@ export interface Comment extends Entity {
 		avatar: string;
 		fullname: string;
 	};
+	like?: LikeType;
 	postId: number;
 	content: string;
 	rating: number;

@@ -152,8 +152,9 @@ export class PostsController {
 	async getPostComments(
 		@Param('id', ParseIntPipe) id: number,
 		@Query() paginationOptions: PaginationOptionsDto,
+		@GetUser() user: User,
 	): Promise<Paginated<CommentDto>> {
-		return this.postService.findComments(id, paginationOptions);
+		return this.postService.findComments(id, paginationOptions, user);
 	}
 
 	@Post(':id/comments')

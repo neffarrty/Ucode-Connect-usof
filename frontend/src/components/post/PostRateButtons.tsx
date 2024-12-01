@@ -7,7 +7,7 @@ import { useState } from 'react';
 import axios from '../../utils/axios';
 import { Post } from '../../interface/Post';
 
-interface RatePostButtonsProps {
+interface PostRateButtonsProps {
 	post: Post;
 }
 
@@ -71,7 +71,7 @@ export const PostRateButton: React.FC<PostRateButtonProps> = ({
 	);
 };
 
-export const PostRateButtons: React.FC<RatePostButtonsProps> = ({ post }) => {
+export const PostRateButtons: React.FC<PostRateButtonsProps> = ({ post }) => {
 	const [like, setLike] = useState<'LIKE' | 'DISLIKE' | undefined>(post.like);
 	const [rating, setRating] = useState(post.rating);
 

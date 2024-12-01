@@ -254,6 +254,7 @@ export class PostsService {
 	async findComments(
 		id: number,
 		{ page, limit }: PaginationOptionsDto,
+		user: User,
 	): Promise<Paginated<CommentDto>> {
 		await this.findById(id);
 
@@ -276,6 +277,9 @@ export class PostsService {
 							fullname: true,
 						},
 					},
+					likes: {
+						where: { authorId: user.id },
+					},
 				},
 			}),
 			this.prisma.comment.count({ where }),
@@ -283,7 +287,10 @@ export class PostsService {
 		const pages = Math.ceil(count / limit);
 
 		return {
-			data: comments,
+			data: comments.map(({ likes, ...post }) => ({
+				...post,
+				like: likes?.shift()?.type,
+			})),
 			meta: {
 				page,
 				total: count,

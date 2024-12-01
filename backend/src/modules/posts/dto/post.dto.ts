@@ -22,7 +22,7 @@ export class PostDto {
 
 	@ApiProperty({
 		description: 'Information about rate of post by the current user',
-		example: null,
+		example: LikeType.DISLIKE,
 	})
 	like?: LikeType;
 
