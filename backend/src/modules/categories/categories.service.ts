@@ -7,8 +7,8 @@ import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { CategoryDto, CreateCategoryDto, UpdateCategoryDto } from './dto';
 import { PaginationOptionsDto, Paginated } from 'src/pagination';
 import { PostDto } from 'src/modules/posts/dto/post.dto';
-import { CategorySortingOptionsDto, SortType } from './dto/sorting-options.dto';
-import { CategoryFilteringOptionsDto } from './dto/filtering-options.dto';
+import { CategorySortOptionsDto, SortType } from './dto/sort-options.dto';
+import { CategoryFilterOptionsDto } from './dto/filter-options.dto';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
@@ -16,8 +16,8 @@ export class CategoriesService {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async findAll(
-		{ sort, order }: CategorySortingOptionsDto,
-		{ title }: CategoryFilteringOptionsDto,
+		{ sort, order }: CategorySortOptionsDto,
+		{ title }: CategoryFilterOptionsDto,
 	): Promise<CategoryDto[]> {
 		const where: Prisma.CategoryWhereInput = {
 			title: {

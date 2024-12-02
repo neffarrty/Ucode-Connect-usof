@@ -10,9 +10,9 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { UserDto, CreateUserDto, UpdateUserDto } from './dto';
 import {
-	FilteringOptionsDto,
+	FilterOptionsDto,
 	PostDto,
-	SortingOptionsDto,
+	SortOptionsDto,
 } from 'src/modules/posts/dto';
 import { Paginated, PaginationOptionsDto } from 'src/pagination';
 import { Prisma, Role, Status, User } from '@prisma/client';
@@ -20,6 +20,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import * as bcrypt from 'bcryptjs';
 import { CommentDto } from '../comments/dto';
+import { UserFilterOptionsDto } from './dto/filter-options.dto';
 
 @Injectable()
 export class UsersService {
@@ -34,6 +35,8 @@ export class UsersService {
 				id: id,
 			},
 		});
+
+		console.log(user);
 
 		if (!user) {
 			throw new NotFoundException(`User with id ${id} not found`);
@@ -58,16 +61,24 @@ export class UsersService {
 		});
 	}
 
-	async findAll({
-		page,
-		limit,
-	}: PaginationOptionsDto): Promise<Paginated<UserDto>> {
+	async findAll(
+		{ page, limit }: PaginationOptionsDto,
+		{ login }: UserFilterOptionsDto,
+	): Promise<Paginated<UserDto>> {
+		const where: Prisma.UserWhereInput = {
+			login: {
+				contains: login,
+				mode: 'insensitive',
+			},
+		};
+
 		const [users, count] = await this.prisma.$transaction([
 			this.prisma.user.findMany({
+				where,
 				take: limit,
 				skip: (page - 1) * limit,
 			}),
-			this.prisma.user.count(),
+			this.prisma.user.count({ where }),
 		]);
 		const pages = Math.ceil(count / limit);
 
@@ -139,9 +150,10 @@ export class UsersService {
 	}
 
 	async findPosts(
+		id: number,
 		{ page, limit }: PaginationOptionsDto,
-		{ sort, order }: SortingOptionsDto,
-		{ createdAt, categories, status, title }: FilteringOptionsDto,
+		{ sort, order }: SortOptionsDto,
+		{ createdAt, categories, status, title }: FilterOptionsDto,
 		user: User,
 	): Promise<Paginated<PostDto>> {
 		const where: Prisma.PostWhereInput = {
@@ -165,7 +177,7 @@ export class UsersService {
 				},
 				{ createdAt },
 				{ status: user.role === Role.ADMIN ? status : Status.ACTIVE },
-				{ authorId: user.id },
+				{ authorId: id },
 			],
 		};
 
@@ -222,13 +234,13 @@ export class UsersService {
 	}
 
 	async findComments(
+		id: number,
 		{ page, limit }: PaginationOptionsDto,
-		{ sort, order }: SortingOptionsDto,
-		{ createdAt }: FilteringOptionsDto,
-		user: User,
+		{ sort, order }: SortOptionsDto,
+		{ createdAt }: FilterOptionsDto,
 	): Promise<Paginated<CommentDto>> {
 		const where: Prisma.CommentWhereInput = {
-			AND: [{ createdAt }, { authorId: user.id }],
+			AND: [{ createdAt }, { authorId: id }],
 		};
 
 		const [comments, count] = await this.prisma.$transaction([
@@ -280,13 +292,13 @@ export class UsersService {
 	}
 
 	async update(id: number, user: User, dto: UpdateUserDto): Promise<UserDto> {
-		await this.findById(id);
+		const candidate = await this.findById(id);
 
 		if (user.id !== id && user.role !== Role.ADMIN) {
 			throw new ForbiddenException('Forbidden to update user');
 		}
 
-		await this.checkIfNotExist(dto.login, dto.email, user);
+		await this.checkIfNotExist(dto.login, dto.email, candidate);
 
 		if (dto.password) {
 			dto.password = await bcrypt.hash(dto.password, 10);

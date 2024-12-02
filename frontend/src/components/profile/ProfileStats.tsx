@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { Box, Paper, Tab, Tabs, Typography } from '@mui/material';
-import { useSelector } from 'react-redux';
 import { UserPostsChart } from './UserPostsChart';
 import { UserCommentsChart } from './UserCommentsChart';
+import { User } from '../../interface';
 
-export const ProfileStats: React.FC = () => {
-	const { user } = useSelector((state: any) => state.auth);
+interface ProfileStatsProps {
+	user: User;
+}
+
+export const ProfileStats: React.FC<ProfileStatsProps> = ({ user }) => {
 	const [value, setValue] = useState(0);
 
 	const handleChange = (_event: React.SyntheticEvent, value: number) => {
@@ -17,7 +20,7 @@ export const ProfileStats: React.FC = () => {
 			sx={{
 				display: 'flex',
 				flexDirection: 'column',
-				height: '100%',
+				pb: 10,
 				border: '1px solid',
 				borderColor: 'divider',
 			}}
@@ -37,17 +40,14 @@ export const ProfileStats: React.FC = () => {
 				{value === 0 && (
 					<>
 						<Box sx={{ px: 6 }}>
-							<Typography variant="h6" gutterBottom>
-								Your Posts Over the Past Year
-							</Typography>
 							<Typography
 								variant="body2"
 								color="text.secondary"
 								gutterBottom
 							>
-								This chart shows how many posts you've written
-								each month in the past year. Pretty cool to see
-								your activity, right?
+								This chart shows how many posts
+								{` ${user.login} `}
+								written each month in the past year.
 							</Typography>
 						</Box>
 						<UserPostsChart user={user} />
@@ -56,17 +56,14 @@ export const ProfileStats: React.FC = () => {
 				{value === 1 && (
 					<>
 						<Box sx={{ px: 6 }}>
-							<Typography variant="h6" gutterBottom>
-								Your Comments Over the Past Year
-							</Typography>
 							<Typography
 								variant="body2"
 								color="text.secondary"
 								gutterBottom
 							>
-								Here's a look at how many comments you've made
-								every month over the last year. Keep the
-								conversation going!
+								Here's a look at how many comments
+								{` ${user.login} `} made every month over the
+								last year.
 							</Typography>
 						</Box>
 						<UserCommentsChart user={user} />

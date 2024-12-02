@@ -30,7 +30,7 @@ export class DateFilterDto {
 	gte?: Date;
 }
 
-export class FilteringOptionsDto {
+export class FilterOptionsDto {
 	@ApiProperty({
 		type: DateFilterDto,
 		required: false,

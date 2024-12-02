@@ -20,7 +20,7 @@ export const UserCommentsChart: React.FC<UserCommentsChartProps> = ({
 		queryKey: ['user_comments', user.id],
 		queryFn: async () => {
 			const response = await axios.get<Paginated<Comment>>(
-				`/users/${user?.id}/comments`,
+				`/users/${user.id}/comments`,
 			);
 			if (response.data.meta.pages > 1) {
 				const { data } = await axios.get(
@@ -48,7 +48,7 @@ export const UserCommentsChart: React.FC<UserCommentsChartProps> = ({
 					valueFormatter: (month, context) =>
 						context.location === 'tick'
 							? `${month.slice(0, 3)}\n${month.slice(3)}`
-							: `${month} 2023`,
+							: `${month}`,
 				},
 			]}
 			series={[

@@ -16,6 +16,7 @@ import {
 	PostsByCategoryPage,
 	BookmarksPage,
 	CategoriesPage,
+	UsersPage,
 } from './pages';
 import { theme } from './theme/theme';
 import NotFound from './components/errors/NotFound';
@@ -88,7 +89,7 @@ const App: React.FC = () => {
 					}
 				/>
 				<Route
-					path="/profile"
+					path="/users/:id"
 					element={
 						<PrivateRoute>
 							<ProfilePage />
@@ -116,6 +117,14 @@ const App: React.FC = () => {
 					element={
 						<PrivateRoute>
 							<PostsByCategoryPage />
+						</PrivateRoute>
+					}
+				/>
+				<Route
+					path="/users"
+					element={
+						<PrivateRoute>
+							<UsersPage />
 						</PrivateRoute>
 					}
 				/>

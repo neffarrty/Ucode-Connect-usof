@@ -9,16 +9,22 @@ import {
 	SnackbarCloseReason,
 } from '@mui/material';
 import { AddAPhoto } from '@mui/icons-material';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { User } from '../../interface/User';
 import axios from '../../utils/axios';
 import { updateUser } from '../../redux/auth/slice';
+import { RootState } from '../../redux/store';
 
-export const ProfileAvatar: React.FC = () => {
+interface ProfileAvatarProps {
+	user: User;
+}
+
+export const ProfileAvatar: React.FC<ProfileAvatarProps> = ({ user }) => {
 	const [openSnackBar, setOpenSnackBar] = useState(false);
-	const { user } = useSelector((state: any) => state.auth);
 	const dispatch = useDispatch();
+	const currentUser = useSelector((state: RootState) => state.auth.user);
+	const client = useQueryClient();
 
 	const { mutate, isPending, isError, error } = useMutation<
 		User,
@@ -37,6 +43,7 @@ export const ProfileAvatar: React.FC = () => {
 		onSuccess: (user: User) => {
 			dispatch(updateUser(user));
 			setOpenSnackBar(true);
+			client.invalidateQueries({ queryKey: ['user'] });
 		},
 		onError: (_error) => {
 			setOpenSnackBar(true);
@@ -68,30 +75,32 @@ export const ProfileAvatar: React.FC = () => {
 				overlap="circular"
 				anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
 				badgeContent={
-					<IconButton
-						component="label"
-						disabled={isPending}
-						sx={{
-							border: 2,
-							bgcolor: 'background.paper',
-							borderColor: 'primary.main',
-							'&:hover': {
-								bgcolor: 'background.paper',
-							},
-						}}
-					>
-						<input
-							type="file"
-							hidden
-							accept="image/*"
-							onChange={handleFileChange}
-						/>
-						<AddAPhoto
+					currentUser?.id === user.id && (
+						<IconButton
+							component="label"
+							disabled={isPending}
 							sx={{
-								color: 'primary.dark',
+								border: 2,
+								bgcolor: 'background.paper',
+								borderColor: 'primary.main',
+								'&:hover': {
+									bgcolor: 'background.paper',
+								},
 							}}
-						/>
-					</IconButton>
+						>
+							<input
+								type="file"
+								hidden
+								accept="image/*"
+								onChange={handleFileChange}
+							/>
+							<AddAPhoto
+								sx={{
+									color: 'primary.dark',
+								}}
+							/>
+						</IconButton>
+					)
 				}
 			>
 				<Avatar

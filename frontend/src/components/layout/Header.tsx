@@ -35,13 +35,9 @@ export const Header: React.FC = () => {
 	};
 
 	const handleLogout = async () => {
-		try {
-			dispatch(logout()).then(() => {
-				navigate('/login');
-			});
-		} catch (error) {
-			console.error('Logout failed:', error);
-		}
+		dispatch(logout()).then(() => {
+			navigate('/login');
+		});
 	};
 
 	return (
@@ -105,7 +101,9 @@ export const Header: React.FC = () => {
 							open={Boolean(anchorElUser)}
 							onClose={handleCloseUserMenu}
 						>
-							<MenuItem onClick={() => navigate('/profile')}>
+							<MenuItem
+								onClick={() => navigate(`/users/${user.id}`)}
+							>
 								<AccountCircle sx={{ mr: 1 }} />
 								<Typography sx={{ textAlign: 'center' }}>
 									Profile

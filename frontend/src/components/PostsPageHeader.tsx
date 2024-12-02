@@ -12,7 +12,7 @@ import {
 	Typography,
 } from '@mui/material';
 import { Search, FilterAlt } from '@mui/icons-material';
-import { PostFilters } from '../pages';
+import { PostFilters } from '../interface';
 
 interface PostsPageHeaderProps {
 	count: number;

@@ -2,6 +2,7 @@ export * from './HomePage';
 export * from './ProfilePage';
 export * from './BookmarksPage';
 export * from './CategoriesPage';
+export * from './UsersPage';
 export * from './post/PostsPage';
 export * from './post/PostPage';
 export * from './post/CreatePostPage';

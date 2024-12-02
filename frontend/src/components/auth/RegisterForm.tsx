@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form';
+import React from 'react';
 import {
 	TextField,
 	Button,
@@ -15,49 +15,20 @@ import {
 	Badge,
 	VpnKey,
 } from '@mui/icons-material';
+import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { register as registerAction } from '../../redux/auth/actions';
 import { AppDispatch, RootState } from '../../redux/store';
 import { yupResolver } from '@hookform/resolvers/yup';
 import logo from '../../assets/logo.svg';
-import * as yup from 'yup';
-
-const schema = yup.object().shape({
-	login: yup
-		.string()
-		.min(5, 'Username must be at least 5 characters')
-		.max(20, 'Username cannot exceed 20 characters')
-		.required('Username is required'),
-	email: yup
-		.string()
-		.email('Please enter a valid email')
-		.required('Email is required'),
-	password: yup
-		.string()
-		.matches(
-			/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/,
-			'Password must be at least 8 characters and include uppercase, lowercase, and a number',
-		)
-		.required('Password is required'),
-	confirmPassword: yup
-		.string()
-		.oneOf([yup.ref('password')], 'Passwords must match')
-		.required('Confirm password is required'),
-	fullname: yup
-		.string()
-		.nullable()
-		.transform((value) => (value === '' ? undefined : value))
-		.min(5, 'Full name must be at least 5 characters')
-		.max(32, 'Full name cannot exceed 32 characters')
-		.optional(),
-});
+import { schema } from '../../schemas/user-schema';
 
 interface FormInput {
 	login: string;
 	email: string;
 	password: string;
 	confirmPassword: string;
-	fullname?: string | null;
+	fullname: string;
 }
 
 const RegisterForm: React.FC = () => {
@@ -141,7 +112,7 @@ const RegisterForm: React.FC = () => {
 				}}
 			/>
 			<TextField
-				label="Full Name"
+				label="Full Name *"
 				{...register('fullname')}
 				error={!!errors.fullname}
 				helperText={errors.fullname?.message}

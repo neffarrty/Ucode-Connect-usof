@@ -14,9 +14,13 @@ import {
 	TextField,
 	SnackbarCloseReason,
 	Slide,
+	FormControl,
+	InputLabel,
+	Select,
+	MenuItem,
 } from '@mui/material';
-import { useMutation } from '@tanstack/react-query';
-import { useSelector, useDispatch } from 'react-redux';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useDispatch, useSelector } from 'react-redux';
 import { User } from '../../interface/User';
 import { Close, Edit, Grade, Save } from '@mui/icons-material';
 import { getMembershipDuration } from '../../utils/dates';
@@ -35,9 +39,14 @@ const Transition = React.forwardRef(function Transition(
 	return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export const ProfileUserInfo: React.FC = () => {
-	const { user } = useSelector((state: any) => state.auth);
+interface ProfileUserInfoProps {
+	user: User;
+}
+
+export const ProfileUserInfo: React.FC<ProfileUserInfoProps> = ({ user }) => {
 	const dispatch = useDispatch();
+	const currentUser = useSelector((state: any) => state.auth.user);
+	const client = useQueryClient();
 
 	const [openSnackBar, setOpenSnackBar] = useState(false);
 	const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -49,8 +58,9 @@ export const ProfileUserInfo: React.FC = () => {
 		reset,
 	} = useForm({
 		defaultValues: {
-			login: user?.login,
-			fullname: user?.fullname,
+			login: user.login,
+			fullname: user.fullname,
+			role: user.role,
 		},
 	});
 
@@ -65,9 +75,12 @@ export const ProfileUserInfo: React.FC = () => {
 			return response.data;
 		},
 		onSuccess: (user) => {
-			dispatch(updateUser(user));
+			if (currentUser.id === user.id) {
+				dispatch(updateUser(user));
+			}
 			setOpenSnackBar(true);
 			setOpenEditDialog(false);
+			client.invalidateQueries({ queryKey: ['user'] });
 		},
 		onError: (_error) => {
 			setOpenSnackBar(true);
@@ -106,7 +119,7 @@ export const ProfileUserInfo: React.FC = () => {
 				position: 'relative',
 			}}
 		>
-			<ProfileAvatar />
+			<ProfileAvatar user={user} />
 			<Stack direction="column" gap={0.5}>
 				<Stack direction="row" gap={1} alignItems="center">
 					<Typography
@@ -128,7 +141,7 @@ export const ProfileUserInfo: React.FC = () => {
 					</Typography>
 				</Stack>
 				<Typography variant="body2" color="text.secondary">
-					{getMembershipDuration(new Date(user?.createdAt))}
+					{getMembershipDuration(new Date(user.createdAt))}
 				</Typography>
 			</Stack>
 			<IconButton
@@ -158,7 +171,7 @@ export const ProfileUserInfo: React.FC = () => {
 				<DialogTitle sx={{ color: 'white', bgcolor: 'primary.main' }}>
 					Edit Profile
 				</DialogTitle>
-				<DialogContent dividers>
+				<DialogContent dividers sx={{ maxWidth: 400 }}>
 					<TextField
 						label="Login"
 						fullWidth
@@ -175,6 +188,19 @@ export const ProfileUserInfo: React.FC = () => {
 						margin="normal"
 						{...register('fullname')}
 					/>
+					{currentUser.role === 'ADMIN' && user.role !== 'ADMIN' && (
+						<FormControl sx={{ width: '100%', mt: 2 }}>
+							<InputLabel>Role</InputLabel>
+							<Select
+								label="Role"
+								{...register('role')}
+								displayEmpty
+							>
+								<MenuItem value={'USER'}>USER</MenuItem>
+								<MenuItem value={'ADMIN'}>ADMIN</MenuItem>
+							</Select>
+						</FormControl>
+					)}
 				</DialogContent>
 				<DialogActions>
 					<IconButton onClick={handleEditClose} color="primary">

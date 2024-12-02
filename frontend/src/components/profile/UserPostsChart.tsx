@@ -1,11 +1,10 @@
 import React from 'react';
 import { LineChart } from '@mui/x-charts';
 import { useQuery } from '@tanstack/react-query';
-import { Paginated, Post, User } from '../../interface';
+import { Paginated, Post, User, Entity } from '../../interface';
 import { AxiosError } from 'axios';
 import axios from '../../utils/axios';
 import { format, isWithinInterval, startOfMonth, subMonths } from 'date-fns';
-import { Entity } from '../../interface/Entity';
 
 export const getDataByMonth = (data: Entity[]) => {
 	const months = Array.from({ length: 12 }, (_, i) => {
@@ -50,7 +49,7 @@ export const UserPostsChart: React.FC<UserPostsChartProps> = ({ user }) => {
 		queryKey: ['user_posts', user.id],
 		queryFn: async () => {
 			const response = await axios.get<Paginated<Post>>(
-				`/users/${user?.id}/posts`,
+				`/users/${user.id}/posts`,
 			);
 			if (response.data.meta.pages > 1) {
 				const { data } = await axios.get(
@@ -77,7 +76,7 @@ export const UserPostsChart: React.FC<UserPostsChartProps> = ({ user }) => {
 					valueFormatter: (month, context) =>
 						context.location === 'tick'
 							? `${month.slice(0, 3)}\n${month.slice(3)}`
-							: `${month} 2023`,
+							: `${month}`,
 				},
 			]}
 			series={[

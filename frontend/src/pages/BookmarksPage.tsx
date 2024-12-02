@@ -153,10 +153,9 @@ export const BookmarksPage: React.FC = () => {
 								</Box>
 							))}
 						</Stack>
-						<Box
+						<Stack
 							component="section"
 							sx={{
-								display: 'flex',
 								justifyContent: 'space-between',
 								p: 3,
 							}}
@@ -186,7 +185,7 @@ export const BookmarksPage: React.FC = () => {
 									))}
 								</ButtonGroup>
 							</Box>
-						</Box>
+						</Stack>
 					</React.Fragment>
 				) : (
 					<Box

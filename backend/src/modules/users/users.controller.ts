@@ -29,9 +29,9 @@ import {
 import { UsersService } from 'src/modules/users/users.service';
 import { UserDto, CreateUserDto, UpdateUserDto, FileUploadDto } from './dto';
 import {
-	FilteringOptionsDto,
+	FilterOptionsDto,
 	PostDto,
-	SortingOptionsDto,
+	SortOptionsDto,
 } from 'src/modules/posts/dto';
 import { diskStorage } from 'multer';
 import { GetUser, Roles, ApiAuth } from 'src/decorators';
@@ -44,6 +44,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Role, User } from '@prisma/client';
 import { CommentDto } from '../comments/dto';
+import { UserFilterOptionsDto } from './dto/filter-options.dto';
 
 @ApiTags('users')
 @ApiAuth()
@@ -59,8 +60,9 @@ export class UsersController {
 	@ApiPaginatedResponse(UserDto)
 	getAllUsers(
 		@Query() paginationOptions: PaginationOptionsDto,
+		@Query() filterOptions: UserFilterOptionsDto,
 	): Promise<Paginated<UserDto>> {
-		return this.userService.findAll(paginationOptions);
+		return this.userService.findAll(paginationOptions, filterOptions);
 	}
 
 	@Get('bookmarks')
@@ -84,12 +86,14 @@ export class UsersController {
 		description: 'User not found',
 	})
 	async getUserPosts(
+		@Param('id', ParseIntPipe) id: number,
 		@Query() paginationOptions: PaginationOptionsDto,
-		@Query() sortingOptions: SortingOptionsDto,
-		@Query() filteringOptions: FilteringOptionsDto,
+		@Query() sortingOptions: SortOptionsDto,
+		@Query() filteringOptions: FilterOptionsDto,
 		@GetUser() user: User,
 	): Promise<Paginated<PostDto>> {
 		return this.userService.findPosts(
+			id,
 			paginationOptions,
 			sortingOptions,
 			filteringOptions,
@@ -108,16 +112,16 @@ export class UsersController {
 		description: 'User not found',
 	})
 	async getUserComment(
+		@Param('id', ParseIntPipe) id: number,
 		@Query() paginationOptions: PaginationOptionsDto,
-		@Query() sortingOptions: SortingOptionsDto,
-		@Query() filteringOptions: FilteringOptionsDto,
-		@GetUser() user: User,
+		@Query() sortingOptions: SortOptionsDto,
+		@Query() filteringOptions: FilterOptionsDto,
 	): Promise<Paginated<CommentDto>> {
 		return this.userService.findComments(
+			id,
 			paginationOptions,
 			sortingOptions,
 			filteringOptions,
-			user,
 		);
 	}
 
