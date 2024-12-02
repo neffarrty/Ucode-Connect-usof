@@ -7,7 +7,7 @@ import { fetchUser } from '../../redux/auth/actions';
 import { CircularProgress } from '@mui/material';
 import { RootState } from '../../redux/store';
 
-export const GoogleOAuthSuccess: React.FC = () => {
+export const OAuthSuccess: React.FC = () => {
 	const { token } = useParams();
 	const navigate = useNavigate();
 	const dispatch = useDispatch<AppDispatch>();

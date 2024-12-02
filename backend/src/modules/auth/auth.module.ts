@@ -15,6 +15,8 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { GoogleGuard } from './guards/google.guard';
 import * as path from 'path';
+import { GithubStrategy } from './strategies/github.strategy';
+import { GithubGuard } from './guards/github.guard';
 
 @Module({
 	providers: [
@@ -23,10 +25,12 @@ import * as path from 'path';
 		JwtStrategy,
 		JwtRefreshStrategy,
 		GoogleStrategy,
+		GithubStrategy,
 		LocalGuard,
 		JwtGuard,
 		JwtRefreshGuard,
 		GoogleGuard,
+		GithubGuard,
 	],
 	controllers: [AuthController],
 	imports: [

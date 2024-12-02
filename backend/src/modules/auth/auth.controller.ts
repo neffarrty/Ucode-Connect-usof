@@ -42,6 +42,7 @@ import { LocalGuard } from './guards/local.guard';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 import { GoogleGuard } from './guards/google.guard';
 import { JwtGuard } from './guards/jwt.guard';
+import { GithubGuard } from './guards/github.guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -114,9 +115,33 @@ export class AuthController {
 	@Get('google/callback')
 	@UseGuards(GoogleGuard)
 	@ApiExcludeEndpoint()
-	async googleAuthRedirect(@GetUser() user: User, @Res() res: Response) {
+	async googleAuthRedirect(
+		@GetUser() user: User,
+		@Res({ passthrough: true }) res: Response,
+	) {
 		const { token } = await this.service.login(user, res);
-		res.redirect(`http://localhost:3001/google-success/${token}`);
+		res.redirect(`http://localhost:3001/oauth-success/${token}`);
+	}
+
+	@Public()
+	@Get('github')
+	@UseGuards(GithubGuard)
+	@ApiOperation({ summary: 'Authenticate with Github' })
+	@ApiOkResponse({
+		description: 'Redirects to Github for authentication',
+	})
+	async githubAuth(@Req() req: Request) {}
+
+	@Public()
+	@Get('github/callback')
+	@UseGuards(GithubGuard)
+	@ApiExcludeEndpoint()
+	async githubAuthCallback(
+		@GetUser() user: User,
+		@Res({ passthrough: true }) res: Response,
+	) {
+		const { token } = await this.service.login(user, res);
+		res.redirect(`http://localhost:3001/oauth-success/${token}`);
 	}
 
 	@HttpCode(HttpStatus.NO_CONTENT)

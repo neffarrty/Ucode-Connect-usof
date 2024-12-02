@@ -3,7 +3,7 @@ import { AppDispatch, RootState } from '../../redux/store';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { login } from '../../redux/auth/actions';
-import { AlternateEmail, VpnKey, Google } from '@mui/icons-material';
+import { AlternateEmail, VpnKey, Google, GitHub } from '@mui/icons-material';
 import {
 	Box,
 	Typography,
@@ -14,6 +14,7 @@ import {
 	CircularProgress,
 	Divider,
 	Link,
+	Stack,
 } from '@mui/material';
 import logo from '../../assets/logo.svg';
 import * as yup from 'yup';
@@ -144,14 +145,24 @@ const LoginForm: React.FC = () => {
 				</Link>
 			</Typography>
 			<Divider sx={{ my: 2 }}>OR</Divider>
-			<Button
-				variant="outlined"
-				href="http://localhost:3000/api/auth/google"
-				fullWidth
-				startIcon={<Google />}
-			>
-				Continue with Google
-			</Button>
+			<Stack direction="column" gap={1}>
+				<Button
+					variant="outlined"
+					href="http://localhost:3000/api/auth/google"
+					fullWidth
+					startIcon={<Google />}
+				>
+					Continue with Google
+				</Button>
+				<Button
+					variant="outlined"
+					href="http://localhost:3000/api/auth/github"
+					fullWidth
+					startIcon={<GitHub />}
+				>
+					Continue with Github
+				</Button>
+			</Stack>
 		</Box>
 	);
 };

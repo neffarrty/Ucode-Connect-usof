@@ -11,7 +11,7 @@ import {
 	Login,
 	Register,
 	Verify,
-	GoogleOAuthSuccess,
+	OAuthSuccess,
 	HomePage,
 	ProfilePage,
 	PostsPage,
@@ -59,8 +59,8 @@ const App: React.FC = () => {
 				/>
 				<Route path="/verify/:token" element={<Verify />} />
 				<Route
-					path="/google-success/:token"
-					element={<GoogleOAuthSuccess />}
+					path="/oauth-success/:token"
+					element={<OAuthSuccess />}
 				/>
 				<Route
 					path="/posts"

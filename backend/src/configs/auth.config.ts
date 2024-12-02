@@ -20,4 +20,13 @@ export default registerAs('auth', () => ({
 			url: process.env.GOOGLE_CALLBACK_URL,
 		},
 	},
+	github: {
+		client: {
+			id: process.env.GITHUB_CLIENT_ID,
+			secret: process.env.GITHUB_CLIENT_SECRET,
+		},
+		callback: {
+			url: process.env.GITHUB_CALLBACK_URL,
+		},
+	},
 }));

@@ -7,4 +7,4 @@ export * from './auth/Register';
 export * from './auth/ForgotPassword';
 export * from './auth/ResetPassword';
 export * from './auth/Verify';
-export * from './auth/GoogleOAuthSuccess';
+export * from './auth/OAuthSuccess';
