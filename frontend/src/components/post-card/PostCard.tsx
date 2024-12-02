@@ -18,6 +18,8 @@ import axios from '../../utils/axios';
 import { Post, Comment, Category, Paginated } from '../../interface';
 import { PostCardActions } from './PostCardActions';
 import { formatDate } from '../../utils/dates';
+import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface PostCardProps {
 	post: Post;
@@ -43,14 +45,6 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
 			};
 		},
 	});
-
-	const truncateText = (text: string, limit: number) => {
-		const words = text.split(' ');
-		if (words.length <= limit) {
-			return text;
-		}
-		return words.slice(0, limit).join(' ') + '...';
-	};
 
 	if (isLoading) {
 		return <Skeleton variant="rectangular" height={300} />;
@@ -114,9 +108,15 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
 							sx={{
 								color: 'text.secondary',
 								textAlign: 'justify',
+								display: '-webkit-box',
+								WebkitBoxOrient: 'vertical',
+								overflow: 'hidden',
+								WebkitLineClamp: 7,
 							}}
 						>
-							{truncateText(post.content, 50)}
+							<Markdown remarkPlugins={[remarkGfm]}>
+								{post.content}
+							</Markdown>
 						</Typography>
 					</Box>
 				</CardContent>
