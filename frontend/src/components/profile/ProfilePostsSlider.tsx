@@ -82,6 +82,8 @@ export const ProfilePostsSlider: React.FC<ProfilePostSliderProps> = ({
 								display: 'flex',
 								flexDirection: 'row',
 								position: 'relative',
+								boxShadow: 'none',
+								mt: 1,
 							}}
 						>
 							<Box sx={{ flex: 1 }}>

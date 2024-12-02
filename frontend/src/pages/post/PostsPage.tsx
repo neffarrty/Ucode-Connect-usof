@@ -15,7 +15,7 @@ import { Post, Paginated, PostFilters } from '../../interface';
 import { AxiosError } from 'axios';
 import axios from '../../utils/axios';
 import { Layout } from '../../components/layout/Layout';
-import { PostsPageHeader } from '../../components/PostsPageHeader';
+import { PostsPageHeader } from '../../components/post/PostsPageHeader';
 import { PostCard } from '../../components/post-card/PostCard';
 import { useNavigate } from 'react-router-dom';
 

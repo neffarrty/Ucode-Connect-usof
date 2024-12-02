@@ -130,12 +130,14 @@ export const UsersPage: React.FC = () => {
 							size="small"
 							value={searchValue}
 							onChange={handleLoginChange}
-							InputProps={{
-								startAdornment: (
-									<InputAdornment position="start">
-										<Search />
-									</InputAdornment>
-								),
+							slotProps={{
+								input: {
+									startAdornment: (
+										<InputAdornment position="start">
+											<Search />
+										</InputAdornment>
+									),
+								},
 							}}
 						/>
 					</Stack>

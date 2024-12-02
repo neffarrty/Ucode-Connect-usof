@@ -5,14 +5,17 @@ import {
 	ButtonGroup,
 	debounce,
 	InputAdornment,
-	MenuItem,
-	Select,
 	Stack,
 	TextField,
 	Typography,
+	Chip,
+	Autocomplete,
 } from '@mui/material';
-import { Search, FilterAlt } from '@mui/icons-material';
-import { PostFilters } from '../interface';
+import { Search, FilterAlt, Cancel } from '@mui/icons-material';
+import { Category, PostFilters } from '../../interface';
+import { useQuery } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
+import axios from '../../utils/axios';
 
 interface PostsPageHeaderProps {
 	count: number;
@@ -30,6 +33,14 @@ export const PostsPageHeader: React.FC<PostsPageHeaderProps> = ({
 	setPage,
 }) => {
 	const [searchValue, setSearchValue] = useState(filters.title);
+
+	const { data: categories } = useQuery<Category[], AxiosError>({
+		queryKey: ['categories', filters],
+		queryFn: async () => {
+			const { data } = await axios.get<Category[]>('/categories');
+			return data;
+		},
+	});
 
 	const updateFilters = useMemo(
 		() =>
@@ -52,12 +63,22 @@ export const PostsPageHeader: React.FC<PostsPageHeaderProps> = ({
 		[updateFilters],
 	);
 
-	const handleCategoryChange = (categories: string[]) => {
+	const handleCategoryChange = useCallback(
+		(_event: React.ChangeEvent<{}>, value: string[]) => {
+			setFilters((prev) => ({
+				...prev,
+				categories: value as string[],
+			}));
+			setPage(1);
+		},
+		[updateFilters],
+	);
+
+	const handleDelete = (category: string) => {
 		setFilters((prev) => ({
 			...prev,
-			categories,
+			categories: prev.categories.filter((item) => item !== category),
 		}));
-		setPage(1);
 	};
 
 	const handleDateChange = (type: 'gte' | 'lte', date: Date | null) => {
@@ -98,7 +119,7 @@ export const PostsPageHeader: React.FC<PostsPageHeaderProps> = ({
 				direction="row"
 				sx={{ justifyContent: 'space-between', maxHeight: 40 }}
 			>
-				<Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
+				<Stack direction="row" gap={2} sx={{ flex: 1 }}>
 					<TextField
 						placeholder="Search by title"
 						variant="outlined"
@@ -115,7 +136,51 @@ export const PostsPageHeader: React.FC<PostsPageHeaderProps> = ({
 							},
 						}}
 					/>
-				</Box>
+					{categories && (
+						<Autocomplete
+							multiple
+							options={categories.map(
+								(category) => category.title,
+							)}
+							value={filters.categories}
+							onChange={handleCategoryChange}
+							renderInput={(params) => (
+								<TextField
+									{...params}
+									placeholder="Search by categories"
+									variant="outlined"
+								/>
+							)}
+							renderTags={(selected) => (
+								<Box
+									sx={{
+										display: 'flex',
+										flexWrap: 'wrap',
+										gap: 0.5,
+									}}
+								>
+									{selected.map((value) => (
+										<Chip
+											key={value}
+											label={value}
+											clickable
+											deleteIcon={
+												<Cancel
+													onMouseDown={(e) =>
+														e.stopPropagation()
+													}
+												/>
+											}
+											onDelete={() => handleDelete(value)}
+										/>
+									))}
+								</Box>
+							)}
+							size="small"
+							sx={{ width: '50%' }}
+						/>
+					)}
+				</Stack>
 				<Stack direction="row" gap={0.5}>
 					<ButtonGroup variant="outlined">
 						<Button
@@ -141,22 +206,6 @@ export const PostsPageHeader: React.FC<PostsPageHeaderProps> = ({
 							Most rated
 						</Button>
 					</ButtonGroup>
-					<Button variant="contained" startIcon={<FilterAlt />}>
-						Filter
-					</Button>
-					<Select
-						multiple
-						value={filters.categories}
-						onChange={(event) => {
-							const value = event.target.value as string[];
-							handleCategoryChange(value);
-						}}
-						renderValue={(selected) => selected.join(', ')}
-					>
-						<MenuItem value="Category1">Category1</MenuItem>
-						<MenuItem value="Category2">Category2</MenuItem>
-						<MenuItem value="Category3">Category3</MenuItem>
-					</Select>
 				</Stack>
 			</Stack>
 		</Stack>

@@ -36,8 +36,6 @@ export class UsersService {
 			},
 		});
 
-		console.log(user);
-
 		if (!user) {
 			throw new NotFoundException(`User with id ${id} not found`);
 		}
@@ -97,14 +95,39 @@ export class UsersService {
 
 	async findBookmarks(
 		{ page, limit }: PaginationOptionsDto,
+		{ sort, order }: SortOptionsDto,
+		{ createdAt, categories, status, title }: FilterOptionsDto,
 		user: User,
 	): Promise<Paginated<PostDto>> {
-		const where = {
-			bookmarks: {
-				some: {
-					userId: user.id,
+		const where: Prisma.PostWhereInput = {
+			AND: [
+				{
+					categories: {
+						some: {
+							category: {
+								title: {
+									in: categories,
+								},
+							},
+						},
+					},
 				},
-			},
+				{
+					title: {
+						contains: title,
+						mode: 'insensitive',
+					},
+				},
+				{ createdAt },
+				{ status: user.role === Role.ADMIN ? status : Status.ACTIVE },
+				{
+					bookmarks: {
+						some: {
+							userId: user.id,
+						},
+					},
+				},
+			],
 		};
 
 		const [posts, count] = await this.prisma.$transaction([
@@ -126,7 +149,7 @@ export class UsersService {
 				take: limit,
 				skip: (page - 1) * limit,
 				orderBy: {
-					createdAt: 'desc',
+					[sort]: order,
 				},
 			}),
 			this.prisma.post.count({ where }),

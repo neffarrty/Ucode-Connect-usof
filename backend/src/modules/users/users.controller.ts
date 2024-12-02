@@ -70,9 +70,16 @@ export class UsersController {
 	@ApiPaginatedResponse(PostDto)
 	async getUserBookmarks(
 		@Query() paginationOptions: PaginationOptionsDto,
+		@Query() sortOptions: SortOptionsDto,
+		@Query() filterOptions: FilterOptionsDto,
 		@GetUser() user: User,
 	) {
-		return this.userService.findBookmarks(paginationOptions, user);
+		return this.userService.findBookmarks(
+			paginationOptions,
+			sortOptions,
+			filterOptions,
+			user,
+		);
 	}
 
 	@Get(':id/posts')
@@ -88,15 +95,15 @@ export class UsersController {
 	async getUserPosts(
 		@Param('id', ParseIntPipe) id: number,
 		@Query() paginationOptions: PaginationOptionsDto,
-		@Query() sortingOptions: SortOptionsDto,
-		@Query() filteringOptions: FilterOptionsDto,
+		@Query() sortOptions: SortOptionsDto,
+		@Query() filterOptions: FilterOptionsDto,
 		@GetUser() user: User,
 	): Promise<Paginated<PostDto>> {
 		return this.userService.findPosts(
 			id,
 			paginationOptions,
-			sortingOptions,
-			filteringOptions,
+			sortOptions,
+			filterOptions,
 			user,
 		);
 	}
@@ -111,7 +118,7 @@ export class UsersController {
 	@ApiNotFoundResponse({
 		description: 'User not found',
 	})
-	async getUserComment(
+	async getUserComments(
 		@Param('id', ParseIntPipe) id: number,
 		@Query() paginationOptions: PaginationOptionsDto,
 		@Query() sortingOptions: SortOptionsDto,
