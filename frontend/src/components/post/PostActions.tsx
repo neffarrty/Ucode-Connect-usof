@@ -1,7 +1,7 @@
 import React from 'react';
 import { Stack } from '@mui/material';
 import { Post } from '../../interface/Post';
-import { ShareButton } from '../ShareButton';
+import { ShareButton } from './ShareButton';
 import { BookmarkButton } from './BookmarkButton';
 import { PostRateButtons } from './PostRateButtons';
 import { useSelector } from 'react-redux';

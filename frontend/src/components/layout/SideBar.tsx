@@ -1,6 +1,7 @@
 import React from 'react';
 import {
 	Box,
+	Divider,
 	Drawer,
 	List,
 	ListItemButton,
@@ -8,7 +9,7 @@ import {
 	ListItemText,
 	Toolbar,
 } from '@mui/material';
-import { Home, Article, Bookmarks, Style } from '@mui/icons-material';
+import { Home, Article, Bookmarks, Style, People } from '@mui/icons-material';
 
 interface SideBarProps {
 	width: number;
@@ -43,30 +44,34 @@ export const SideBar: React.FC<SideBarProps> = ({ width }) => {
 					}}
 					component="nav"
 				>
-					<ListItemButton href="/home">
-						<ListItemIcon>
-							<Home />
-						</ListItemIcon>
-						<ListItemText primary="Home" />
-					</ListItemButton>
-					<ListItemButton href="/posts">
-						<ListItemIcon>
-							<Article />
-						</ListItemIcon>
-						<ListItemText primary="Posts" />
-					</ListItemButton>
-					<ListItemButton href="/bookmarks">
-						<ListItemIcon>
-							<Bookmarks />
-						</ListItemIcon>
-						<ListItemText primary="Bookmarks" />
-					</ListItemButton>
-					<ListItemButton href="/categories">
-						<ListItemIcon>
-							<Style />
-						</ListItemIcon>
-						<ListItemText primary="Categories" />
-					</ListItemButton>
+					{[
+						{ href: '/home', icon: <Home />, text: 'Home' },
+						{ href: '/posts', icon: <Article />, text: 'Posts' },
+						{
+							href: '/categories',
+							icon: <Style />,
+							text: 'Categories',
+						},
+						{ href: '/users', icon: <People />, text: 'Users' },
+					].map(({ href, icon, text }) => (
+						<ListItemButton key={href} href={href}>
+							<ListItemIcon>{icon}</ListItemIcon>
+							<ListItemText primary={text} />
+						</ListItemButton>
+					))}
+					<Divider />
+					{[
+						{
+							href: '/bookmarks',
+							icon: <Bookmarks />,
+							text: 'Bookmarks',
+						},
+					].map(({ href, icon, text }) => (
+						<ListItemButton key={href} href={href}>
+							<ListItemIcon>{icon}</ListItemIcon>
+							<ListItemText primary={text} />
+						</ListItemButton>
+					))}
 				</List>
 			</Box>
 		</Drawer>

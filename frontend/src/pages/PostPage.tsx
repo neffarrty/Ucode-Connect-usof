@@ -12,20 +12,15 @@ import {
 } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
-import MarkdownIt from 'markdown-it';
-import DOMPurify from 'dompurify';
 import { Post } from '../interface/Post';
 import { AxiosError } from 'axios';
 import axios from '../utils/axios';
+import remarkGfm from 'remark-gfm';
+import Markdown from 'react-markdown';
 import { CommentsList } from '../components/comment/CommentsList';
 import { PostActions } from '../components/post/PostActions';
 import { PostHeader } from '../components/post/PostHeader';
 import { Layout } from '../components/layout/Layout';
-
-import remarkGfm from 'remark-gfm';
-import Markdown from 'react-markdown';
-
-const parser = new MarkdownIt();
 
 export const PostPage: React.FC = () => {
 	const { id } = useParams<{ id: string }>();
@@ -44,7 +39,20 @@ export const PostPage: React.FC = () => {
 
 	if (error) {
 		return (
-			<Alert severity="error">Error loading post: {error.message}</Alert>
+			<Layout>
+				<Box
+					sx={{
+						display: 'flex',
+						flexGrow: 1,
+						alignItems: 'center',
+						justifyContent: 'center',
+					}}
+				>
+					<Alert severity="error">
+						Error loading post: {error.message}
+					</Alert>
+				</Box>
+			</Layout>
 		);
 	}
 
@@ -97,7 +105,7 @@ export const PostPage: React.FC = () => {
 									>
 										<Chip
 											component="a"
-											href={`http://localhost:3001/category/${category.id}`}
+											href={`/categories/${category.id}/posts`}
 											label={category.title}
 											variant="outlined"
 											size="small"
@@ -108,14 +116,6 @@ export const PostPage: React.FC = () => {
 								))}
 							</Stack>
 							<Divider sx={{ mt: 1 }} />
-							{/* <Box
-								dangerouslySetInnerHTML={{
-									__html: DOMPurify.sanitize(
-										parser.render(post.content),
-									),
-								}}
-								style={{ marginTop: 16, textAlign: 'justify' }}
-							/> */}
 							<Box>
 								<Markdown remarkPlugins={[remarkGfm]}>
 									{post.content}

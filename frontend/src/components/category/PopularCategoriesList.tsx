@@ -10,9 +10,9 @@ import {
 	Divider,
 } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-import { Category } from '../interface';
+import { Category } from '../../interface';
 import { AxiosError } from 'axios';
-import axios from '../utils/axios';
+import axios from '../../utils/axios';
 
 interface PopularCategoriesListProps {
 	size: number;

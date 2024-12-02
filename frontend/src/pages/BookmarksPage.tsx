@@ -69,7 +69,11 @@ export const BookmarksPage: React.FC = () => {
 		return cleaned;
 	};
 
-	const { isLoading, error, data } = useQuery<Paginated<Post>, AxiosError>({
+	const {
+		isLoading,
+		error,
+		data: bookmarks,
+	} = useQuery<Paginated<Post>, AxiosError>({
 		queryKey: ['bookmarks', page, limit, filters],
 		queryFn: async () => {
 			const params = cleanFilters(filters);
@@ -88,23 +92,6 @@ export const BookmarksPage: React.FC = () => {
 		},
 	});
 
-	if (isLoading) {
-		return (
-			<Layout>
-				<Box
-					sx={{
-						display: 'flex',
-						flexGrow: 1,
-						alignItems: 'center',
-						justifyContent: 'center',
-					}}
-				>
-					<CircularProgress size={24} />
-				</Box>
-			</Layout>
-		);
-	}
-
 	return (
 		<Layout>
 			<Box
@@ -115,7 +102,7 @@ export const BookmarksPage: React.FC = () => {
 				}}
 			>
 				<PostsPageHeader
-					count={data?.meta.total || 0}
+					count={bookmarks?.meta.total || 0}
 					filters={filters}
 					setFilters={setFilters}
 					setPage={setPage}
@@ -149,7 +136,18 @@ export const BookmarksPage: React.FC = () => {
 						</Alert>
 					</Box>
 				)}
-				{data && (
+				{isLoading ? (
+					<Box
+						sx={{
+							display: 'flex',
+							flexGrow: 1,
+							alignItems: 'center',
+							justifyContent: 'center',
+						}}
+					>
+						<CircularProgress size={24} />
+					</Box>
+				) : bookmarks && bookmarks?.data.length ? (
 					<React.Fragment>
 						<Stack
 							component="main"
@@ -160,7 +158,7 @@ export const BookmarksPage: React.FC = () => {
 								p: 3,
 							}}
 						>
-							{data.data.map((post) => (
+							{bookmarks.data.map((post) => (
 								<Box key={post.id} sx={{ flexGrow: 1 }}>
 									<PostCard post={post} />
 								</Box>
@@ -175,7 +173,7 @@ export const BookmarksPage: React.FC = () => {
 							}}
 						>
 							<Pagination
-								count={data.meta.pages}
+								count={bookmarks.meta.pages}
 								page={page}
 								variant="outlined"
 								shape="rounded"
@@ -186,9 +184,6 @@ export const BookmarksPage: React.FC = () => {
 								sx={{ color: 'primary.main', alignSelf: 'end' }}
 							/>
 							<Box>
-								<Typography component="div" sx={{ mb: 0.5 }}>
-									Posts per page
-								</Typography>
 								<ButtonGroup variant="outlined">
 									{[15, 30, 50].map((lim) => (
 										<Button
@@ -204,6 +199,20 @@ export const BookmarksPage: React.FC = () => {
 							</Box>
 						</Box>
 					</React.Fragment>
+				) : (
+					<Box
+						sx={{
+							display: 'flex',
+							flexDirection: 'column',
+							justifyContent: 'center',
+							alignItems: 'center',
+							flexGrow: 1,
+						}}
+					>
+						<Typography variant="h6" color="text.secondary">
+							No posts found
+						</Typography>
+					</Box>
 				)}
 			</Box>
 		</Layout>

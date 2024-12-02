@@ -5,6 +5,7 @@ import {
 	Button,
 	ButtonGroup,
 	CircularProgress,
+	Divider,
 	Pagination,
 	Stack,
 	Typography,
@@ -104,18 +105,25 @@ export const PostsByCategoryPage: React.FC = () => {
 					flex: 1,
 				}}
 			>
-				<Box
+				<Stack
+					direction="column"
 					sx={{
 						width: '100%',
-						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'space-between',
+						px: 3,
+						gap: 1,
 					}}
 				>
 					<Typography variant="h4" color="primary.dark">
-						Posts tagged with "{data?.category.title}"
+						Posts tagged with {`[${data?.category.title}]`}
 					</Typography>
-				</Box>
+					<Typography variant="body2" color="text.secondary">
+						{data?.category.description}"
+					</Typography>
+					<Divider />
+					<Typography variant="subtitle1" color="primary.light">
+						{`${new Intl.NumberFormat('en-US').format(data?.category.posts || 0)} posts`}
+					</Typography>
+				</Stack>
 				{data?.posts && (
 					<React.Fragment>
 						<Stack

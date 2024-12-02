@@ -43,7 +43,8 @@ export const CommentsList: React.FC<PostCommentsProps> = ({ postId }) => {
 
 	return (
 		<Box>
-			<Typography variant="h5">
+			<CreateCommentForm postId={postId} />
+			<Typography variant="h5" sx={{ mt: 2 }}>
 				Comments ({comments?.meta.total || 0})
 			</Typography>
 			{isLoading ? (
@@ -65,7 +66,6 @@ export const CommentsList: React.FC<PostCommentsProps> = ({ postId }) => {
 				sx={{
 					display: 'flex',
 					justifyContent: 'space-between',
-					mb: 2,
 				}}
 			>
 				<Pagination
@@ -80,7 +80,6 @@ export const CommentsList: React.FC<PostCommentsProps> = ({ postId }) => {
 					sx={{ color: 'primary.main', alignSelf: 'end' }}
 				/>
 			</Box>
-			<CreateCommentForm postId={postId} />
 		</Box>
 	);
 };

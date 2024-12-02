@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Button } from '@mui/material';
 import { Post } from '../../interface/Post';
-import { ShareButton } from '../ShareButton';
+import { ShareButton } from '../post/ShareButton';
 import { BookmarkButton } from '../post/BookmarkButton';
 import { ArrowRightAlt } from '@mui/icons-material';
 

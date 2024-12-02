@@ -6,7 +6,7 @@ import { AxiosError } from 'axios';
 import axios from '../utils/axios';
 import { Layout } from '../components/layout/Layout';
 import { PostCard } from '../components/post-card/PostCard';
-import { PopularCategoriesList } from '../components/PopularCategoriesList';
+import { PopularCategoriesList } from '../components/category/PopularCategoriesList';
 
 export const HomePage: React.FC = () => {
 	const { isLoading, error, data } = useQuery<Paginated<Post>, AxiosError>({

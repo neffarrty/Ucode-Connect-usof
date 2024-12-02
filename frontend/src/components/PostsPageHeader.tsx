@@ -1,9 +1,10 @@
-import React, { ReactNode, useCallback } from 'react';
+import React, { ReactNode, useCallback, useMemo, useState } from 'react';
 import {
 	Box,
 	Button,
 	ButtonGroup,
 	debounce,
+	InputAdornment,
 	MenuItem,
 	Select,
 	Stack,
@@ -28,27 +29,27 @@ export const PostsPageHeader: React.FC<PostsPageHeaderProps> = ({
 	setFilters,
 	setPage,
 }) => {
-	// const { isLoading, error, data } = useQuery<Paginated<Post>, AxiosError>({
-	// 	queryKey: ['posts', page, limit, filters],
-	// 	queryFn: async () => {
-	// 		const params = cleanFilters(filters);
+	const [searchValue, setSearchValue] = useState(filters.title);
 
-	// 		console.log(params);
+	const updateFilters = useMemo(
+		() =>
+			debounce((value: string) => {
+				setFilters((prev) => ({
+					...prev,
+					title: value,
+				}));
+				setPage(1);
+			}, 500),
+		[setFilters, setPage],
+	);
 
-	// 		const response = await axios.get<Paginated<Post>>('/posts', {
-	// 			params,
-	// 		});
-	// 		return response.data;
-	// 	},
-	// });
-	const handleTitleChange = useCallback(
-		debounce((event: React.ChangeEvent<HTMLInputElement>) => {
-			setFilters((prev) => ({
-				...prev,
-				title: event.target.value,
-			}));
-		}, 500),
-		[],
+	const handleSearchChange = useCallback(
+		(event: React.ChangeEvent<HTMLInputElement>) => {
+			const value = event.target.value;
+			setSearchValue(value);
+			updateFilters(value);
+		},
+		[updateFilters],
 	);
 
 	const handleCategoryChange = (categories: string[]) => {
@@ -98,12 +99,21 @@ export const PostsPageHeader: React.FC<PostsPageHeaderProps> = ({
 				sx={{ justifyContent: 'space-between', maxHeight: 40 }}
 			>
 				<Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
-					<Search sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
 					<TextField
 						placeholder="Search by title"
-						variant="standard"
-						value={filters.title}
-						onChange={handleTitleChange}
+						variant="outlined"
+						size="small"
+						value={searchValue}
+						onChange={handleSearchChange}
+						slotProps={{
+							input: {
+								startAdornment: (
+									<InputAdornment position="start">
+										<Search />
+									</InputAdornment>
+								),
+							},
+						}}
 					/>
 				</Box>
 				<Stack direction="row" gap={0.5}>

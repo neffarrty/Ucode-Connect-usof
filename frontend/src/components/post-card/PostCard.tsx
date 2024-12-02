@@ -81,7 +81,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
 								>
 									<Chip
 										component="a"
-										href={`http://localhost:3001/category/${category.id}`}
+										href={`/categories/${category.id}/posts`}
 										label={category.title}
 										variant="outlined"
 										size="small"
@@ -94,7 +94,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
 						<Typography
 							component="a"
 							variant="h6"
-							href={`http://localhost:3001/posts/${post.id}`}
+							href={`/posts/${post.id}`}
 							sx={{
 								color: 'text.primary',
 								mt: 1,

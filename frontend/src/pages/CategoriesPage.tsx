@@ -1,10 +1,11 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import {
 	Box,
 	Button,
 	ButtonGroup,
 	CircularProgress,
 	Grid2 as Grid,
+	InputAdornment,
 	Stack,
 	TextField,
 	Typography,
@@ -116,17 +117,22 @@ export const CategoriesPage: React.FC = () => {
 						direction="row"
 						sx={{ justifyContent: 'space-between', maxHeight: 40 }}
 					>
-						<Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
-							<Search
-								sx={{ color: 'action.active', mr: 1, my: 0.5 }}
-							/>
-							<TextField
-								placeholder="Search category by title"
-								variant="standard"
-								value={filters.title}
-								onChange={handleTitleChange}
-							/>
-						</Box>
+						<TextField
+							placeholder="Search by title"
+							variant="outlined"
+							size="small"
+							value={filters.title}
+							onChange={handleTitleChange}
+							slotProps={{
+								input: {
+									startAdornment: (
+										<InputAdornment position="start">
+											<Search />
+										</InputAdornment>
+									),
+								},
+							}}
+						/>
 						<Stack direction="row" gap={0.5}>
 							<ButtonGroup variant="outlined">
 								<Button

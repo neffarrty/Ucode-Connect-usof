@@ -72,7 +72,11 @@ export const PostsPage: React.FC = () => {
 		return cleaned;
 	};
 
-	const { isLoading, error, data } = useQuery<Paginated<Post>, AxiosError>({
+	const {
+		isLoading,
+		error,
+		data: posts,
+	} = useQuery<Paginated<Post>, AxiosError>({
 		queryKey: ['posts', page, limit, filters],
 		queryFn: async () => {
 			const params = cleanFilters(filters);
@@ -88,23 +92,6 @@ export const PostsPage: React.FC = () => {
 		},
 	});
 
-	if (isLoading) {
-		return (
-			<Layout>
-				<Box
-					sx={{
-						display: 'flex',
-						flexGrow: 1,
-						alignItems: 'center',
-						justifyContent: 'center',
-					}}
-				>
-					<CircularProgress size={24} />
-				</Box>
-			</Layout>
-		);
-	}
-
 	return (
 		<Layout>
 			<Box
@@ -115,7 +102,7 @@ export const PostsPage: React.FC = () => {
 				}}
 			>
 				<PostsPageHeader
-					count={data?.meta.total || 0}
+					count={posts?.meta.total || 0}
 					filters={filters}
 					setFilters={setFilters}
 					setPage={setPage}
@@ -156,7 +143,18 @@ export const PostsPage: React.FC = () => {
 						</Alert>
 					</Box>
 				)}
-				{data && (
+				{isLoading ? (
+					<Box
+						sx={{
+							display: 'flex',
+							flexGrow: 1,
+							alignItems: 'center',
+							justifyContent: 'center',
+						}}
+					>
+						<CircularProgress size={24} />
+					</Box>
+				) : posts && posts?.data.length ? (
 					<React.Fragment>
 						<Stack
 							component="main"
@@ -167,7 +165,7 @@ export const PostsPage: React.FC = () => {
 								p: 3,
 							}}
 						>
-							{data.data.map((post) => (
+							{posts.data.map((post) => (
 								<Box key={post.id} sx={{ flexGrow: 1 }}>
 									<PostCard post={post} />
 								</Box>
@@ -182,7 +180,7 @@ export const PostsPage: React.FC = () => {
 							}}
 						>
 							<Pagination
-								count={data.meta.pages}
+								count={posts.meta.pages}
 								page={page}
 								variant="outlined"
 								shape="rounded"
@@ -212,6 +210,20 @@ export const PostsPage: React.FC = () => {
 							</Box>
 						</Box>
 					</React.Fragment>
+				) : (
+					<Box
+						sx={{
+							display: 'flex',
+							flexDirection: 'column',
+							justifyContent: 'center',
+							alignItems: 'center',
+							flexGrow: 1,
+						}}
+					>
+						<Typography variant="h6" color="text.secondary">
+							No posts found
+						</Typography>
+					</Box>
 				)}
 			</Box>
 		</Layout>

@@ -28,10 +28,6 @@ const Copyright: React.FC = () => {
 	);
 };
 
-interface FooterProps {
-	sidebarWidth: number;
-}
-
 export const Footer: React.FC = () => {
 	return (
 		<Box
@@ -59,20 +55,6 @@ export const Footer: React.FC = () => {
 				>
 					<Box sx={{ display: 'flex' }}>
 						<Logo />
-					</Box>
-					<Box
-						sx={{
-							display: 'flex',
-							alignItems: 'start',
-							gap: 2,
-						}}
-					>
-						<Link href="#" underline="none">
-							Home
-						</Link>
-						<Link href="#" underline="none">
-							Home
-						</Link>
 					</Box>
 				</Box>
 				<Divider sx={{ my: 1 }} />
