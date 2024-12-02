@@ -1,9 +1,5 @@
 import * as React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import '@fontsource/roboto/300.css';
-import '@fontsource/roboto/400.css';
-import '@fontsource/roboto/500.css';
-import '@fontsource/roboto/700.css';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import {
 	ForgotPassword,
@@ -15,15 +11,20 @@ import {
 	HomePage,
 	ProfilePage,
 	PostsPage,
+	PostPage,
+	CreatePostPage,
+	PostsByCategoryPage,
+	BookmarksPage,
+	CategoriesPage,
 } from './pages';
 import { theme } from './theme/theme';
 import NotFound from './components/errors/NotFound';
-import { PostPage } from './pages/PostPage';
-import { CreatePostPage } from './pages/CreatePostPage';
 import PrivateRoute from './components/PrivateRoute';
-import { BookmarksPage } from './pages/BookmarksPage';
-import { CategoriesPage } from './pages/CategoriesPage';
-import { PostsByCategoryPage } from './pages/PostsByCategoryPage';
+
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
 
 const App: React.FC = () => {
 	return (

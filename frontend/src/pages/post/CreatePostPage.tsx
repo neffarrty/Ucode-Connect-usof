@@ -13,16 +13,16 @@ import {
 	Alert,
 	Autocomplete,
 } from '@mui/material';
-import { Layout } from '../components/layout/Layout';
-import { Category } from '../interface/Category';
+import { Layout } from '../../components/layout/Layout';
+import { Category } from '../../interface/Category';
 import { Cancel } from '@mui/icons-material';
 import MarkdownIt from 'markdown-it';
 import MdEditor from 'react-markdown-editor-lite';
 import 'react-markdown-editor-lite/lib/index.css';
-import axios from '../utils/axios';
+import axios from '../../utils/axios';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { Post } from '../interface';
+import { Post } from '../../interface';
 import { useNavigate } from 'react-router-dom';
 
 const parser = new MarkdownIt();

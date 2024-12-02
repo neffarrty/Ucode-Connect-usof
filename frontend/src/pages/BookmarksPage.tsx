@@ -10,23 +10,12 @@ import {
 	Typography,
 } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-import { Post, Paginated } from '../interface';
+import { Post, Paginated, PostFilters } from '../interface';
 import { AxiosError } from 'axios';
 import axios from '../utils/axios';
 import { Layout } from '../components/layout/Layout';
 import { PostsPageHeader } from '../components/PostsPageHeader';
 import { PostCard } from '../components/post-card/PostCard';
-
-export interface PostFilters {
-	sort: string;
-	order: string;
-	title: string;
-	categories: string[];
-	createdAt: {
-		gte: Date | null;
-		lte: Date | null;
-	};
-}
 
 export const BookmarksPage: React.FC = () => {
 	const [page, setPage] = useState(1);
