@@ -21,6 +21,8 @@ import { useSelector } from 'react-redux';
 import { AxiosError } from 'axios';
 import axios from '../../utils/axios';
 import { formatDate } from '../../utils/dates';
+import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const truncateText = (text: string, limit: number) => {
 	const words = text.split(' ');
@@ -142,13 +144,17 @@ export const ProfilePostsSlider: React.FC = () => {
 											sx={{
 												color: 'text.secondary',
 												textAlign: 'justify',
+												display: '-webkit-box',
+												WebkitBoxOrient: 'vertical',
+												overflow: 'hidden',
+												WebkitLineClamp: 3,
 											}}
 										>
-											{truncateText(
-												posts[currentSlide]?.content ||
-													'',
-												25,
-											)}
+											<Markdown
+												remarkPlugins={[remarkGfm]}
+											>
+												{posts[currentSlide]?.content}
+											</Markdown>
 										</Typography>
 									</Box>
 								</CardContent>
