@@ -104,13 +104,13 @@ This command will start the PostgreSQL and Redis containers in the background.
 
 ## Project setup
 
-### Server
-
 Clone the project to your local machine
 
 ```bash
 $ git clone https://github.com/neffarrty/Ucode-Connect-usof.git
 ```
+
+### Server
 
 Go to the project directory
 
@@ -121,7 +121,7 @@ $ cd Ucode-Connect-usof/
 Navigate to the backend directory
 
 ```bash
-$ cd frontend/
+$ cd backend/
 ```
 
 Copy the example .env file and fill in any necessary values
