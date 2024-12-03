@@ -33,10 +33,12 @@ export const PostsByCategoryPage: React.FC = () => {
 		_event: React.ChangeEvent<unknown>,
 		value: number,
 	) => {
+		window.scrollTo({ top: 0 });
 		setPage(value);
 	};
 
 	const handleLimitChange = (value: number) => {
+		window.scrollTo({ top: 0 });
 		setLimit(value);
 		setPage(1);
 	};

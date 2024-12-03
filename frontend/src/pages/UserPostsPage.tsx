@@ -38,16 +38,19 @@ export const UserPostsPage: React.FC = () => {
 			gte: null,
 			lte: null,
 		},
+		status: '',
 	});
 
 	const handlePageChange = (
 		_event: React.ChangeEvent<unknown>,
 		value: number,
 	) => {
+		window.scrollTo({ top: 0 });
 		setPage(value);
 	};
 
 	const handleLimitChange = (value: number) => {
+		window.scrollTo({ top: 0 });
 		setLimit(value);
 		setPage(1);
 	};
