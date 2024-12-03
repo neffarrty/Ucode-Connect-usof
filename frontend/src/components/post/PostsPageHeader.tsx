@@ -11,6 +11,8 @@ import {
 	Autocomplete,
 	Collapse,
 	debounce,
+	Select,
+	MenuItem,
 } from '@mui/material';
 import { Search, FilterAlt, Cancel } from '@mui/icons-material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -34,7 +36,6 @@ export const PostsPageHeader: React.FC<PostsPageHeaderProps> = ({
 	setFilters,
 	setPage,
 }) => {
-	const [searchValue, setSearchValue] = useState(filters.title);
 	const [expanded, setExpanded] = useState(false);
 
 	const { data: categories } = useQuery<Category[], AxiosError>({
@@ -59,9 +60,7 @@ export const PostsPageHeader: React.FC<PostsPageHeaderProps> = ({
 
 	const handleSearchChange = useCallback(
 		(event: React.ChangeEvent<HTMLInputElement>) => {
-			const value = event.target.value;
-			setSearchValue(value);
-			updateFilters(value);
+			updateFilters(event.target.value);
 		},
 		[updateFilters],
 	);
@@ -126,7 +125,7 @@ export const PostsPageHeader: React.FC<PostsPageHeaderProps> = ({
 					placeholder="Search by title"
 					variant="outlined"
 					size="small"
-					value={searchValue}
+					value={filters.title}
 					onChange={handleSearchChange}
 					slotProps={{
 						input: {
@@ -226,6 +225,7 @@ export const PostsPageHeader: React.FC<PostsPageHeaderProps> = ({
 						sx={{ mb: 2, width: '100%' }}
 					/>
 				)}
+
 				<Stack direction="row" gap={2}>
 					<DatePicker
 						label="From Date"
@@ -249,6 +249,23 @@ export const PostsPageHeader: React.FC<PostsPageHeaderProps> = ({
 							},
 						}}
 					/>
+					<Select
+						value={filters.status || ''}
+						onChange={(e) =>
+							setFilters((prev) => ({
+								...prev,
+								status: e.target.value as string,
+							}))
+						}
+						displayEmpty
+						variant="outlined"
+						size="small"
+						sx={{ minWidth: 120 }}
+					>
+						<MenuItem value="">All</MenuItem>
+						<MenuItem value="ACTIVE">ACTIVE</MenuItem>
+						<MenuItem value="INACTIVE">INACTIVE</MenuItem>
+					</Select>
 					<Box sx={{ marginLeft: 'auto' }}>
 						<Button
 							variant="outlined"
@@ -260,6 +277,7 @@ export const PostsPageHeader: React.FC<PostsPageHeaderProps> = ({
 									createdAt: { gte: null, lte: null },
 									sort: 'createdAt',
 									order: 'desc',
+									status: '',
 								});
 								setPage(1);
 							}}

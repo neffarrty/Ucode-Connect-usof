@@ -199,7 +199,23 @@ export class UsersService {
 					},
 				},
 				{ createdAt },
-				{ status: user.role === Role.ADMIN ? status : Status.ACTIVE },
+				{
+					OR:
+						user.role === Role.ADMIN
+							? [
+									{
+										status,
+									},
+								]
+							: [
+									{
+										status: Status.ACTIVE,
+									},
+									{
+										authorId: user.id,
+									},
+								],
+				},
 				{ authorId: id },
 			],
 		};

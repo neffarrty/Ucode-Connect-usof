@@ -21,6 +21,7 @@ import { CommentsList } from '../../components/comment/CommentsList';
 import { PostActions } from '../../components/post/PostActions';
 import { PostHeader } from '../../components/post/PostHeader';
 import { Layout } from '../../components/layout/Layout';
+import { VisibilityOff } from '@mui/icons-material';
 
 export const PostPage: React.FC = () => {
 	const { id } = useParams<{ id: string }>();
@@ -91,6 +92,20 @@ export const PostPage: React.FC = () => {
 					</Paper>
 					<Paper sx={{ p: 2 }}>
 						<Stack direction="column" sx={{ mb: 2 }}>
+							{post.status === 'INACTIVE' && (
+								<Chip
+									icon={
+										<VisibilityOff sx={{ fontSize: 16 }} />
+									}
+									label={post.status}
+									variant="outlined"
+									sx={{
+										mb: 1,
+										display: 'inline-flex',
+										alignItems: 'center',
+									}}
+								/>
+							)}
 							<Typography
 								variant="h3"
 								sx={{ color: 'primary.dark' }}

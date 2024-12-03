@@ -16,6 +16,7 @@ import { AccountCircle, ExitToApp } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../../redux/auth/actions';
 import { AppDispatch } from '../../redux/store';
+import { SearchInput } from '../SearchInput';
 
 export const Header: React.FC = () => {
 	const { user } = useSelector((state: any) => state.auth);
@@ -60,6 +61,7 @@ export const Header: React.FC = () => {
 						direction="row"
 						sx={{ alignItems: 'center', gap: 1 }}
 					>
+						<SearchInput />
 						<Stack direction="column" sx={{ alignItems: 'end' }}>
 							<Typography
 								variant="subtitle1"
