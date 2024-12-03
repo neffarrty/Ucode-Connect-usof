@@ -11,8 +11,8 @@ import {
 	CreatePostDto,
 	UpdatePostDto,
 	CreateLikeDto,
-	SortingOptionsDto,
-	FilteringOptionsDto,
+	SortOptionsDto,
+	FilterOptionsDto,
 } from './dto';
 import { CommentDto, CreateCommentDto } from 'src/modules/comments/dto';
 import { CategoryDto } from 'src/modules/categories/dto/category.dto';
@@ -25,8 +25,8 @@ export class PostsService {
 
 	async findAll(
 		{ page, limit }: PaginationOptionsDto,
-		{ sort, order }: SortingOptionsDto,
-		{ createdAt, categories, status, title }: FilteringOptionsDto,
+		{ sort, order }: SortOptionsDto,
+		{ createdAt, categories, status, title }: FilterOptionsDto,
 		user: User,
 	): Promise<Paginated<PostDto>> {
 		const where: Prisma.PostWhereInput = {
@@ -49,7 +49,23 @@ export class PostsService {
 					},
 				},
 				{ createdAt },
-				{ status: user.role === Role.ADMIN ? status : Status.ACTIVE },
+				{
+					OR:
+						user.role === Role.ADMIN
+							? [
+									{
+										status,
+									},
+								]
+							: [
+									{
+										status: Status.ACTIVE,
+									},
+									{
+										authorId: user.id,
+									},
+								],
+				},
 			],
 		};
 
@@ -63,13 +79,22 @@ export class PostsService {
 								select: {
 									id: true,
 									title: true,
+									description: true,
 								},
 							},
 						},
 					},
+					likes: {
+						where: { authorId: user.id },
+					},
 					bookmarks: {
-						where: {
-							userId: user.id,
+						where: { userId: user.id },
+					},
+					author: {
+						select: {
+							login: true,
+							avatar: true,
+							fullname: true,
 						},
 					},
 				},
@@ -84,12 +109,14 @@ export class PostsService {
 		const pages = Math.ceil(count / limit);
 
 		return {
-			data: posts.map(({ bookmarks, ...post }) => ({
+			data: posts.map(({ bookmarks, likes, ...post }) => ({
 				...post,
 				bookmarked: bookmarks.some((fav) => fav.userId === user.id),
+				like: likes?.shift()?.type,
 			})),
 			meta: {
 				page,
+				total: count,
 				count: limit,
 				pages,
 				prev: page > 1 ? page - 1 : null,
@@ -104,7 +131,30 @@ export class PostsService {
 				id,
 			},
 			include: user
-				? { bookmarks: { where: { userId: user.id } } }
+				? {
+						author: {
+							select: {
+								login: true,
+								avatar: true,
+								fullname: true,
+							},
+						},
+						categories: {
+							select: {
+								category: {
+									select: {
+										id: true,
+										title: true,
+										description: true,
+									},
+								},
+							},
+						},
+						bookmarks: { where: { userId: user.id } },
+						likes: {
+							where: { authorId: user.id },
+						},
+					}
 				: undefined,
 		});
 
@@ -112,11 +162,12 @@ export class PostsService {
 			throw new NotFoundException(`Post with id ${id} not found`);
 		}
 
-		const { bookmarks, ...result } = post;
+		const { bookmarks, likes, ...result } = post;
 
 		return {
 			...result,
 			bookmarked: user ? bookmarks.length > 0 : false,
+			like: likes?.shift()?.type,
 		};
 	}
 
@@ -135,6 +186,15 @@ export class PostsService {
 							},
 						},
 					})),
+				},
+			},
+			include: {
+				author: {
+					select: {
+						login: true,
+						avatar: true,
+						fullname: true,
+					},
 				},
 			},
 		});
@@ -172,6 +232,15 @@ export class PostsService {
 				id,
 			},
 			data,
+			include: {
+				author: {
+					select: {
+						login: true,
+						avatar: true,
+						fullname: true,
+					},
+				},
+			},
 		});
 	}
 
@@ -186,12 +255,22 @@ export class PostsService {
 			where: {
 				id,
 			},
+			include: {
+				author: {
+					select: {
+						login: true,
+						avatar: true,
+						fullname: true,
+					},
+				},
+			},
 		});
 	}
 
 	async findComments(
 		id: number,
 		{ page, limit }: PaginationOptionsDto,
+		user: User,
 	): Promise<Paginated<CommentDto>> {
 		await this.findById(id);
 
@@ -204,7 +283,19 @@ export class PostsService {
 				take: limit,
 				skip: (page - 1) * limit,
 				orderBy: {
-					rating: 'desc',
+					createdAt: 'desc',
+				},
+				include: {
+					author: {
+						select: {
+							login: true,
+							avatar: true,
+							fullname: true,
+						},
+					},
+					likes: {
+						where: { authorId: user.id },
+					},
 				},
 			}),
 			this.prisma.comment.count({ where }),
@@ -212,9 +303,13 @@ export class PostsService {
 		const pages = Math.ceil(count / limit);
 
 		return {
-			data: comments,
+			data: comments.map(({ likes, ...post }) => ({
+				...post,
+				like: likes?.shift()?.type,
+			})),
 			meta: {
 				page,
+				total: count,
 				count: limit,
 				pages,
 				prev: page > 1 ? page - 1 : null,
@@ -239,6 +334,15 @@ export class PostsService {
 				postId: id,
 				authorId: user.id,
 				...dto,
+			},
+			include: {
+				author: {
+					select: {
+						login: true,
+						avatar: true,
+						fullname: true,
+					},
+				},
 			},
 		});
 	}
@@ -397,6 +501,15 @@ export class PostsService {
 					},
 				},
 			},
+			include: {
+				author: {
+					select: {
+						login: true,
+						avatar: true,
+						fullname: true,
+					},
+				},
+			},
 		});
 
 		return {
@@ -430,6 +543,15 @@ export class PostsService {
 							userId: user.id,
 							postId: id,
 						},
+					},
+				},
+			},
+			include: {
+				author: {
+					select: {
+						login: true,
+						avatar: true,
+						fullname: true,
 					},
 				},
 			},

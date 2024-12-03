@@ -58,6 +58,9 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 # AdminJS
 .adminjs
 
-# uploads directory
-uploads/*
-!uploads/avatars/default.png
+# public directory
+public/*
+!public/avatars/default.png
+
+# Redis
+redisdata/

@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Status } from '@prisma/client';
+import { LikeType, Status } from '@prisma/client';
+import { UserDto } from 'src/modules/users/dto';
 
 export class PostDto {
 	@ApiProperty({
@@ -13,6 +14,17 @@ export class PostDto {
 		example: 12,
 	})
 	authorId: number;
+
+	@ApiProperty({
+		description: 'Author of the post',
+	})
+	author: Partial<UserDto>;
+
+	@ApiProperty({
+		description: 'Information about rate of post by the current user',
+		example: LikeType.DISLIKE,
+	})
+	like?: LikeType;
 
 	@ApiProperty({
 		description: 'Title of the post',

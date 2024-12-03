@@ -35,7 +35,7 @@ import redisConfig from './configs/redis.config';
 			global: true,
 		}),
 		ServeStaticModule.forRoot({
-			rootPath: join(process.cwd(), 'uploads', 'avatars'),
+			rootPath: join(process.cwd(), 'public', 'avatars'),
 			serveRoot: '/avatars',
 			serveStaticOptions: { index: false },
 		}),

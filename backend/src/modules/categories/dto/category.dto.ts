@@ -19,4 +19,10 @@ export class CategoryDto {
 			'A programming language that builds on JavaScript by adding static type definitions',
 	})
 	description: string;
+
+	@ApiProperty({
+		description: 'Number of posts with the category',
+		example: 67,
+	})
+	posts?: number;
 }

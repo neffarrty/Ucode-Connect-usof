@@ -30,7 +30,7 @@ export class DateFilterDto {
 	gte?: Date;
 }
 
-export class FilteringOptionsDto {
+export class FilterOptionsDto {
 	@ApiProperty({
 		type: DateFilterDto,
 		required: false,
@@ -45,11 +45,10 @@ export class FilteringOptionsDto {
 		required: false,
 		description: 'Array of category titles to filter by',
 	})
-	@IsOptional()
 	@IsArray()
 	@IsString({ each: true })
 	@IsNotEmpty({ each: true })
-	@Transform(({ value }) => [...value.split(',')])
+	@IsOptional()
 	categories?: string[];
 
 	@ApiProperty({

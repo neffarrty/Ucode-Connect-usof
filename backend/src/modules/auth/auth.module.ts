@@ -3,7 +3,6 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UsersModule } from 'src/modules/users/users.module';
 import { PassportModule } from '@nestjs/passport';
-import { PrismaModule } from 'src/modules/prisma/prisma.module';
 import { ConfigService } from '@nestjs/config';
 import { MailerModule, MailerOptions } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
@@ -16,6 +15,8 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { GoogleGuard } from './guards/google.guard';
 import * as path from 'path';
+import { GithubStrategy } from './strategies/github.strategy';
+import { GithubGuard } from './guards/github.guard';
 
 @Module({
 	providers: [
@@ -24,10 +25,12 @@ import * as path from 'path';
 		JwtStrategy,
 		JwtRefreshStrategy,
 		GoogleStrategy,
+		GithubStrategy,
 		LocalGuard,
 		JwtGuard,
 		JwtRefreshGuard,
 		GoogleGuard,
+		GithubGuard,
 	],
 	controllers: [AuthController],
 	imports: [
@@ -47,7 +50,7 @@ import * as path from 'path';
 					},
 				},
 				defaults: {
-					from: '"BugTalk" <no-reply@usof.com>',
+					from: '"CodeTalk" <no-reply@usof.com>',
 				},
 				template: {
 					dir: path.join(__dirname, '..', '..', 'templates'),

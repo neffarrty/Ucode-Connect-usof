@@ -1,9 +1,14 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+	BadRequestException,
+	Injectable,
+	UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
-import { UsersService } from 'src/modules/users/users.service';
+import { JwtPayload } from '../interface/jwt-payload.interface';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(
@@ -11,8 +16,8 @@ export class JwtRefreshStrategy extends PassportStrategy(
 	'jwt-refresh',
 ) {
 	constructor(
-		private readonly configService: ConfigService,
-		private readonly usersService: UsersService,
+		private readonly config: ConfigService,
+		private readonly prisma: PrismaService,
 	) {
 		super({
 			jwtFromRequest: ExtractJwt.fromExtractors([
@@ -21,15 +26,17 @@ export class JwtRefreshStrategy extends PassportStrategy(
 				},
 			]),
 			ignoreExpiration: false,
-			secretOrKey: configService.get<string>('auth.jwt.refresh.secret'),
+			secretOrKey: config.get<string>('auth.jwt.refresh.secret'),
 		});
 	}
 
-	async validate(payload: any) {
-		const user = this.usersService.findById(payload.sub);
+	async validate(payload: JwtPayload) {
+		const user = await this.prisma.user.findUnique({
+			where: { id: payload.userId },
+		});
 
 		if (!user) {
-			throw new BadRequestException('Invalid token');
+			throw new UnauthorizedException('Invalid refresh token');
 		}
 
 		return user;

@@ -3,7 +3,6 @@ import {
 	ApiExtraModels,
 	ApiOkResponse,
 	ApiProperty,
-	ApiQuery,
 	getSchemaPath,
 } from '@nestjs/swagger';
 import { PaginationMetadata } from './pagination-metadata';

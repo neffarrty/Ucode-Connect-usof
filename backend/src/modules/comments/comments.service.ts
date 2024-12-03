@@ -18,6 +18,15 @@ export class CommentsService {
 			where: {
 				id,
 			},
+			include: {
+				author: {
+					select: {
+						login: true,
+						avatar: true,
+						fullname: true,
+					},
+				},
+			},
 		});
 
 		if (!comment) {
@@ -34,13 +43,22 @@ export class CommentsService {
 	): Promise<CommentDto> {
 		const comment = await this.findById(id);
 
-		if (comment.authorId !== user.id) {
+		if (comment.authorId !== user.id && user.role !== Role.ADMIN) {
 			throw new ForbiddenException('Forbidden to update comment');
 		}
 
 		return this.prisma.comment.update({
 			where: {
 				id,
+			},
+			include: {
+				author: {
+					select: {
+						login: true,
+						avatar: true,
+						fullname: true,
+					},
+				},
 			},
 			data: dto,
 		});
@@ -56,6 +74,15 @@ export class CommentsService {
 		return this.prisma.comment.delete({
 			where: {
 				id,
+			},
+			include: {
+				author: {
+					select: {
+						login: true,
+						avatar: true,
+						fullname: true,
+					},
+				},
 			},
 		});
 	}

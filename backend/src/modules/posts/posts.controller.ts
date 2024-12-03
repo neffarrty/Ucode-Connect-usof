@@ -28,8 +28,8 @@ import {
 	UpdatePostDto,
 	CreateLikeDto,
 	LikeDto,
-	SortingOptionsDto,
-	FilteringOptionsDto,
+	SortOptionsDto,
+	FilterOptionsDto,
 } from './dto';
 import { CommentDto, CreateCommentDto } from 'src/modules/comments/dto';
 import { CategoryDto } from 'src/modules/categories/dto/category.dto';
@@ -55,14 +55,14 @@ export class PostsController {
 	@ApiPaginatedResponse(PostDto)
 	async getAllPosts(
 		@Query() paginationOptions: PaginationOptionsDto,
-		@Query() sortingOptions: SortingOptionsDto,
-		@Query() filteringOptions: FilteringOptionsDto,
+		@Query() sortOptions: SortOptionsDto,
+		@Query() filterOptions: FilterOptionsDto,
 		@GetUser() user: User,
 	): Promise<Paginated<PostDto>> {
 		return this.postService.findAll(
 			paginationOptions,
-			sortingOptions,
-			filteringOptions,
+			sortOptions,
+			filterOptions,
 			user,
 		);
 	}
@@ -152,8 +152,9 @@ export class PostsController {
 	async getPostComments(
 		@Param('id', ParseIntPipe) id: number,
 		@Query() paginationOptions: PaginationOptionsDto,
+		@GetUser() user: User,
 	): Promise<Paginated<CommentDto>> {
-		return this.postService.findComments(id, paginationOptions);
+		return this.postService.findComments(id, paginationOptions, user);
 	}
 
 	@Post(':id/comments')

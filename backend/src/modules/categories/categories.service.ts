@@ -5,43 +5,99 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { CategoryDto, CreateCategoryDto, UpdateCategoryDto } from './dto';
-import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
-import { Paginated } from 'src/pagination/paginated';
+import { PaginationOptionsDto, Paginated } from 'src/pagination';
 import { PostDto } from 'src/modules/posts/dto/post.dto';
+import { CategorySortOptionsDto, SortType } from './dto/sort-options.dto';
+import { CategoryFilterOptionsDto } from './dto/filter-options.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class CategoriesService {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async findAll({
-		page,
-		limit,
-	}: PaginationOptionsDto): Promise<Paginated<CategoryDto>> {
-		const [categories, count] = await this.prisma.$transaction([
-			this.prisma.category.findMany({
-				take: limit,
-				skip: (page - 1) * limit,
-			}),
-			this.prisma.category.count(),
-		]);
-		const pages = Math.ceil(count / limit);
-
-		return {
-			data: categories,
-			meta: {
-				page,
-				count: limit,
-				pages,
-				next: page < pages ? page + 1 : null,
-				prev: page > 1 ? page - 1 : null,
+	async findAll(
+		{ sort, order }: CategorySortOptionsDto,
+		{ title }: CategoryFilterOptionsDto,
+	): Promise<CategoryDto[]> {
+		const where: Prisma.CategoryWhereInput = {
+			title: {
+				contains: title,
+				mode: 'insensitive',
 			},
 		};
+
+		const orderBy =
+			sort === SortType.POSTS
+				? { posts: { _count: order } }
+				: { [sort]: order };
+
+		const categories = await this.prisma.category.findMany({
+			where,
+			include: {
+				_count: {
+					select: { posts: true },
+				},
+			},
+			orderBy,
+		});
+
+		return categories.map(({ _count, ...category }) => ({
+			...category,
+			posts: _count.posts,
+		}));
 	}
 
+	// async findAll({
+	// 	page,
+	// 	limit,
+	// }: PaginationOptionsDto): Promise<Paginated<CategoryDto>> {
+	// 	const [categories, count] = await this.prisma.$transaction([
+	// 		this.prisma.category.findMany({
+	// 			take: limit,
+	// 			skip: (page - 1) * limit,
+	// 			include: {
+	// 				_count: {
+	// 					select: { posts: true },
+	// 				},
+	// 			},
+	// 			orderBy: {
+	// 				posts: {
+	// 					_count: 'desc',
+	// 				},
+	// 			},
+	// 		}),
+	// 		this.prisma.category.count(),
+	// 	]);
+	// 	const pages = Math.ceil(count / limit);
+
+	// 	return {
+	// 		data: categories.map((category) => {
+	// 			const { _count, ...data } = category;
+	// 			return {
+	// 				...data,
+	// 				posts: _count.posts,
+	// 			};
+	// 		}),
+	// 		meta: {
+	// 			page,
+	// 			total: count,
+	// 			count: limit,
+	// 			pages,
+	// 			next: page < pages ? page + 1 : null,
+	// 			prev: page > 1 ? page - 1 : null,
+	// 		},
+	// 	};
+	// }
+
 	async findById(id: number): Promise<CategoryDto> {
-		const category = this.prisma.category.findUnique({
+		const category = await this.prisma.category.findUnique({
 			where: {
 				id,
+			},
+			include: {
+				_count: {
+					select: { posts: true },
+				},
 			},
 		});
 
@@ -49,7 +105,11 @@ export class CategoriesService {
 			throw new NotFoundException(`Category with id ${id} not found`);
 		}
 
-		return category;
+		const { _count, ...data } = category;
+		return {
+			...data,
+			posts: _count.posts,
+		};
 	}
 
 	async findPosts(
@@ -68,6 +128,14 @@ export class CategoriesService {
 		const [posts, count] = await this.prisma.$transaction([
 			this.prisma.post.findMany({
 				where,
+				include: {
+					author: {
+						select: {
+							login: true,
+							avatar: true,
+						},
+					},
+				},
 				take: limit,
 				skip: (page - 1) * limit,
 			}),
@@ -79,6 +147,7 @@ export class CategoriesService {
 			data: posts,
 			meta: {
 				page,
+				total: count,
 				count: limit,
 				pages,
 				prev: page > 1 ? page - 1 : null,
@@ -119,7 +188,7 @@ export class CategoriesService {
 	}
 
 	private async checkIfTitleExists(title: string) {
-		const category = this.prisma.category.findFirst({
+		const category = await this.prisma.category.findFirst({
 			where: {
 				title: {
 					equals: title,
