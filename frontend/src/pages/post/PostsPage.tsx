@@ -20,7 +20,7 @@ import { PostCard } from '../../components/post-card/PostCard';
 import { useSearchParams } from 'react-router-dom';
 
 export const PostsPage: React.FC = () => {
-	const [query, setQuery] = useSearchParams();
+	const [query] = useSearchParams();
 	const [page, setPage] = useState(1);
 	const [limit, setLimit] = useState(15);
 

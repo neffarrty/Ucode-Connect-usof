@@ -138,25 +138,37 @@ export const ResetPassword: React.FC = () => {
 						{error.response?.data?.message || error.message}
 					</Alert>
 				)}
-				{success && (
-					<Alert severity="success" sx={{ mt: 1 }}>
-						Password reset successful. Please log in with your new
-						credentials.
-					</Alert>
+				{success ? (
+					<>
+						<Alert severity="success" sx={{ mt: 1 }}>
+							Password reset successful. Please log in with your
+							new credentials.
+						</Alert>
+						<Button
+							type="submit"
+							variant="contained"
+							fullWidth
+							href="/login"
+							sx={{ mt: 1 }}
+						>
+							{'Go to login'}
+						</Button>
+					</>
+				) : (
+					<Button
+						type="submit"
+						variant="contained"
+						disabled={isPending}
+						fullWidth
+						sx={{ mt: 1 }}
+					>
+						{isPending ? (
+							<CircularProgress size={24} />
+						) : (
+							'Reset password'
+						)}
+					</Button>
 				)}
-				<Button
-					type="submit"
-					variant="contained"
-					disabled={isPending}
-					fullWidth
-					sx={{ mt: 1 }}
-				>
-					{isPending ? (
-						<CircularProgress size={24} />
-					) : (
-						'Reset password'
-					)}
-				</Button>
 			</Box>
 		</Container>
 	);
