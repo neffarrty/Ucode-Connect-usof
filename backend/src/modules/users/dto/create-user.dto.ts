@@ -7,6 +7,7 @@ import {
 	IsBoolean,
 	IsEnum,
 	Matches,
+	IsOptional,
 } from 'class-validator';
 import { Role } from '@prisma/client';
 
@@ -49,33 +50,36 @@ export class CreateUserDto {
 	email: string;
 
 	@ApiProperty({
-		description: 'URL to the user’s avatar image',
+		description: 'URL to the user avatar image',
 		example: 'https://example.com/avatar.jpg',
 		type: String,
 		required: false,
 	})
 	@IsString()
 	@IsNotEmpty()
+	@IsOptional()
 	avatar?: string;
 
 	@ApiProperty({
-		description: 'User’s rating score, indicating reputation',
+		description: 'User rating score, indicating reputation',
 		example: 150,
 		type: Number,
 		required: false,
 	})
 	@IsInt()
+	@IsOptional()
 	rating?: number;
 
 	@ApiProperty({
-		description: 'User’s role within the application',
+		description: 'User role within the application',
 		example: 'USER',
 		type: String,
 		enum: Role,
 		required: false,
 	})
 	@IsEnum(Role)
-	role?: Role;
+	@IsOptional()
+	role: Role = Role.USER;
 
 	@ApiProperty({
 		description: 'Indicates if the user’s email has been verified',
@@ -84,5 +88,6 @@ export class CreateUserDto {
 		required: false,
 	})
 	@IsBoolean()
-	verified?: boolean;
+	@IsOptional()
+	verified: boolean = true;
 }

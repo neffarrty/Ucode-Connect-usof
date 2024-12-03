@@ -10,9 +10,9 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { UserDto, CreateUserDto, UpdateUserDto } from './dto';
 import {
-	FilteringOptionsDto,
+	FilterOptionsDto,
 	PostDto,
-	SortingOptionsDto,
+	SortOptionsDto,
 } from 'src/modules/posts/dto';
 import { Paginated, PaginationOptionsDto } from 'src/pagination';
 import { Prisma, Role, Status, User } from '@prisma/client';
@@ -20,6 +20,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import * as bcrypt from 'bcryptjs';
 import { CommentDto } from '../comments/dto';
+import { UserFilterOptionsDto } from './dto/filter-options.dto';
 
 @Injectable()
 export class UsersService {
@@ -58,16 +59,24 @@ export class UsersService {
 		});
 	}
 
-	async findAll({
-		page,
-		limit,
-	}: PaginationOptionsDto): Promise<Paginated<UserDto>> {
+	async findAll(
+		{ page, limit }: PaginationOptionsDto,
+		{ login }: UserFilterOptionsDto,
+	): Promise<Paginated<UserDto>> {
+		const where: Prisma.UserWhereInput = {
+			login: {
+				contains: login,
+				mode: 'insensitive',
+			},
+		};
+
 		const [users, count] = await this.prisma.$transaction([
 			this.prisma.user.findMany({
+				where,
 				take: limit,
 				skip: (page - 1) * limit,
 			}),
-			this.prisma.user.count(),
+			this.prisma.user.count({ where }),
 		]);
 		const pages = Math.ceil(count / limit);
 
@@ -86,62 +95,8 @@ export class UsersService {
 
 	async findBookmarks(
 		{ page, limit }: PaginationOptionsDto,
-		user: User,
-	): Promise<Paginated<PostDto>> {
-		const where = {
-			bookmarks: {
-				some: {
-					userId: user.id,
-				},
-			},
-		};
-
-		const [posts, count] = await this.prisma.$transaction([
-			this.prisma.post.findMany({
-				where,
-				include: {
-					author: {
-						select: {
-							login: true,
-							avatar: true,
-						},
-					},
-					bookmarks: {
-						where: {
-							userId: user.id,
-						},
-					},
-				},
-				take: limit,
-				skip: (page - 1) * limit,
-				orderBy: {
-					createdAt: 'desc',
-				},
-			}),
-			this.prisma.post.count({ where }),
-		]);
-		const pages = Math.ceil(count / limit);
-
-		return {
-			data: posts.map(({ bookmarks, ...post }) => ({
-				...post,
-				bookmarked: bookmarks.some((fav) => fav.userId === user.id),
-			})),
-			meta: {
-				page,
-				total: count,
-				count: limit,
-				pages,
-				next: page < pages ? page + 1 : null,
-				prev: page > 1 ? page - 1 : null,
-			},
-		};
-	}
-
-	async findPosts(
-		{ page, limit }: PaginationOptionsDto,
-		{ sort, order }: SortingOptionsDto,
-		{ createdAt, categories, status, title }: FilteringOptionsDto,
+		{ sort, order }: SortOptionsDto,
+		{ createdAt, categories, status, title }: FilterOptionsDto,
 		user: User,
 	): Promise<Paginated<PostDto>> {
 		const where: Prisma.PostWhereInput = {
@@ -165,7 +120,87 @@ export class UsersService {
 				},
 				{ createdAt },
 				{ status: user.role === Role.ADMIN ? status : Status.ACTIVE },
-				{ authorId: user.id },
+				{
+					bookmarks: {
+						some: {
+							userId: user.id,
+						},
+					},
+				},
+			],
+		};
+
+		const [posts, count] = await this.prisma.$transaction([
+			this.prisma.post.findMany({
+				where,
+				include: {
+					author: {
+						select: {
+							login: true,
+							avatar: true,
+						},
+					},
+					bookmarks: {
+						where: {
+							userId: user.id,
+						},
+					},
+				},
+				take: limit,
+				skip: (page - 1) * limit,
+				orderBy: {
+					[sort]: order,
+				},
+			}),
+			this.prisma.post.count({ where }),
+		]);
+		const pages = Math.ceil(count / limit);
+
+		return {
+			data: posts.map(({ bookmarks, ...post }) => ({
+				...post,
+				bookmarked: bookmarks.some((fav) => fav.userId === user.id),
+			})),
+			meta: {
+				page,
+				total: count,
+				count: limit,
+				pages,
+				next: page < pages ? page + 1 : null,
+				prev: page > 1 ? page - 1 : null,
+			},
+		};
+	}
+
+	async findPosts(
+		id: number,
+		{ page, limit }: PaginationOptionsDto,
+		{ sort, order }: SortOptionsDto,
+		{ createdAt, categories, status, title }: FilterOptionsDto,
+		user: User,
+	): Promise<Paginated<PostDto>> {
+		const where: Prisma.PostWhereInput = {
+			AND: [
+				{
+					categories: {
+						some: {
+							category: {
+								title: {
+									in: categories,
+								},
+							},
+						},
+					},
+				},
+				{
+					title: {
+						contains: title,
+						mode: 'insensitive',
+					},
+				},
+				{ createdAt },
+				{ status: user.role === Role.ADMIN ? status : Status.ACTIVE },
+				{ authorId: id },
 			],
 		};
 
@@ -222,13 +257,13 @@ export class UsersService {
 	}
 
 	async findComments(
+		id: number,
 		{ page, limit }: PaginationOptionsDto,
-		{ sort, order }: SortingOptionsDto,
-		{ createdAt }: FilteringOptionsDto,
-		user: User,
+		{ sort, order }: SortOptionsDto,
+		{ createdAt }: FilterOptionsDto,
 	): Promise<Paginated<CommentDto>> {
 		const where: Prisma.CommentWhereInput = {
-			AND: [{ createdAt }, { authorId: user.id }],
+			AND: [{ createdAt }, { authorId: id }],
 		};
 
 		const [comments, count] = await this.prisma.$transaction([
@@ -280,13 +315,13 @@ export class UsersService {
 	}
 
 	async update(id: number, user: User, dto: UpdateUserDto): Promise<UserDto> {
-		await this.findById(id);
+		const candidate = await this.findById(id);
 
 		if (user.id !== id && user.role !== Role.ADMIN) {
 			throw new ForbiddenException('Forbidden to update user');
 		}
 
-		await this.checkIfNotExist(dto.login, dto.email, user);
+		await this.checkIfNotExist(dto.login, dto.email, candidate);
 
 		if (dto.password) {
 			dto.password = await bcrypt.hash(dto.password, 10);

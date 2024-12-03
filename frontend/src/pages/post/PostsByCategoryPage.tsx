@@ -11,11 +11,11 @@ import {
 	Typography,
 } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-import { Post, Paginated, Category } from '../interface';
+import { Post, Paginated, Category } from '../../interface';
 import { AxiosError } from 'axios';
-import axios from '../utils/axios';
-import { Layout } from '../components/layout/Layout';
-import { PostCard } from '../components/post-card/PostCard';
+import axios from '../../utils/axios';
+import { Layout } from '../../components/layout/Layout';
+import { PostCard } from '../../components/post-card/PostCard';
 import { useParams } from 'react-router-dom';
 
 interface QueryResponse {

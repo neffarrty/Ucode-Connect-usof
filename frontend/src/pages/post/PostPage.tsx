@@ -12,15 +12,15 @@ import {
 } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
-import { Post } from '../interface/Post';
+import { Post } from '../../interface/Post';
 import { AxiosError } from 'axios';
-import axios from '../utils/axios';
+import axios from '../../utils/axios';
 import remarkGfm from 'remark-gfm';
 import Markdown from 'react-markdown';
-import { CommentsList } from '../components/comment/CommentsList';
-import { PostActions } from '../components/post/PostActions';
-import { PostHeader } from '../components/post/PostHeader';
-import { Layout } from '../components/layout/Layout';
+import { CommentsList } from '../../components/comment/CommentsList';
+import { PostActions } from '../../components/post/PostActions';
+import { PostHeader } from '../../components/post/PostHeader';
+import { Layout } from '../../components/layout/Layout';
 
 export const PostPage: React.FC = () => {
 	const { id } = useParams<{ id: string }>();

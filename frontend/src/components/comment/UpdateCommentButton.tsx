@@ -13,7 +13,7 @@ import {
 import { Edit } from '@mui/icons-material';
 import { TransitionProps } from '@mui/material/transitions';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Comment, Paginated } from '../../interface';
+import { Comment } from '../../interface';
 import axios from '../../utils/axios';
 import { useForm } from 'react-hook-form';
 

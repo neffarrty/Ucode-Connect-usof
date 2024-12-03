@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { store } from '../redux/store';
-import { updateState } from '../redux/auth/slice';
+import { updateState, updateUser } from '../redux/auth/slice';
 
-const apiClient = axios.create({
+const instance = axios.create({
 	baseURL: import.meta.env.VITE_API_URL,
 	withCredentials: true,
 });
@@ -21,7 +21,7 @@ const processQueue = (error: any, token: string | null = null) => {
 	failedQueue = [];
 };
 
-apiClient.interceptors.request.use(
+instance.interceptors.request.use(
 	(config) => {
 		const token = store.getState().auth.token;
 		if (token) {
@@ -32,31 +32,54 @@ apiClient.interceptors.request.use(
 	(error) => Promise.reject(error),
 );
 
-apiClient.interceptors.response.use(
-	(response) => response,
-	async (error) => {
-		const originalRequest = error.config;
+instance.interceptors.response.use(
+	async (response) => {
+		const user = store.getState().auth.user;
 
-		if (error.response?.status === 401 && !originalRequest._retry) {
+		try {
+			const token = store.getState().auth.token;
+
+			const response = await axios.get(`/users/${user?.id}`, {
+				baseURL: import.meta.env.VITE_API_URL,
+				withCredentials: true,
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+
+			localStorage.setItem('user', JSON.stringify(response.data));
+			store.dispatch(updateUser(response.data));
+		} catch (err) {
+			console.error(err);
+		}
+		return response;
+	},
+	async (error) => {
+		const request = error.config;
+
+		if (error.response?.status === 401 && !request._retry) {
 			if (isRefreshing) {
 				return new Promise((resolve, reject) => {
 					failedQueue.push({ resolve, reject });
 				})
 					.then((token) => {
-						originalRequest.headers.Authorization = `Bearer ${token}`;
-						return axios(originalRequest);
+						request.headers.Authorization = `Bearer ${token}`;
+						return axios(request);
 					})
 					.catch((err) => Promise.reject(err));
 			}
 
-			originalRequest._retry = true;
+			request._retry = true;
 			isRefreshing = true;
 
 			try {
 				const response = await axios.post(
-					`${import.meta.env.VITE_API_URL}/auth/refresh-tokens`,
+					`/auth/refresh-tokens`,
 					{},
-					{ withCredentials: true },
+					{
+						baseURL: import.meta.env.VITE_API_URL,
+						withCredentials: true,
+					},
 				);
 
 				const { user, token } = response.data;
@@ -65,10 +88,9 @@ apiClient.interceptors.response.use(
 
 				processQueue(null, token);
 
-				originalRequest.headers.Authorization = `Bearer ${token}`;
-				return axios(originalRequest);
+				request.headers.Authorization = `Bearer ${token}`;
+				return axios(request);
 			} catch (err) {
-				console.log(err);
 				processQueue(err, null);
 				localStorage.removeItem('token');
 				window.location.href = '/login';
@@ -82,4 +104,4 @@ apiClient.interceptors.response.use(
 	},
 );
 
-export default apiClient;
+export default instance;

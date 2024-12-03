@@ -16,24 +16,20 @@ import {
 } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos, Star } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
-import { Paginated, Post } from '../../interface/';
-import { useSelector } from 'react-redux';
+import { Paginated, Post, User } from '../../interface/';
 import { AxiosError } from 'axios';
 import axios from '../../utils/axios';
 import { formatDate } from '../../utils/dates';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-const truncateText = (text: string, limit: number) => {
-	const words = text.split(' ');
-	if (words.length <= limit) {
-		return text;
-	}
-	return words.slice(0, limit).join(' ') + '...';
-};
+interface ProfilePostSliderProps {
+	user: User;
+}
 
-export const ProfilePostsSlider: React.FC = () => {
-	const { user } = useSelector((state: any) => state.auth);
+export const ProfilePostsSlider: React.FC<ProfilePostSliderProps> = ({
+	user,
+}) => {
 	const [currentSlide, setCurrentSlide] = useState(0);
 	const [direction, setDirection] = useState<'left' | 'right'>('right');
 	const [posts, setPosts] = useState<Post[]>([]);
@@ -86,15 +82,14 @@ export const ProfilePostsSlider: React.FC = () => {
 								display: 'flex',
 								flexDirection: 'row',
 								position: 'relative',
+								boxShadow: 'none',
+								mt: 1,
 							}}
 						>
 							<Box sx={{ flex: 1 }}>
 								<CardHeader
 									subheader={formatDate(
-										new Date(
-											posts[currentSlide].createdAt ||
-												Date.now(),
-										),
+										new Date(posts[currentSlide].createdAt),
 									)}
 									sx={{ py: 0.5 }}
 								/>
@@ -126,7 +121,7 @@ export const ProfilePostsSlider: React.FC = () => {
 													>
 														<Chip
 															component="a"
-															href={`http://localhost:3001/category/${category.id}`}
+															href={`/categories/${category.id}`}
 															label={
 																category.title
 															}
@@ -153,14 +148,14 @@ export const ProfilePostsSlider: React.FC = () => {
 											<Markdown
 												remarkPlugins={[remarkGfm]}
 											>
-												{posts[currentSlide]?.content}
+												{posts[currentSlide].content}
 											</Markdown>
 										</Typography>
 									</Box>
 								</CardContent>
 								<CardActions disableSpacing>
 									<Button
-										href={`http://localhost:3001/posts/${posts[currentSlide]?.id}`}
+										href={`/posts/${posts[currentSlide].id}`}
 										size="small"
 									>
 										Learn More
@@ -186,7 +181,7 @@ export const ProfilePostsSlider: React.FC = () => {
 								>
 									<Star color="primary" />
 									<Typography variant="body1">
-										{posts[currentSlide]?.rating || 0}
+										{posts[currentSlide].rating || 0}
 									</Typography>
 								</Box>
 							</Box>

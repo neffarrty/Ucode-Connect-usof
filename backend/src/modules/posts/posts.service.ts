@@ -11,8 +11,8 @@ import {
 	CreatePostDto,
 	UpdatePostDto,
 	CreateLikeDto,
-	SortingOptionsDto,
-	FilteringOptionsDto,
+	SortOptionsDto,
+	FilterOptionsDto,
 } from './dto';
 import { CommentDto, CreateCommentDto } from 'src/modules/comments/dto';
 import { CategoryDto } from 'src/modules/categories/dto/category.dto';
@@ -25,8 +25,8 @@ export class PostsService {
 
 	async findAll(
 		{ page, limit }: PaginationOptionsDto,
-		{ sort, order }: SortingOptionsDto,
-		{ createdAt, categories, status, title }: FilteringOptionsDto,
+		{ sort, order }: SortOptionsDto,
+		{ createdAt, categories, status, title }: FilterOptionsDto,
 		user: User,
 	): Promise<Paginated<PostDto>> {
 		const where: Prisma.PostWhereInput = {

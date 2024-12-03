@@ -36,7 +36,6 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
 				p: 2,
 				border: '1px solid',
 				borderColor: 'primary.light',
-				borderRadius: 3,
 				boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
 				transition: 'transform 0.2s ease-out, box-shadow 0.2s ease-out',
 				'&:hover': {
@@ -47,7 +46,6 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
 				display: 'flex',
 				flexDirection: 'column',
 				justifyContent: 'space-between',
-				backgroundColor: '#fff',
 			}}
 		>
 			<Stack gap={1} sx={{ flex: 1 }}>
