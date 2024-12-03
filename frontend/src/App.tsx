@@ -19,6 +19,7 @@ import {
 	BookmarksPage,
 	CategoriesPage,
 	UsersPage,
+	UserPostsPage,
 } from './pages';
 import { theme } from './theme/theme';
 import NotFound from './components/errors/NotFound';
@@ -131,6 +132,14 @@ const App: React.FC = () => {
 						element={
 							<PrivateRoute>
 								<UsersPage />
+							</PrivateRoute>
+						}
+					/>
+					<Route
+						path="/users/:id/posts"
+						element={
+							<PrivateRoute>
+								<UserPostsPage />
 							</PrivateRoute>
 						}
 					/>

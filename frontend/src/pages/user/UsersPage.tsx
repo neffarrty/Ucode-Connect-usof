@@ -15,13 +15,13 @@ import {
 } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
-import { UserCard } from '../components/user/UserCard';
+import { UserCard } from '../../components/user/UserCard';
 import { useSelector } from 'react-redux';
 import { AxiosError } from 'axios';
-import { Layout } from '../components/layout/Layout';
-import axios from '../utils/axios';
-import { Paginated, User } from '../interface';
-import { CreateUserButton } from '../components/user/CreateUserButton';
+import { Layout } from '../../components/layout/Layout';
+import axios from '../../utils/axios';
+import { Paginated, User } from '../../interface';
+import { CreateUserButton } from '../../components/user/CreateUserButton';
 
 interface UserParams {
 	page: number;

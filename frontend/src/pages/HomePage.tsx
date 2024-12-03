@@ -82,6 +82,9 @@ export const HomePage: React.FC = () => {
 									gap: 2,
 								}}
 							>
+								<Typography variant="h5" color="primary.dark">
+									Top Posts of the Last Week
+								</Typography>
 								{data.data.map((post) => (
 									<Box key={post.id} sx={{ flexGrow: 1 }}>
 										<PostCard post={post} />

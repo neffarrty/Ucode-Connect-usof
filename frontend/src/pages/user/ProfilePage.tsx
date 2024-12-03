@@ -1,14 +1,22 @@
 import React from 'react';
-import { Box, CircularProgress, Paper, Stack, Typography } from '@mui/material';
-import { Layout } from '../components/layout/Layout';
-import { ProfileStats } from '../components/profile/ProfileStats';
-import { ProfileUserInfo } from '../components/profile/ProfileUserInfo';
-import { ProfilePostsSlider } from '../components/profile/ProfilePostsSlider';
+import {
+	Box,
+	Button,
+	CircularProgress,
+	Paper,
+	Stack,
+	Typography,
+} from '@mui/material';
+import { Layout } from '../../components/layout/Layout';
+import { ProfileStats } from '../../components/profile/ProfileStats';
+import { ProfileUserInfo } from '../../components/profile/ProfileUserInfo';
+import { ProfilePostsSlider } from '../../components/profile/ProfilePostsSlider';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { User } from '../interface';
+import { User } from '../../interface';
 import { AxiosError } from 'axios';
-import axios from '../utils/axios';
+import axios from '../../utils/axios';
+import { East } from '@mui/icons-material';
 
 export const ProfilePage: React.FC = () => {
 	const { id } = useParams<{ id: string }>();
@@ -75,13 +83,25 @@ export const ProfilePage: React.FC = () => {
 								gap={1}
 								sx={{ flexGrow: 1 }}
 							>
-								<Typography
-									variant="h5"
-									fontWeight="bold"
-									color="primary.dark"
+								<Stack
+									direction="row"
+									sx={{ justifyContent: 'space-between' }}
 								>
-									Most rated posts
-								</Typography>
+									<Typography
+										variant="h5"
+										fontWeight="bold"
+										color="primary.dark"
+									>
+										Most rated posts
+									</Typography>
+									<Button
+										href={`/users/${id}/posts`}
+										endIcon={<East />}
+									>
+										See all
+									</Button>
+								</Stack>
+
 								<Paper
 									sx={{
 										display: 'flex',
