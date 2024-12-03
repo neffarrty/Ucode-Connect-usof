@@ -10,8 +10,10 @@ import {
 	Chip,
 	Tooltip,
 	Skeleton,
+	Stack,
+	IconButton,
 } from '@mui/material';
-import { Star, Forum } from '@mui/icons-material';
+import { Star, Forum, ArrowCircleRight } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import axios from '../../utils/axios';
@@ -124,11 +126,10 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
 					<PostCardActions post={post} />
 				</CardActions>
 			</Box>
-			<Box
+			<Stack
+				direction="column"
 				sx={{
 					width: 80,
-					display: 'flex',
-					flexDirection: 'column',
 					alignItems: 'center',
 					p: 2,
 				}}
@@ -160,7 +161,10 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
 						{data?.comments.meta.total}
 					</Typography>
 				</Box>
-			</Box>
+				<IconButton href={`/posts/${post.id}`} sx={{ mt: 'auto' }}>
+					<ArrowCircleRight sx={{ color: 'primary.main' }} />
+				</IconButton>
+			</Stack>
 		</Card>
 	);
 };

@@ -9,7 +9,7 @@ import {
 	Typography,
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
-import { AlternateEmail } from '@mui/icons-material';
+import { VpnKey } from '@mui/icons-material';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
@@ -108,7 +108,7 @@ export const ResetPassword: React.FC = () => {
 						input: {
 							startAdornment: (
 								<InputAdornment position="start">
-									<AlternateEmail fontSize="small" />
+									<VpnKey fontSize="small" />
 								</InputAdornment>
 							),
 						},
@@ -127,7 +127,7 @@ export const ResetPassword: React.FC = () => {
 						input: {
 							startAdornment: (
 								<InputAdornment position="start">
-									<AlternateEmail fontSize="small" />
+									<VpnKey fontSize="small" />
 								</InputAdornment>
 							),
 						},

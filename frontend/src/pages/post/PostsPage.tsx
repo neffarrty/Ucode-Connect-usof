@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 	Alert,
 	Box,
@@ -17,23 +17,32 @@ import axios from '../../utils/axios';
 import { Layout } from '../../components/layout/Layout';
 import { PostsPageHeader } from '../../components/post/PostsPageHeader';
 import { PostCard } from '../../components/post-card/PostCard';
-import { useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 
 export const PostsPage: React.FC = () => {
-	const navigate = useNavigate();
+	const [query, setQuery] = useSearchParams();
 	const [page, setPage] = useState(1);
 	const [limit, setLimit] = useState(15);
 
 	const [filters, setFilters] = useState<PostFilters>({
 		sort: 'createdAt',
 		order: 'desc',
-		title: '',
+		title: query.get('title') || '',
 		categories: [],
 		createdAt: {
 			gte: null,
 			lte: null,
 		},
+		status: '',
 	});
+
+	useEffect(() => {
+		const title = query.get('title') || '';
+		setFilters((prev) => ({
+			...prev,
+			title,
+		}));
+	}, [query]);
 
 	const handlePageChange = (
 		_event: React.ChangeEvent<unknown>,
@@ -51,8 +60,9 @@ export const PostsPage: React.FC = () => {
 		const cleaned: Partial<PostFilters> = {};
 
 		if (filters.sort) cleaned.sort = filters.sort;
+		if (filters.status) cleaned.status = filters.status;
 		if (filters.order) cleaned.order = filters.order;
-		if (filters.title.trim()) cleaned.title = filters.title;
+		if (filters.title.trim()) cleaned.title = filters.title.trim();
 		if (filters.categories.length > 0)
 			cleaned.categories = filters.categories;
 		if (filters.createdAt.gte || filters.createdAt.lte)
@@ -110,7 +120,7 @@ export const PostsPage: React.FC = () => {
 							<Button
 								variant="outlined"
 								startIcon={<Create />}
-								onClick={() => navigate('/posts/new')}
+								href="/posts/new"
 							>
 								Create post
 							</Button>

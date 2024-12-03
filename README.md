@@ -1,6 +1,17 @@
-﻿# BugTalk
+﻿<div align="center">
+  <img src="./frontend/src/assets/logo.svg" width="350"/>
+</div>
 
-<div>
+# CodeTalk
+
+<div align="center">
+  <img src="https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB" height="30"/>
+  <img src="https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white" height="30"/>
+  <img src="https://img.shields.io/badge/-React%20Query-FF4154?style=for-the-badge&logo=react%20query&logoColor=white" height="30"/>
+  <img src="https://img.shields.io/badge/React%20Hook%20Form-%23EC5990.svg?style=for-the-badge&logo=reacthookform&logoColor=white" height="30"/>
+  <img src="https://img.shields.io/badge/redux-%23593d88.svg?style=for-the-badge&logo=redux&logoColor=white" height="30"/>
+  <img src="https://img.shields.io/badge/MUI-%230081CB.svg?style=for-the-badge&logo=mui&logoColor=white" height="30"/>
+  <img src="https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white" height="30"/>
   <img src="https://img.shields.io/badge/nestjs-E0234E?style=for-the-badge&logo=nestjs&logoColor=white" height="30"/>
   <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" height="30"/>
   <img src="https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white" height="30"/>
@@ -12,16 +23,7 @@
 
 ---
 
-BugTalk is a Q&A web application built using NestJS. The platform is designed to enable developers to ask questions, share their knowledge, and assist each other in solving technical challenges. It serves as a hub for collaborative learning and problem-solving, fostering a community where expertise and insights can be exchanged.
-
-## Technology Stack:
-
- - NestJS, Node.js
- - PostgreSQL
- - Redis
- - Prisma
- - JWT with Passport.js for secure user authentication.
- - Swagger for API documentation.
+CodeTalk is a Q&A web application built using NestJS. The platform is designed to enable developers to ask questions, share their knowledge, and assist each other in solving technical challenges. It serves as a hub for collaborative learning and problem-solving, fostering a community where expertise and insights can be exchanged.
 
 ## Table of Contents
 
@@ -35,18 +37,35 @@ BugTalk is a Q&A web application built using NestJS. The platform is designed to
 - [API Documentation](#api-documentation)
 - [License](#license)
 
+## Technology Stack:
+
+### Backend
+
+- NestJS, Node.js
+- PostgreSQL
+- Redis
+- Prisma
+- JWT with Passport.js for secure user authentication
+- Swagger for API documentation
+
+### Frontend
+
+- React
+- Redux
+- MUI
+
 ## Dependencies
 
 The project relies on the following technologies:
 
- - [Node.js](https://nodejs.org/en) v16.x or higher.
- - [NPM](https://www.npmjs.com) v7.x or higher.
- - [PostgreSQL](https://www.postgresql.org) v13.x or higher.
- - [Redis](https://redis.io) v6.x or higher
+- [Node.js](https://nodejs.org/en) v16.x or higher.
+- [NPM](https://www.npmjs.com) v7.x or higher.
+- [PostgreSQL](https://www.postgresql.org) v13.x or higher.
+- [Redis](https://redis.io) v6.x or higher
 
 If you don't have PostgreSQL and Redis installed on your local machine, you can run the application using Docker. The [docker-compose.yaml](./backend/docker-compose.yaml) file provided in the project will set up the necessary containers for you.
 
-> [!NOTE] 
+> [!NOTE]
 > Make sure you have [Docker](https://www.docker.com) and [Docker Compose](https://docs.docker.com/compose/) installed on your machine.
 
 Start the containers by running the following command in your project directory:
@@ -113,7 +132,7 @@ Once the server has started successfully, the API will be accessible at http://l
 After starting the server, you can access the admin panel at http://localhost:3000/admin. Default admin user is generated during databse seeding and has the following credentials:
 
 | Email             | Password |
-|:------------------|:---------|
+| :---------------- | :------- |
 | admin@example.com | admin    |
 
 Use these credentials to log in to the admin panel.

@@ -3,6 +3,7 @@ export interface PostFilters {
 	order: string;
 	title: string;
 	categories: string[];
+	status: string;
 	createdAt: {
 		gte: Date | null;
 		lte: Date | null;
