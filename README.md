@@ -1,9 +1,10 @@
-﻿<p align="center">
+﻿<div align="center">
 	<img src="https://img.shields.io/github/license/neffarrty/Ucode-Connect-usof?color=FFBB94" alt="license">
+  	<img src="https://img.shields.io/github/commit-activity/t/neffarrty/Ucode-Connect-usof?color=A33757" alt="commit-activity">
 	<img src="https://img.shields.io/github/last-commit/neffarrty/Ucode-Connect-usof?color=A33757" alt="last-commit">
 	<img src="https://img.shields.io/github/languages/top/neffarrty/Ucode-Connect-usof?color=A33757" alt="repo-top-language">
 	<img src="https://img.shields.io/github/languages/count/neffarrty/Ucode-Connect-usof?color=A33757" alt="repo-language-count">
-<p>
+</div>
 
 <div align="center">
   <img src="./frontend/src/assets/logo.svg" width="350"/>
@@ -24,6 +25,7 @@
   <img src="https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=Swagger&logoColor=white" height="30"/>
   <img src="https://img.shields.io/badge/redis-%23DD0031.svg?&style=for-the-badge&logo=redis&logoColor=white" height="30"/>
   <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white" height="30"/>
+  <img src="https://img.shields.io/badge/prettier-%23F7B93E.svg?style=for-the-badge&logo=prettier&logoColor=black" height="30"/>
 </div>
 
 ---
