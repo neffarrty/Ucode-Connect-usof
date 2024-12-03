@@ -5,12 +5,15 @@ import { Grade } from '@mui/icons-material';
 import { getMembershipDuration } from '../../utils/dates';
 import { ProfileAvatar } from './FrofileAvatar';
 import { UpdateUserButton } from './UpdateUserButton';
+import { useSelector } from 'react-redux';
 
 interface ProfileUserInfoProps {
 	user: User;
 }
 
 export const ProfileUserInfo: React.FC<ProfileUserInfoProps> = ({ user }) => {
+	const currentUser = useSelector((state: any) => state.auth.user);
+
 	return (
 		<Paper
 			sx={{
@@ -48,7 +51,10 @@ export const ProfileUserInfo: React.FC<ProfileUserInfoProps> = ({ user }) => {
 				<Typography variant="body2" color="text.secondary">
 					{getMembershipDuration(new Date(user.createdAt))}
 				</Typography>
-				<UpdateUserButton user={user} />
+				{(currentUser.id === user.id ||
+					currentUser.role === 'ADMIN') && (
+					<UpdateUserButton user={user} />
+				)}
 			</Stack>
 		</Paper>
 	);

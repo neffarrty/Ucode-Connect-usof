@@ -3,15 +3,17 @@ import {
 	Box,
 	Button,
 	ButtonGroup,
-	debounce,
 	InputAdornment,
 	Stack,
 	TextField,
 	Typography,
 	Chip,
 	Autocomplete,
+	Collapse,
+	debounce,
 } from '@mui/material';
 import { Search, FilterAlt, Cancel } from '@mui/icons-material';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Category, PostFilters } from '../../interface';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
@@ -33,6 +35,7 @@ export const PostsPageHeader: React.FC<PostsPageHeaderProps> = ({
 	setPage,
 }) => {
 	const [searchValue, setSearchValue] = useState(filters.title);
+	const [expanded, setExpanded] = useState(false);
 
 	const { data: categories } = useQuery<Category[], AxiosError>({
 		queryKey: ['categories', filters],
@@ -50,7 +53,7 @@ export const PostsPageHeader: React.FC<PostsPageHeaderProps> = ({
 					title: value,
 				}));
 				setPage(1);
-			}, 500),
+			}, 100),
 		[setFilters, setPage],
 	);
 
@@ -71,7 +74,7 @@ export const PostsPageHeader: React.FC<PostsPageHeaderProps> = ({
 			}));
 			setPage(1);
 		},
-		[updateFilters],
+		[setFilters, setPage],
 	);
 
 	const handleDelete = (category: string) => {
@@ -119,69 +122,23 @@ export const PostsPageHeader: React.FC<PostsPageHeaderProps> = ({
 				direction="row"
 				sx={{ justifyContent: 'space-between', maxHeight: 40 }}
 			>
-				<Stack direction="row" gap={2} sx={{ flex: 1 }}>
-					<TextField
-						placeholder="Search by title"
-						variant="outlined"
-						size="small"
-						value={searchValue}
-						onChange={handleSearchChange}
-						slotProps={{
-							input: {
-								startAdornment: (
-									<InputAdornment position="start">
-										<Search />
-									</InputAdornment>
-								),
-							},
-						}}
-					/>
-					{categories && (
-						<Autocomplete
-							multiple
-							options={categories.map(
-								(category) => category.title,
-							)}
-							value={filters.categories}
-							onChange={handleCategoryChange}
-							renderInput={(params) => (
-								<TextField
-									{...params}
-									placeholder="Search by categories"
-									variant="outlined"
-								/>
-							)}
-							renderTags={(selected) => (
-								<Box
-									sx={{
-										display: 'flex',
-										flexWrap: 'wrap',
-										gap: 0.5,
-									}}
-								>
-									{selected.map((value) => (
-										<Chip
-											key={value}
-											label={value}
-											clickable
-											deleteIcon={
-												<Cancel
-													onMouseDown={(e) =>
-														e.stopPropagation()
-													}
-												/>
-											}
-											onDelete={() => handleDelete(value)}
-										/>
-									))}
-								</Box>
-							)}
-							size="small"
-							sx={{ width: '50%' }}
-						/>
-					)}
-				</Stack>
-				<Stack direction="row" gap={0.5}>
+				<TextField
+					placeholder="Search by title"
+					variant="outlined"
+					size="small"
+					value={searchValue}
+					onChange={handleSearchChange}
+					slotProps={{
+						input: {
+							startAdornment: (
+								<InputAdornment position="start">
+									<Search />
+								</InputAdornment>
+							),
+						},
+					}}
+				/>
+				<Stack direction="row" gap={2}>
 					<ButtonGroup variant="outlined">
 						<Button
 							sx={{ width: 125 }}
@@ -206,8 +163,112 @@ export const PostsPageHeader: React.FC<PostsPageHeaderProps> = ({
 							Most rated
 						</Button>
 					</ButtonGroup>
+					<Button
+						startIcon={<FilterAlt />}
+						variant={expanded ? 'contained' : 'outlined'}
+						onClick={() => setExpanded(!expanded)}
+					>
+						Filters
+					</Button>
 				</Stack>
 			</Stack>
+			<Collapse
+				in={expanded}
+				timeout="auto"
+				unmountOnExit
+				sx={{
+					mt: 1,
+					border: 1,
+					borderColor: 'primary.main',
+					borderRadius: 2,
+					p: 2,
+				}}
+			>
+				{categories && (
+					<Autocomplete
+						multiple
+						options={categories.map((category) => category.title)}
+						value={filters.categories}
+						onChange={handleCategoryChange}
+						renderInput={(params) => (
+							<TextField
+								{...params}
+								placeholder="Search by categories"
+								variant="outlined"
+							/>
+						)}
+						renderTags={(selected) => (
+							<Box
+								sx={{
+									display: 'flex',
+									flexWrap: 'wrap',
+									gap: 0.5,
+								}}
+							>
+								{selected.map((value) => (
+									<Chip
+										key={value}
+										label={value}
+										clickable
+										deleteIcon={
+											<Cancel
+												onMouseDown={(e) =>
+													e.stopPropagation()
+												}
+											/>
+										}
+										onDelete={() => handleDelete(value)}
+									/>
+								))}
+							</Box>
+						)}
+						size="small"
+						sx={{ mb: 2, width: '100%' }}
+					/>
+				)}
+				<Stack direction="row" gap={2}>
+					<DatePicker
+						label="From Date"
+						value={filters.createdAt?.gte || null}
+						onChange={(date) => handleDateChange('gte', date)}
+						slotProps={{
+							textField: {
+								variant: 'outlined',
+								size: 'small',
+							},
+						}}
+					/>
+					<DatePicker
+						label="To Date"
+						value={filters.createdAt?.lte || null}
+						onChange={(date) => handleDateChange('lte', date)}
+						slotProps={{
+							textField: {
+								variant: 'outlined',
+								size: 'small',
+							},
+						}}
+					/>
+					<Box sx={{ marginLeft: 'auto' }}>
+						<Button
+							variant="outlined"
+							color="error"
+							onClick={() => {
+								setFilters({
+									title: '',
+									categories: [],
+									createdAt: { gte: null, lte: null },
+									sort: 'createdAt',
+									order: 'desc',
+								});
+								setPage(1);
+							}}
+						>
+							Clear
+						</Button>
+					</Box>
+				</Stack>
+			</Collapse>
 		</Stack>
 	);
 };
