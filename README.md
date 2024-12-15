@@ -9,21 +9,23 @@
   <img src="./frontend/src/assets/logo.svg" width="350"/>
 </div>
 
+---
+
 <div align="center">
-  <img src="https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB" height="30"/>
-  <img src="https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white" height="30"/>
-  <img src="https://img.shields.io/badge/-React%20Query-FF4154?style=for-the-badge&logo=react%20query&logoColor=white" height="30"/>
-  <img src="https://img.shields.io/badge/React%20Hook%20Form-%23EC5990.svg?style=for-the-badge&logo=reacthookform&logoColor=white" height="30"/>
-  <img src="https://img.shields.io/badge/redux-%23593d88.svg?style=for-the-badge&logo=redux&logoColor=white" height="30"/>
-  <img src="https://img.shields.io/badge/MUI-%230081CB.svg?style=for-the-badge&logo=mui&logoColor=white" height="30"/>
-  <img src="https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white" height="30"/>
-  <img src="https://img.shields.io/badge/nestjs-E0234E?style=for-the-badge&logo=nestjs&logoColor=white" height="30"/>
-  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" height="30"/>
-  <img src="https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white" height="30"/>
-  <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" height="30"/>
-  <img src="https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=Swagger&logoColor=white" height="30"/>
-  <img src="https://img.shields.io/badge/redis-%23DD0031.svg?&style=for-the-badge&logo=redis&logoColor=white" height="30"/>
-  <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white" height="30"/>
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=fff" />
+  <img src="https://img.shields.io/badge/React-20232A.svg?logo=react&logoColor=%2361DAFB" />
+  <img src="https://img.shields.io/badge/React_Router-CA4245?logo=react-router&logoColor=white" />
+  <img src="https://img.shields.io/badge/React%20Query-FF4154?logo=reactquery&logoColor=fff" />
+  <img src="https://img.shields.io/badge/React%20Hook%20Form-EC5990?logo=reacthookform&logoColor=fff" />
+  <img src="https://img.shields.io/badge/Redux-764ABC?logo=redux&logoColor=fff" />
+  <img src="https://img.shields.io/badge/MUI-007FFF?logo=mui&logoColor=fff" />
+  <img src="https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=fff" />
+  <img src="https://img.shields.io/badge/Nest.js-E0234E?logo=nestjs&logoColor=fff" />
+  <img src="https://img.shields.io/badge/Prisma-2D3748?logo=prisma&logoColor=fff" />
+  <img src="https://img.shields.io/badge/Postgres-316192.svg?logo=postgresql&logoColor=fff" />
+  <img src="https://img.shields.io/badge/Swagger-85EA2D?logo=swagger&logoColor=fff" />
+  <img src="https://img.shields.io/badge/Redis-DD0031.svg?logo=redis&logoColor=fff" />
+  <img src="https://img.shields.io/badge/JWT-000000?logo=jsonwebtokens&logoColor=white" />
 </div>
 
 ---
@@ -36,8 +38,8 @@ CodeTalk is a Q&A web application built using React and NestJS. The platform is 
 - [Table of Contents](#table-of-contents)
 - [Dependencies](#dependencies)
 - [Project setup](#project-setup)
-  - [Database setup](#database-setup)
-  - [Starting the server](#starting-the-server)
+  - [Starting the server](#server)
+  - [Starting the client](#client)
 - [Admin panel](#admin-panel)
 - [API Documentation](#api-documentation)
 - [License](#license)
